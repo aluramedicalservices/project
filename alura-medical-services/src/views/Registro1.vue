@@ -6,7 +6,7 @@
             <hr>
         </div>
         <div class="content">
-            <form @submit.prevent="guardarDatos">
+            <form @submit.prevent="registrarUsuario">
                 <label for="name">Nombre(s)</label><br>
                 <input v-model="nombre" type="text" id="name" placeholder="Nombre(s)" required />
                 <br>
@@ -65,40 +65,42 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-    const nombre = ref('');
-    const apellidoPaterno = ref('');
-    const apellidoMaterno = ref('');
-    const telefono = ref('');
-    const sexo = ref('');
-    const fechaNacimiento = ref('');
-    const calle = ref('');
-    const numeroExterior = ref('');
-    const colonia = ref('');
-    const ciudad = ref('');
-    const cp = ref('');
+const router = useRouter()
 
-    // Esta función se ejecutará cuando el formulario sea enviado
-    const guardarDatos = () => {
-    // Aquí podrías guardar los datos en un backend, localStorage, etc.
-    console.log({
-        nombre: nombre.value,
-        apellidoPaterno: apellidoPaterno.value,
-        apellidoMaterno: apellidoMaterno.value,
-        telefono: telefono.value,
-        sexo: sexo.value,
-        fechaNacimiento: fechaNacimiento.value,
-        calle: calle.value,
-        numeroExterior: numeroExterior.value,
-        colonia: colonia.value,
-        ciudad: ciudad.value,
-        cp: cp.value,
-    });
+const nombre = ref('')
+const apellidoPaterno = ref('')
+const apellidoMaterno = ref('')
+const telefono = ref('')
+const sexo = ref('')
+const fechaNacimiento = ref('')
+const calle = ref('')
+const numeroExterior = ref('')
+const colonia = ref('')
+const ciudad = ref('')
+const cp = ref('')
 
-    // Después de guardar los datos, puedes redirigir o hacer otra acción
-    alert('Datos guardados correctamente.');
-    };
+const registrarUsuario = () => {
+  // Guardamos los datos en sessionStorage para usarlos en `registro2.vue`
+  sessionStorage.setItem('datosUsuario', JSON.stringify({
+    nombre: nombre.value,
+    apellidoPaterno: apellidoPaterno.value,
+    apellidoMaterno: apellidoMaterno.value,
+    telefono: telefono.value,
+    sexo: sexo.value,
+    fechaNacimiento: fechaNacimiento.value,
+    calle: calle.value,
+    numeroExterior: numeroExterior.value,
+    colonia: colonia.value,
+    ciudad: ciudad.value,
+    cp: cp.value,
+  }))
+
+  // Redirige a la segunda parte del registro
+  router.push('/registro2')
+}
 </script>
 
 <style scoped>
