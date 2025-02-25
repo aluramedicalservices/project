@@ -19,7 +19,7 @@
         <button type="submit">Iniciar sesión</button>
 
         <div>
-            <a href="/recuperar-contraseña">¿Olvidaste tu contraseña?</a>
+            <a href="/recuperar-contrasena">¿Olvidaste tu contraseña?</a>
         </div>
     </form>
 </template>
@@ -62,5 +62,5 @@
 </script>
 
 <style scoped>
-/* Estilos básicos para el formulario de inicio de sesión */
+/* Estilos */
 </style>

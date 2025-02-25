@@ -4,6 +4,8 @@ import Apertura from '../views/Apertura.vue';
 import Registro1 from '../views/Registro1.vue'; 
 import Registro2 from '../views/Registro2.vue'; 
 import IniciarSesion from '@/views/IniciarSesion.vue';
+import RecuperarContrasena from '@/views/RecuperarContrasena.vue';
+import RestablecerContrasena from '@/views/RestablecerContrasena.vue';
 
 const routes = [
   {
@@ -30,6 +32,16 @@ const routes = [
     path: '/autenticacion',
     name: 'IniciarSesion',
     component: IniciarSesion,
+  },
+  {
+    path: '/recuperar-contrasena',
+    name: 'RecuperarContrasena',
+    component: RecuperarContrasena,
+  },
+  {
+    path: '/restablecer-contrasena',
+    name: 'RestablecerContrasena',
+    component: RestablecerContrasena, 
   },
 ];
 
