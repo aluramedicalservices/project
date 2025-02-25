@@ -26,26 +26,38 @@
 
 <script setup>
     import { ref } from 'vue';
+    import { supabase } from '@/config/supabase'
+    import { useRouter } from 'vue-router';
 
     const correo = ref('');
     const contraseña = ref('');
 
-    // Función para manejar el inicio de sesión
-    const iniciarSesion = () => {
-        // Validación simple: verificar si los campos están vacíos
+    const router = useRouter();
+
+    // Función para manejar el inicio de sesión // 
+
+    const iniciarSesion = async () => {
         if (!correo.value || !contraseña.value) {
             alert('Por favor, ingresa ambos campos.');
             return;
         }
 
-        // Si los datos son correctos, se puede proceder con la lógica de autenticación
-        console.log({
-            correo: correo.value,
-            contraseña: contraseña.value,
-        });
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email: correo.value,
+                password: contraseña.value
+            });
 
-        // Aquí podrías hacer una solicitud para verificar las credenciales en el servidor
-        alert('Inicio de sesión exitoso.');
+            if (error) {
+                throw error;
+            }
+
+            alert('Inicio de sesión exitoso.');
+            router.push('/');
+
+        } catch (error) {
+            alert(error.message);
+        }
     };
 </script>
 
