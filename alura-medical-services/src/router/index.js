@@ -6,6 +6,10 @@ import Registro2 from '../views/Registro2.vue';
 import IniciarSesion from '@/views/IniciarSesion.vue';
 import RecuperarContrasena from '@/views/RecuperarContrasena.vue';
 import RestablecerContrasena from '@/views/RestablecerContrasena.vue';
+import AgendarCita from '../views/AgendarCita.vue';
+import ConfirmarCita from '../views/ConfirmarCita.vue';
+import ProximasCitas from '../views/ProximasCitas.vue';
+import DetallesCita from '../views/DetallesCita.vue';
 
 const routes = [
   {
@@ -43,6 +47,27 @@ const routes = [
     name: 'RestablecerContrasena',
     component: RestablecerContrasena, 
   },
+  {
+    path: '/agendar',
+    name: 'AgendarCita',
+    component: AgendarCita,
+  },
+  {
+    path: '/confirmar',
+    name: 'ConfirmarCita',
+    component: ConfirmarCita,
+  },
+  {
+    path: '/proximas-citas',
+    name: 'ProximasCitas',
+    component: ProximasCitas,
+  },
+  {
+    path: '/detalles-de-cita',
+    name: 'DetallesCita',
+    component: DetallesCita,
+  },
+
 ];
 
 const router = createRouter({

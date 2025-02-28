@@ -1,6 +1,5 @@
 <template>
     <div class="principal-title">
-        <button><a>Volver</a></button>
         <h1>Inicia Sesión</h1>
         <hr>
     </div>
