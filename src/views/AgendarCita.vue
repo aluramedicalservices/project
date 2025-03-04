@@ -12,7 +12,7 @@
             <option value="especialista">Cita con especialista</option>
         </select>
 
-        <!-- Calendario siempre abierto -->
+        <!-- Calendario -->
         <div class="calendar-container">
             <label>Escoger fecha</label><br>
             <div class="calendar">
@@ -37,20 +37,7 @@
         <label for="hour-option">Escoger horario</label><br>
         <select v-model="hourOption" id="hour-option" required>
             <option value="" disabled selected>Escoger horario</option>
-            <option value="7am">07:00 a.m.</option>
-            <option value="8am">08:00 a.m.</option>
-            <option value="9am">09:00 a.m.</option>
-            <option value="10am">10:00 a.m.</option>
-            <option value="11am">11:00 a.m.</option>
-            <option value="12pm">12:00 p.m.</option>
-            <option value="1pm">01:00 p.m.</option>
-            <option value="2pm">02:00 p.m.</option>
-            <option value="3pm">03:00 p.m.</option>
-            <option value="4pm">04:00 p.m.</option>
-            <option value="5pm">05:00 p.m.</option>
-            <option value="6pm">06:00 p.m.</option>
-            <option value="7pm">07:00 p.m.</option>
-            <option value="8pm">08:00 p.m.</option>
+            <option v-for="hour in availableHours" :key="hour" :value="hour">{{ hour }}</option>
         </select>
 
         <!-- Botón agendar -->
@@ -63,7 +50,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { supabase } from '@/config/supabase';
 import NavTop from '../components/NavTop.vue';
 import NavBottom from '../components/NavBottom.vue';
 import Titulo from '../components/Titulo.vue';
@@ -73,6 +60,7 @@ const appointment_type = ref('');
 const selectedDate = ref('');
 const hourOption = ref('');
 const router = useRouter();
+const user = ref(null); // Almacena la sesión del usuario
 
 const today = new Date();
 const currentYear = ref(today.getFullYear());
@@ -83,6 +71,15 @@ const months = [
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ];
 const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+
+// Horarios disponibles
+const availableHours = [
+    "07:00 a.m.", "08:00 a.m.", "09:00 a.m.", "10:00 a.m.",
+    "11:00 a.m.", "12:00 p.m.", "01:00 p.m.", "02:00 p.m.",
+    "03:00 p.m.", "04:00 p.m.", "05:00 p.m.", "06:00 p.m.",
+    "07:00 p.m.", "08:00 p.m."
+];
 
 // Cálculo de días en el mes
 const daysInMonth = computed(() => {
@@ -123,15 +120,45 @@ const isSelected = (day) => {
     return selectedDate.value === `${currentYear.value}-${String(currentMonth.value + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 };
 
+// Cargar usuario autenticado
+const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    user.value = user;
+};
+
 // Función para agendar la cita
-const agendarCita = () => {
+const agendarCita = async () => {
     if (!appointment_type.value || !selectedDate.value || !hourOption.value) {
         alert('Por favor, completa todos los campos.');
         return;
     }
-    alert(`Cita agendada:\n\nTipo: ${appointment_type.value}\nFecha: ${selectedDate.value}\nHora: ${hourOption.value}`);
-    router.push('/citas');
+
+    if (!user.value) {
+        alert("Debes iniciar sesión para agendar una cita.");
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from('appointments')
+        .insert([
+            {
+                user_id: user.value.id,
+                appointment_type: appointment_type.value,
+                appointment_date: selectedDate.value,
+                appointment_time: hourOption.value
+            }
+        ]);
+
+    if (error) {
+        alert('Error al agendar la cita: ' + error.message);
+    } else {
+        alert('Cita agendada con éxito');
+        router.push('/citas'); // Redirige al usuario después de agendar
+    }
 };
+
+// Cargar usuario al montar el componente
+getUser();
 </script>
 
 <style scoped>
