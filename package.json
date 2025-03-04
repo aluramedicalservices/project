@@ -12,6 +12,8 @@
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",
     "@supabase/supabase-js": "^2.48.1",
+    "pinia": "^3.0.1",
+    "stripe": "^17.7.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
