@@ -6,7 +6,7 @@
                 enim sunt, quidem quod rem quae. Consequatur magni illo rem nisi natus hic provident dolorem amet
                 blanditiis!</p>
             <button onclick="window.location.href='/autenticacion'">Iniciar sesión</button>
-            <button onclick="window.location.href='pagina.html'">Registrarse</button>
+            <button onclick="window.location.href='/registro1'">Registrarse</button>
             <p>© Alura 2025</p>
         </div>
     </div>

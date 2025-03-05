@@ -60,10 +60,11 @@
     <NavBottom />
 </template>
 
+
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { supabase } from '@/config/supabase'
 import NavTop from '../../components/Paciente/NavTop.vue';
 import NavBottom from '../../components/Paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
@@ -123,16 +124,42 @@ const isSelected = (day) => {
     return selectedDate.value === `${currentYear.value}-${String(currentMonth.value + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 };
 
-// Función para agendar la cita
-const agendarCita = () => {
+// Función para agendar la cita en Supabase
+const agendarCita = async () => {
     if (!appointment_type.value || !selectedDate.value || !hourOption.value) {
         alert('Por favor, completa todos los campos.');
         return;
     }
-    alert(`Cita agendada:\n\nTipo: ${appointment_type.value}\nFecha: ${selectedDate.value}\nHora: ${hourOption.value}`);
-    router.push('/citas');
+
+    // Obtener usuario autenticado
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+        alert('Debes iniciar sesión para agendar una cita.');
+        return;
+    }
+
+    // Insertar cita en Supabase
+    const { error } = await supabase
+        .from('appointments')
+        .insert([
+            {
+                user_id: user.id, // ID del usuario autenticado
+                appointment_type: appointment_type.value,
+                appointment_date: selectedDate.value,
+                appointment_time: hourOption.value
+            }
+        ]);
+
+    if (error) {
+        console.error('Error al agendar la cita:', error);
+        alert('Hubo un problema al agendar la cita.');
+    } else {
+        alert(`Cita agendada con éxito:\n\nTipo: ${appointment_type.value}\nFecha: ${selectedDate.value}\nHora: ${hourOption.value}`);
+        router.push('/citas'); // Redirige a la vista de citas
+    }
 };
 </script>
+
 
 <style scoped>
 .calendar-container {

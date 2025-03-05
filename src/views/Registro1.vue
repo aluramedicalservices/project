@@ -1,7 +1,7 @@
 <template>
     <div id="register">
         <div class="principal-title">
-            <button><a>Volver</a></button>
+            <button onclick="window.location.href='/apertura'">Volver</button>
             <h1>Registro</h1>
             <hr>
         </div>
