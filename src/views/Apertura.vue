@@ -5,8 +5,8 @@
             <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Soluta mollitia repellendus possimus voluptas
                 enim sunt, quidem quod rem quae. Consequatur magni illo rem nisi natus hic provident dolorem amet
                 blanditiis!</p>
-            <button onclick="window.location.href='/autenticacion'">Iniciar sesión</button>
-            <button onclick="window.location.href='/registro1'">Registrarse</button>
+            <button onclick="window.location.href='/iniciar-sesion'">Iniciar sesión</button>
+            <button onclick="window.location.href='/registro'">Registrarse</button>
             <p>© Alura 2025</p>
         </div>
     </div>

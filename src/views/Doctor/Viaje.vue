@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import GoogleMap from "./components/MapView.vue";
+import GoogleMap from "../../components/MapView.vue";
 
 export default {
   name: "App",

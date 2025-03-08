@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import NavTopD from '../../components/Doctor/NavTopD.vue';
+import NavTop from '../../components/Doctor/NavTopD.vue';
 import Titulo from '../../components/Titulo.vue';
 
 </script>

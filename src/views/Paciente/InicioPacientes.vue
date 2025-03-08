@@ -1,70 +1,115 @@
 <template>
-    <NavTop />
-    <div id="p-patients-home">
-        <div id="s-welcome-card">
-            <div>
-                <img id="patient-profile-p" src="" alt="foto-paciente">
-            </div>
-            <div>
-                <p id="plan-label"></p><br>
-                <p>Bienvenido/a de nuevo,</p><br>
-                <p>[nombre del paciente]</p>
-            </div>
-        </div>
-        <div id="s-upcoming-appointments">
-            <div>
-                <div>
-                    <h1 class="font-mono text-3xl font-bold underline">Próximas citas</h1>
-                    <button><a href="#">Ver</a></button>
-                </div>
-                <p>Hoy es [fecha actual]</p>
-            </div>
-            <div class="appointments-container">
-                <div class="appointment-info">
-                    <a href="#">
-                        <h2>[titulo-cita]</h2>
-                        <p>[fecha]</p>
-                        <p>[hora]</p>
-                    </a>
-                </div>
-                <p><a href="#">Ver todas las citas</a></p>
-            </div>
-
-        </div>
-        <div id="s-request-appointment">
-            <h2>Solicitar cita</h2>
-            <div class="request-appointment-options">
-                <div id="request-online-appointment">
-                    <a href="#">
-                        <i>icono</i>
-                        <br>
-                        <h3>Online</h3>
-                    </a>
-                </div>
-                <div id="request-nursing-appointment">
-                    <a href="#">
-                        <i>icono</i>
-                        <br>
-                        <h3>Enfermería</h3>
-                    </a>
-                </div>
-                <div id="request-specialist-appointment">
-                    <a href="#">
-                        <i>icono</i>
-                        <br>
-                        <h3>Especialista</h3>
-                    </a>
-                </div>
-            </div>
-        </div>
+  <NavTop />
+  <div id="p-patients-home">
+    <!-- Bienvenida y nombre del paciente -->
+    <div id="s-welcome-card">
+      <div>
+        <img id="patient-profile-p" src="" alt="foto-paciente">
+      </div>
+      <div>
+        <p id="plan-label">Premium</p><br>
+        <p>Bienvenid@ de nuevo,</p><br>
+        <p>{{ nombrePaciente }}</p>
+      </div>
     </div>
-    <NavBottom />
+
+    <!-- Próximas citas (solo si hay citas agendadas) -->
+    <div id="s-upcoming-appointments" v-if="citas.length > 0">
+      <div>
+        <h1>Próximas citas</h1>
+        <p>Hoy es {{ fechaActual }}</p>
+      </div>
+      <div class="appointments-container">
+        <div class="appointment-info" v-for="cita in citas" :key="cita.id">
+          <h2>{{ obtenerTipoCita(cita.appointment_type) }}</h2>
+          <p>{{ formatearFecha(cita.appointment_date) }}</p>
+          <p>{{ cita.appointment_time }}</p>
+        </div>
+        <p><a href="#">Ver todas las citas</a></p>
+      </div>
+    </div>
+
+    <!-- Solicitar cita -->
+    <div id="s-request-appointment">
+      <h2>Solicitar cita</h2>
+      <button @click="irAAgendarCitas">Agendar cita</button> <!-- Botón para agendar cita -->
+    </div>
+  </div>
+  <NavBottom />
 </template>
 
 <script setup>
-// Aquí podrías importar componentes si los necesitas
-    import NavTop from '../../components/Paciente/NavTop.vue';
-    import NavBottom from '../../components/Paciente/NavBottom.vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { supabase } from '@/config/supabase';
+import NavTop from '../../components/Paciente/NavTop.vue';
+import NavBottom from '../../components/Paciente/NavBottom.vue';
+
+const nombrePaciente = ref('');
+const fechaActual = ref('');
+const citas = ref([]); // Variable para almacenar las citas del paciente
+const router = useRouter();
+
+// Obtener el nombre del paciente y las citas al cargar la vista
+onMounted(async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      // Obtener el nombre del paciente desde la tabla `users`
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('nombre')
+        .eq('id', user.id)
+        .single();
+
+      if (userError) throw userError;
+      nombrePaciente.value = userData.nombre;
+
+      // Obtener las citas del paciente desde la tabla `appointments`
+      const { data: citasData, error: citasError } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('appointment_date', { ascending: true }); // Ordenar por fecha ascendente
+
+      if (citasError) throw citasError;
+      citas.value = citasData;
+    }
+
+    // Obtener la fecha actual
+    const hoy = new Date();
+    const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    fechaActual.value = hoy.toLocaleDateString('es-ES', opcionesFecha); // Formato: "martes, 11 de febrero de 2025"
+  } catch (error) {
+    console.error('Error al obtener datos:', error.message);
+  }
+});
+
+// Función para redirigir a AgendarCitas.vue
+const irAAgendarCitas = () => {
+  router.push('/agendar-citas');
+};
+
+// Función para formatear la fecha
+const formatearFecha = (fecha) => {
+  const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(fecha).toLocaleDateString('es-ES', opcionesFecha);
+};
+
+// Función para obtener el tipo de cita
+const obtenerTipoCita = (tipo) => {
+  switch (tipo) {
+    case 'asesoria':
+      return 'Asesoría Médica';
+    case 'enfermeria':
+      return 'Cita con Enfermería';
+    case 'especialista':
+      return 'Cita con Especialista';
+    default:
+      return 'Cita';
+  }
+};
 </script>
 
 <style scoped>

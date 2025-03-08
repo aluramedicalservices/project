@@ -1,12 +1,12 @@
 <template>
     <div id="register">
-        <div class="principal-title">
-            <button onclick="window.location.href='/apertura'">Volver</button>
-            <h1>Registro</h1>
-            <hr>
-        </div>
+        <Titulo texto="Cuestionario" />
+
+        <div> Aqui ira la barra de progreso </div>
+
+        <p><b>Por favor, llene el formulario para continuar.</b></p>
         <div class="content">
-            <form @submit.prevent="registrarUsuario">
+            <form @submit.prevent="Cuestionario">
                 <label for="name">Nombre(s)</label><br>
                 <input v-model="nombre" type="text" id="name" placeholder="Nombre(s)" required />
                 <br>
@@ -21,7 +21,7 @@
 
                 <label for="phone">Número de celular</label><br>
                 <input v-model="telefono" type="tel" id="phone" placeholder="+52 664 107 8075"
-                    pattern="^\+52\s\d{3}\s\d{3}\s\d{4}$" required />
+                     required />
                 <br>
 
                 <label for="gender">Sexo</label><br>
@@ -30,32 +30,11 @@
                     <option value="Mujer">Mujer</option>
                 </select>
                 <br>
-
+                
                 <hr>
                 <label for="birthdate">Fecha de nacimiento</label><br>
                 <input v-model="fechaNacimiento" type="date" id="birthdate" min="1900-01-01" max="2025-12-31"
                     required />
-                <br>
-
-                <hr>
-                <label for="calle">Calle</label><br>
-                <input v-model="calle" type="text" id="calle" placeholder="Calle" required />
-                <br>
-
-                <label for="numero">Número exterior</label><br>
-                <input v-model="numeroExterior" type="text" id="numero" placeholder="Número" required />
-                <br>
-
-                <label for="colonia">Colonia</label><br>
-                <input v-model="colonia" type="text" id="colonia" placeholder="Colonia" required />
-                <br>
-
-                <label for="ciudad">Ciudad</label><br>
-                <input v-model="ciudad" type="text" id="ciudad" placeholder="Ciudad" required />
-                <br>
-
-                <label for="cp">Código Postal</label><br>
-                <input v-model="cp" type="text" id="cp" placeholder="Código postal" required />
                 <br>
 
                 <button type="submit">Siguiente</button>
@@ -65,6 +44,8 @@
 </template>
 
 <script setup>
+import Titulo from '../components/Titulo.vue'
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -76,13 +57,8 @@ const apellidoMaterno = ref('')
 const telefono = ref('')
 const sexo = ref('')
 const fechaNacimiento = ref('')
-const calle = ref('')
-const numeroExterior = ref('')
-const colonia = ref('')
-const ciudad = ref('')
-const cp = ref('')
 
-const registrarUsuario = () => {
+const Cuestionario = () => {
   // Guardamos los datos en sessionStorage para usarlos en `registro2.vue`
   sessionStorage.setItem('datosUsuario', JSON.stringify({
     nombre: nombre.value,
@@ -91,15 +67,10 @@ const registrarUsuario = () => {
     telefono: telefono.value,
     sexo: sexo.value,
     fechaNacimiento: fechaNacimiento.value,
-    calle: calle.value,
-    numeroExterior: numeroExterior.value,
-    colonia: colonia.value,
-    ciudad: ciudad.value,
-    cp: cp.value,
   }))
 
   // Redirige a la segunda parte del registro
-  router.push('/registro2')
+  router.push('/cuestionario-2')
 }
 </script>
 

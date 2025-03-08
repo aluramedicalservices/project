@@ -1,20 +1,34 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import InicioPacientes from '../views/InicioPacientes.vue';
+//Vistas generales de la app
 import Apertura from '../views/Apertura.vue'; 
-import Registro1 from '../views/Registro1.vue'; 
-import Registro2 from '../views/Registro2.vue'; 
-import IniciarSesion from '@/views/IniciarSesion.vue';
-import RecuperarContrasena from '@/views/RecuperarContrasena.vue';
-import RestablecerContrasena from '@/views/RestablecerContrasena.vue';
-import AgendarCita from '../views/Paciente/AgendarCita.vue';
-import ConfirmarCita from '../views/Paciente/ConfirmarCita.vue';
-import ProximasCitas from '../views/Paciente/ProximasCitas.vue';
-import DetallesCita from '../views/Paciente/DetallesCita.vue';
+import Registro from '../views/Registro.vue'; 
+import Cuestionario1 from '../views/Cuestionario1.vue'; 
+import Cuestionario2 from '../views/Cuestionario2.vue'; 
+import IniciarSesion from '../views/IniciarSesion.vue';
+import RecuperarContrasena from '../views/RecuperarContrasena.vue';
+import RestablecerContrasena from '../views/RestablecerContrasena.vue';
+
+
+//Vistas Portal de Pacientes
+import InicioPacientes from '../views/paciente/InicioPacientes.vue';
+import AgendarCita from '../views/paciente/AgendarCita.vue';
+import ConfirmarCita from '../views/paciente/ConfirmarCita.vue';
+import ProximasCitas from '../views/paciente/ProximasCitas.vue';
+import DetallesCita from '../views/paciente/DetallesCita.vue';
+
+//Vistas Portal de Pacientes
+import InicioDoctor from '../views/doctor/InicioDoctor.vue';
+import Agenda from '../views/doctor/Agenda.vue';
+import DetallesCitaD from '../views/doctor/DetallesCitaD.vue';
+import ComenzarViaje from '../views/doctor/ComenzarViaje.vue';
+import Viaje from '../views/doctor/Viaje.vue';
+import RegistroCita from '../views/doctor/RegistroCita.vue';
+
 
 const routes = [
   {
-    path: '/',
-    name: 'InicioPacientes',
+    path: '/dashboard-paciente',
+    name: 'inicio-pacientes',
     component: InicioPacientes,
   },
   {
@@ -23,17 +37,21 @@ const routes = [
     component: Apertura,
   },
   {
-    path: '/registro1',
-    name: 'Registro1',
-    component: Registro1,
+    path: '/registro',
+    name: 'Registro',
+    component: Registro,
   },
   {
-    path: '/registro2',
-    name: 'Registro2',
-    component: Registro2,
+    path: '/cuestionario-1',
+    name: 'Cuestionario1',
+    component: Cuestionario1,
+  },{
+    path: '/cuestionario-2',
+    name: 'Cuestionario2',
+    component: Cuestionario2,
   },
   {
-    path: '/autenticacion',
+    path: '/iniciar-sesion',
     name: 'IniciarSesion',
     component: IniciarSesion,
   },
@@ -48,13 +66,13 @@ const routes = [
     component: RestablecerContrasena, 
   },
   {
-    path: '/agendar',
+    path: '/agendar-citas',
     name: 'AgendarCita',
     component: AgendarCita,
   },
   {
-    path: '/confirmar',
-    name: 'ConfirmarCita',
+    path: '/confirmar-cita',
+    name: 'confirmar-cita',
     component: ConfirmarCita,
   },
   {
@@ -66,6 +84,41 @@ const routes = [
     path: '/detalles-de-cita',
     name: 'DetallesCita',
     component: DetallesCita,
+  },
+  {
+    path: '/inicio',
+    name: 'InicioDoctor',
+    component: InicioDoctor,
+  },
+  {
+    path: '/agenda',
+    name: 'Agenda',
+    component: Agenda,
+  },
+  {
+    path: '/detalles-cita',
+    name: 'DetallesCitaD',
+    component: DetallesCitaD,
+  },
+  {
+    path: '/comenzar-viaje',
+    name: 'ComenzarViaje',
+    component: ComenzarViaje,
+  },
+  {
+    path: '/viaje',
+    name: 'Viaje',
+    component: Viaje,
+  },
+  {
+    path: '/viaje',
+    name: 'Viaje',
+    component: Viaje,
+  },
+  {
+    path: '/cita-registro',
+    name: 'RegistroCita',
+    component: RegistroCita,
   },
 
 ];
