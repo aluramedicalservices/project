@@ -11,7 +11,13 @@
         <span class="icon">⏰</span> Hora: <strong>{{ hourOption }}</strong>
       </li>
       <li>
-        <span class="icon">🩺</span> Modalidad: <strong>{{ appointment_type }}</strong>
+        <span class="icon">🩺</span> Modalidad: <strong>{{ appointmentType }}</strong>
+      </li>
+      <li v-if="metodoPago">
+        <span class="icon">💳</span> Método de Pago: <strong>{{ metodoPago }}</strong>
+      </li>
+      <li v-if="especialidad">
+        <span class="icon">👨‍⚕️</span> Especialidad: <strong>{{ especialidad }}</strong>
       </li>
     </ul>
 
@@ -25,57 +31,71 @@
   <NavBottom />
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { supabase } from '@/config/supabase';
 import NavTop from '../../components/Paciente/NavTop.vue';
 import NavBottom from '../../components/Paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
-import { supabase } from '@/config/supabase';
 
-export default {
-  components: {
-    Titulo,
-    NavTop,
-    NavBottom,
-  },
-  data() {
-    return {
-      appointment_type: this.$route.query.modalidad || 'Pendiente',
-      fechaSeleccionada: this.$route.query.fecha || 'Pendiente',
-      hourOption: this.$route.query.hora || 'Pendiente',
-    };
-  },
-  methods: {
-    async confirmarCita() {
-      // Obtener el usuario autenticado
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+const router = useRouter();
+const route = useRoute();
 
-      if (userError || !user) {
-        alert('Debes iniciar sesión para agendar una cita.');
-        return;
-      }
+// Obtener los datos de la cita desde los parámetros de la ruta
+const fechaSeleccionada = ref(route.query.fecha || 'Pendiente');
+const hourOption = ref(route.query.hora || 'Pendiente');
+const appointmentType = ref(route.query.modalidad || 'Pendiente');
+const metodoPago = ref(route.query.metodoPago || '');
+const especialidad = ref(route.query.especialidad || '');
 
-      // Insertar datos en Supabase
-      const { error } = await supabase.from('appointments').insert([
-        {
-          user_id: user.id,
-          appointment_type: this.appointment_type,
-          appointment_date: this.fechaSeleccionada,
-          appointment_time: this.hourOption,
-        },
-      ]);
+const confirmarCita = async () => {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-      if (error) {
-        console.error('Error al agendar la cita:', error);
-        alert('Hubo un problema al agendar la cita. Inténtalo de nuevo.');
-      } else {
-        alert(`Cita confirmada para el ${this.fechaSeleccionada} a las ${this.hourOption}.`);
-        this.$router.push('/dashboard-paciente');
-      }
-    },
-    cancelarCita() {
-      this.$router.push('/agendar-cita');
-    },
-  },
+  if (userError || !user) {
+    alert('Debes iniciar sesión para agendar una cita.');
+    return;
+  }
+
+  // Datos de la cita a guardar en la base de datos
+  const citaData = {
+    user_id: user.id,
+    appointment_type: appointmentType.value,
+    appointment_date: fechaSeleccionada.value,
+    appointment_time: hourOption.value,
+    status: 'scheduled', // Estado inicial
+    doctor_id: null, // Inicialmente no tiene doctor asignado
+  };
+
+  // Agregar método de pago si está presente
+  if (metodoPago.value) {
+    citaData.metodo_pago = metodoPago.value;
+  }
+
+  // Agregar especialidad si está presente
+  if (especialidad.value) {
+    citaData.especialidad = especialidad.value;
+  }
+
+  try {
+    // Insertar la cita en la base de datos
+    const { error } = await supabase.from('appointments').insert([citaData]);
+
+    if (error) {
+      console.error('Error al agendar la cita:', error);
+      alert(`Error al agendar la cita: ${error.message}`);
+    } else {
+      alert(`Cita confirmada para el ${fechaSeleccionada.value} a las ${hourOption.value}.`);
+      router.push('/dashboard-paciente'); // Redirigir al dashboard del paciente
+    }
+  } catch (error) {
+    console.error('Error inesperado:', error);
+    alert('Hubo un problema inesperado al agendar la cita. Inténtalo de nuevo.');
+  }
+};
+
+const cancelarCita = () => {
+  router.push('/agendar-cita'); // Redirigir al formulario de agendar cita
 };
 </script>
 

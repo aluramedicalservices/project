@@ -1,22 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router';
-//Vistas generales de la app
-import Apertura from '../views/Apertura.vue'; 
-import Registro from '../views/Registro.vue'; 
-import Cuestionario1 from '../views/Cuestionario1.vue'; 
-import Cuestionario2 from '../views/Cuestionario2.vue'; 
+
+// Vistas generales de la app
+import Apertura from '../views/Apertura.vue';
+import Registro from '../views/Registro.vue';
+import Cuestionario1 from '../views/Cuestionario1.vue';
+import Cuestionario2 from '../views/Cuestionario2.vue';
 import IniciarSesion from '../views/IniciarSesion.vue';
 import RecuperarContrasena from '../views/RecuperarContrasena.vue';
 import RestablecerContrasena from '../views/RestablecerContrasena.vue';
 
-
-//Vistas Portal de Pacientes
+// Vistas Portal de Pacientes
 import InicioPacientes from '../views/paciente/InicioPacientes.vue';
 import AgendarCita from '../views/paciente/AgendarCita.vue';
 import ConfirmarCita from '../views/paciente/ConfirmarCita.vue';
 import ProximasCitas from '../views/paciente/ProximasCitas.vue';
 import DetallesCita from '../views/paciente/DetallesCita.vue';
+import AgendarCitaOnline from '../views/paciente/AgendarCitaOnline.vue';
+import AgendarCitaEnfermeria from '../views/paciente/AgendarCitaEnfermeria.vue';
+import AgendarCitaEspecialista from '../views/paciente/AgendarCitaEspecialista.vue';
 
-//Vistas Portal de Pacientes
+// Vistas Portal de Doctor
 import InicioDoctor from '../views/doctor/InicioDoctor.vue';
 import Agenda from '../views/doctor/Agenda.vue';
 import DetallesCitaD from '../views/doctor/DetallesCitaD.vue';
@@ -45,7 +48,8 @@ const routes = [
     path: '/cuestionario-1',
     name: 'Cuestionario1',
     component: Cuestionario1,
-  },{
+  },
+  {
     path: '/cuestionario-2',
     name: 'Cuestionario2',
     component: Cuestionario2,
@@ -63,7 +67,7 @@ const routes = [
   {
     path: '/restablecer-contrasena',
     name: 'RestablecerContrasena',
-    component: RestablecerContrasena, 
+    component: RestablecerContrasena,
   },
   {
     path: '/agendar-citas',
@@ -111,16 +115,26 @@ const routes = [
     component: Viaje,
   },
   {
-    path: '/viaje',
-    name: 'Viaje',
-    component: Viaje,
-  },
-  {
     path: '/cita-registro',
     name: 'RegistroCita',
     component: RegistroCita,
   },
-
+  {
+    path: '/agendar-cita-online',
+    name: 'AgendarCitaOnline',
+    component: AgendarCitaOnline,
+  },
+  {
+    path: '/agendar-cita-enfermeria',
+    name: 'AgendarCitaEnfermeria',
+    component: AgendarCitaEnfermeria,
+  },
+  {
+    path: '/agendar-cita-especialista',
+    name: 'AgendarCitaEspecialista',
+    component: AgendarCitaEspecialista,
+  },
+  
 ];
 
 const router = createRouter({

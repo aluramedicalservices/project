@@ -24,8 +24,10 @@
           <h2>{{ obtenerTipoCita(cita.appointment_type) }}</h2>
           <p>{{ formatearFecha(cita.appointment_date) }}</p>
           <p>{{ cita.appointment_time }}</p>
+          <p>Estado: {{ cita.status }}</p>
+          <p v-if="cita.doctor_id">Doctor: {{ cita.doctor_nombre }}</p>
+          <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor">Ver ubicación del doctor</button>
         </div>
-        <p><a href="#">Ver todas las citas</a></p>
       </div>
     </div>
 
@@ -33,6 +35,9 @@
     <div id="s-request-appointment">
       <h2>Solicitar cita</h2>
       <button @click="irAAgendarCitas">Agendar cita</button> <!-- Botón para agendar cita -->
+      <button @click="irAAgendarCitaOnline">Agendar cita Online</button>
+      <button @click="irAAgendarCitaEnfermeria">Agendar cita con Enfermería</button>
+      <button v-if="esPremium" @click="irAAgendarCitaEspecialista">Agendar cita con Especialista</button>
     </div>
   </div>
   <NavBottom />
@@ -66,15 +71,20 @@ onMounted(async () => {
       if (userError) throw userError;
       nombrePaciente.value = userData.nombre;
 
-      // Obtener las citas del paciente desde la tabla `appointments`
+      // Obtener las citas del paciente con los datos del doctor
       const { data: citasData, error: citasError } = await supabase
         .from('appointments')
-        .select('*')
+        .select('*, doctors:doctor_id(nombre)') // Obtener el nombre del doctor
         .eq('user_id', user.id)
         .order('appointment_date', { ascending: true }); // Ordenar por fecha ascendente
 
       if (citasError) throw citasError;
-      citas.value = citasData;
+
+      // Mapear los datos para incluir el nombre del doctor
+      citas.value = citasData.map(cita => ({
+        ...cita,
+        doctor_nombre: cita.doctors?.nombre || 'No asignado',
+      }));
     }
 
     // Obtener la fecha actual
@@ -89,6 +99,21 @@ onMounted(async () => {
 // Función para redirigir a AgendarCitas.vue
 const irAAgendarCitas = () => {
   router.push('/agendar-citas');
+};
+
+// Función para redirigir a AgendarCitaOnline.vue
+const irAAgendarCitaOnline = () => {
+  router.push('/agendar-cita-online');
+};
+
+// Función para redirigir a AgendarCitaEnfermeria.vue
+const irAAgendarCitaEnfermeria = () => {
+  router.push('/agendar-cita-enfermeria');
+};
+
+// Función para redirigir a AgendarCitaEspecialista.vue
+const irAAgendarCitaEspecialista = () => {
+  router.push('/agendar-cita-especialista');
 };
 
 // Función para formatear la fecha
@@ -109,6 +134,12 @@ const obtenerTipoCita = (tipo) => {
     default:
       return 'Cita';
   }
+};
+
+// Función para ver la ubicación del doctor
+const verUbicacionDoctor = () => {
+  // Aquí puedes integrar la API de Google Maps
+  alert('Integrar API de Google Maps aquí.');
 };
 </script>
 
