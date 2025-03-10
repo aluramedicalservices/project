@@ -1,6 +1,6 @@
 <template>
-    <div class="flex items-center justify-center min-h-screen text-noxgrey">
-        <div id="login" class="flex flex-col w-64 text-center space-y-24">
+    <div id="vista-apertura" class="flex items-center justify-center min-h-screen text-noxgrey">
+        <div class="flex flex-col w-64 text-center space-y-24">
             <AluraLogo class="w-xs" />
 
             <div class="flex flex-col">
