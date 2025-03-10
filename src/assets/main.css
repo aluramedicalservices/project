@@ -1,35 +1,30 @@
-@import './base.css';
+@import "tailwindcss";
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+@font-face{
+    font-family: Montserrat;
+    src: url("../assets/Fuentes/Montserrat/Montserrat-VariableFont_wght.ttf");  
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+@font-face{
+    font-family: Nunito;
+    src: url("../assets/Fuentes/Nunito/Nunito-VariableFont_wght.ttf");  
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+@theme {
+--font-montserrat: Montserrat, "sans-serif";
+--font-nunito: Nunito, "sans-serif";
+
+--color-medblue: #5b5ea7; /* Morado principal */
+--color-medbluelight: #ABBAF0; /* Morado claro */
+
+--color-healingblue: #76c7d0; /* Azul turquesa principal */
+--color-healingbluelight: #E0F9FC; /* Azul claro */
+
+--color-noxgrey: #3d4448; /* Gris oscuro */
+--color-sterilgrey: "#e7e7e7"; /* Gris muy claro*/
+--color-vitalblue: "#f0f9fe"; /* Blanco azulado*/
+
+--color-fondo: "#FCFEFF"; /* Blanco para el fondo*/
+
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-}

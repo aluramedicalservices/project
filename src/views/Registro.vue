@@ -1,6 +1,7 @@
 <template>
   <div id="register">
     <Titulo texto="Registro" />
+
     <button onclick="window.location.href='/apertura'">Volver</button>
 
     <div class="content">
@@ -47,9 +48,12 @@
       </form>
     </div>
   </div>
+  
 </template>
 
 <script setup>
+import Titulo from '../components/Titulo.vue'
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/config/supabase'

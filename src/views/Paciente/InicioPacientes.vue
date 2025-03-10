@@ -33,7 +33,7 @@
 
     <!-- Solicitar cita -->
     <div id="s-request-appointment">
-      <h2>Solicitar cita</h2>
+      <h2 class="text-3xl font-bold underline">Solicitar cita</h2>
       <button @click="irAAgendarCitas">Agendar cita</button> <!-- Botón para agendar cita -->
       <button @click="irAAgendarCitaOnline">Agendar cita Online</button>
       <button @click="irAAgendarCitaEnfermeria">Agendar cita con Enfermería</button>

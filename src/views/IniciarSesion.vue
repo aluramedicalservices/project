@@ -1,22 +1,41 @@
 <template>
-  <div class="principal-title">
-    <button @click="router.push('/apertura')">Volver</button>
-    <h1>Inicia Sesión</h1>
-    <hr>
-  </div>
+  <Titulo texto="Iniciar sesión" />
 
   <!-- Formulario para pacientes -->
   <form @submit.prevent="iniciarSesionPaciente" v-if="!mostrarCredencialDoctor">
+
+    <div class="max-w-sm">
+      <label for="correo" class="block text-sm font-nunito mb-2">Correo electrónico</label>
+      <input type="email" 
+        id="correo"
+        class="font-nunito py-2.5 sm:py-3 px-4 block w-full border-1 border-gray-300 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+        placeholder="you@site.com"
+        v-model="correo" 
+        required />
+    </div>
+
+    <div class="max-w-sm">
+      <label for="contraseña" class="block text-sm font-nunito mb-2">Contraseña</label>
+      <input type="password" 
+        id="contraseña"
+        class="font-nunito py-2.5 sm:py-3 px-4 block w-full border-1 border-gray-300 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+        placeholder="Contraseña"
+        v-model="contraseña"
+        required />
+    </div>
+
+    <!-- correo electronico 
     <div>
       <label for="correo">Correo electrónico</label><br>
       <input type="email" id="correo" v-model="correo" placeholder="Correo electrónico" required />
     </div>
-
+   
     <div>
       <label for="contraseña">Contraseña</label><br>
       <input type="password" id="contraseña" v-model="contraseña" placeholder="Contraseña" required />
     </div>
-
+    -->
+    
     <button type="submit">Iniciar sesión</button>
 
     <div>
@@ -41,9 +60,12 @@
       <button type="button" @click="mostrarCredencialDoctor = false">Volver a inicio de sesión</button>
     </div>
   </form>
+
 </template>
 
 <script setup>
+import Titulo from '../components/Titulo.vue'
+
 import { ref } from 'vue';
 import { supabase } from '@/config/supabase';
 import { useRouter } from 'vue-router';
