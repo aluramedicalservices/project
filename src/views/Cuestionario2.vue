@@ -90,7 +90,7 @@ const Cuestionario2 = async () => {
     if (error) throw error
 
     alert('¡Registro completado con éxito!')
-    router.push('/') // Redirigir al inicio o a otra vista
+    router.push('/dashboard-paciente') // Redirigir al inicio o a otra vista
 
   } catch (err) {
     console.error('Error al guardar los datos:', err.message)

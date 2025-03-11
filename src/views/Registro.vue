@@ -82,8 +82,8 @@ const registrarUsuario = async () => {
 
     if (error) throw error
 
-    alert('¡Registro exitoso! Ahora puedes iniciar sesión. Contesta nuestro Cuestionario.')
-    router.push('/cuestionario-1')
+    alert('¡Registro exitoso! Ahora puedes iniciar sesión.')
+    router.push('/apertura')
 
   } catch (err) {
     console.error('Error en el registro:', err.message)
