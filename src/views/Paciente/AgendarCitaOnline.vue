@@ -123,7 +123,7 @@ const irAConfirmarCita = () => {
   router.push({
     path: '/confirmar-cita',
     query: {
-      modalidad: 'asesoria', // Tipo de cita
+      modalidad: 'online', // Tipo de cita
       fecha: selectedDate.value,
       hora: hourOption.value,
     },

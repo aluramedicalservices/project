@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { supabase } from '@/config/supabase';
 import NavTop from '../../components/Paciente/NavTop.vue';
@@ -42,12 +42,34 @@ import Titulo from '../../components/Titulo.vue';
 const router = useRouter();
 const route = useRoute();
 
+// Lista de valores permitidos para "appointment_type"
+const tiposPermitidos = ["online", "domicilio", "especialista"];
+
 // Obtener los datos de la cita desde los parámetros de la ruta
 const fechaSeleccionada = ref(route.query.fecha || 'Pendiente');
 const hourOption = ref(route.query.hora || 'Pendiente');
 const appointmentType = ref(route.query.modalidad || 'Pendiente');
 const metodoPago = ref(route.query.metodoPago || '');
 const especialidad = ref(route.query.especialidad || '');
+
+// Función para convertir la hora a formato de 24 horas (HH:MM:SS)
+const convertirHora = (hora) => {
+  if (!hora) return null;
+  const match = hora.match(/^(\d{1,2}):?(\d{2})?\s?(AM|PM)?$/i);
+  if (!match) return null;
+
+  let [_, horas, minutos, periodo] = match;
+  horas = parseInt(horas, 10);
+  minutos = minutos ? minutos.padStart(2, "0") : "00";
+
+  if (periodo && periodo.toUpperCase() === "PM" && horas !== 12) {
+    horas += 12;
+  } else if (periodo && periodo.toUpperCase() === "AM" && horas === 12) {
+    horas = 0;
+  }
+
+  return `${horas.toString().padStart(2, "0")}:${minutos}:00`;
+};
 
 const confirmarCita = async () => {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -57,25 +79,24 @@ const confirmarCita = async () => {
     return;
   }
 
+  // Validar el tipo de cita
+  if (!tiposPermitidos.includes(appointmentType.value.toLowerCase())) {
+    alert(`Error: Tipo de cita inválido (${appointmentType.value}).`);
+    return;
+  }
+
   // Datos de la cita a guardar en la base de datos
   const citaData = {
     user_id: user.id,
-    appointment_type: appointmentType.value,
+    appointment_type: appointmentType.value.toLowerCase(),
     appointment_date: fechaSeleccionada.value,
-    appointment_time: hourOption.value,
-    status: 'scheduled', // Estado inicial
-    doctor_id: null, // Inicialmente no tiene doctor asignado
+    appointment_time: convertirHora(hourOption.value),
+    status: 'agendada',
+    doctor_id: null,
   };
 
-  // Agregar método de pago si está presente
-  if (metodoPago.value) {
-    citaData.metodo_pago = metodoPago.value;
-  }
-
-  // Agregar especialidad si está presente
-  if (especialidad.value) {
-    citaData.especialidad = especialidad.value;
-  }
+  if (metodoPago.value) citaData.metodo_pago = metodoPago.value;
+  if (especialidad.value) citaData.especialidad = especialidad.value;
 
   try {
     // Insertar la cita en la base de datos
@@ -85,7 +106,7 @@ const confirmarCita = async () => {
       console.error('Error al agendar la cita:', error);
       alert(`Error al agendar la cita: ${error.message}`);
     } else {
-      alert(`Cita confirmada para el ${fechaSeleccionada.value} a las ${hourOption.value}.`);
+      alert(`Cita confirmada para el ${fechaSeleccionada.value} a las ${convertirHora(hourOption.value)}.`);
       router.push('/dashboard-paciente'); // Redirigir al dashboard del paciente
     }
   } catch (error) {

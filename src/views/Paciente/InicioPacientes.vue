@@ -26,7 +26,8 @@
           <p>{{ cita.appointment_time }}</p>
           <p>Estado: {{ cita.status }}</p>
           <p v-if="cita.doctor_id">Doctor: {{ cita.doctor_nombre }}</p>
-          <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor">Ver ubicación del doctor</button>
+          <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor(cita.id)">Ver ubicación del doctor</button>
+          <button @click="verDetallesCita(cita.id)">Ver detalles</button>
         </div>
       </div>
     </div>
@@ -118,7 +119,13 @@ const irAAgendarCitaEnfermeria = () => router.push('/agendar-cita-enfermeria');
 const irAAgendarCitaEspecialista = () => router.push('/agendar-cita-especialista');
 const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 const obtenerTipoCita = (tipo) => tipo === 'asesoria' ? 'Asesoría Médica' : tipo === 'enfermeria' ? 'Cita con Enfermería' : tipo === 'especialista' ? 'Cita con Especialista' : 'Cita';
-const verUbicacionDoctor = () => alert('Integrar API de Google Maps aquí.');
+const verUbicacionDoctor = (citaId) => {
+  // Integrar API de Google Maps aquí.
+  alert(`Ver ubicación del doctor para la cita con ID: ${citaId}`);
+};
+const verDetallesCita = (citaId) => {
+  router.push(`/detalles-de-cita/${citaId}`);
+};
 </script>
 
 <style scoped>

@@ -133,7 +133,7 @@ const irAConfirmarCita = () => {
   router.push({
     path: '/confirmar-cita',
     query: {
-      modalidad: 'enfermeria', // Tipo de cita
+      modalidad: 'domicilio', // Tipo de cita
       fecha: selectedDate.value,
       hora: hourOption.value,
       metodoPago: metodoPago.value,
