@@ -1,0 +1,27 @@
+* [33m138e697[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m para corregir registro y confirmarcita
+* [33m48385e5[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m index.html y manifest.json de juan
+* [33m94ace97[m correccion iniciopacientes
+* [33m8ab2762[m correccion de carpetas a minusculas
+* [33m682e95d[m correccion de carpetas paciente y doctor
+* [33ma82f7e7[m Renombrando carpeta Paciente a paciente (minúsculas)
+* [33m71aec6c[m Renombrando carpeta Paciente a minúsculas
+* [33m6188b3b[m index.js corregido
+* [33ma05fa40[m[33m ([m[1;31morigin/scripts[m[33m, [m[1;32mscripts[m[33m)[m version con scripts de amy del 10.mar.2025 en la noche, service worker de juan y estilos de inicio de sesion
+* [33m52f61c1[m Version 1 de Iniciar sesion
+* [33m652d5c6[m Primeros cambios con css
+* [33m63ccfa2[m Módulo Apertura funcionalidad completa
+* [33m3cc6928[m Configuración Módulo Inicio, dashboard pacientes y agendar cita
+* [33m40b3542[m Citas agendadas en supabase
+* [33m02352d2[m Actualización vistas y maps API
+* [33mdd73ec6[m Google Api agregada
+* [33m6f42daf[m Mensaje del commit
+* [33m99c6837[m Vistas agregadas
+* [33m28cd3b4[m Agregado restablecimiento de contraseña
+* [33m50370be[m Cambió H1
+* [33mbdbf9fe[m Se conectó registro con inicio sesión y redirige páginas
+* [33m384325d[m Prueba registro e inicio sesión a supabase funcionando
+* [33m24e7535[m Supabase configurado y se creó el archivo .env
+* [33mb814704[m Agregando conexión a Supabase
+* [33mcb8acd9[m[33m ([m[1;31morigin/master[m[33m)[m proyecto base, login e inicio de pacientes
+* [33m4605835[m[33m ([m[1;31morigin/vistas-agendar-citas[m[33m)[m version con vistas de doctores
+* [33m9ac9f3a[m Corrección del calendario en AgendarCita
