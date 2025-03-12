@@ -1,6 +1,7 @@
 <template>
   <NavTop />
   <div id="p-patients-home">
+  
     <!-- Bienvenida y nombre del paciente -->
     <div id="s-welcome-card">
       <div>

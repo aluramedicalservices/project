@@ -77,7 +77,7 @@ const mostrarCredencialDoctor = ref(false);
 
 const router = useRouter();
 
-// Función para iniciar sesión como paciente
+// Función para iniciar sesión
 const iniciarSesionPaciente = async () => {
   if (!correo.value || !contraseña.value) {
     alert('Por favor, ingresa ambos campos.');
