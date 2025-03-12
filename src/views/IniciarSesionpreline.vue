@@ -1,12 +1,12 @@
 <template>
-  <div id="vista-iniciar-sesion" class="font-nunito flex flex-col items-center min-h-screen text-noxgrey ">
-    <Titulo texto="Iniciar sesión" />
-    <div class="mt-7 border border-gray-200 rounded-xl shadow-2xs">
+<div id="vista-iniciar-sesion" class="flex flex-col items-center min-h-screen text-noxgrey">
+  <Titulo texto="Iniciar sesión" />
+    <!-- PRELINE -->
+    <div class="mt-7 ">
       <div class="p-4 sm:p-7">
         <div class="text-center">
           <h1 class="block text-2xl font-montserrat font-semibold text-gray-800">¡Bienvenido/a de nuevo!</h1>
-          <!-- Solo mostrar el mensaje de registro a los pacientes -->
-          <p class="mt-2 text-sm text-gray-600 font-nunito" v-if="!mostrarCredencialDoctor">
+          <p class="mt-2 text-sm text-gray-600 font-nunito">
             ¿No tiene una cuenta aún?
             <a class="text-healingblue decoration-2 hover:underline focus:outline-hidden focus:underline font-medium"
               href="/registro">
@@ -16,10 +16,8 @@
         </div>
 
         <div class="mt-5">
-          <!-- Solo se muestra el botón de Google para pacientes -->
-          <button v-if="!mostrarCredencialDoctor" type="button"
-            class="font-nunito w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none "
-            @click="iniciarSesionGoogle">
+          <button type="button"
+            class="font-nunito w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none ">
             <svg class="w-4 h-auto" width="46" height="47" viewBox="0 0 46 47" fill="none">
               <path
                 d="M46 24.0287C46 22.09 45.8533 20.68 45.5013 19.2112H23.4694V27.9356H36.4069C36.1429 30.1094 34.7347 33.37 31.5957 35.5731L31.5663 35.8669L38.5191 41.2719L38.9885 41.3306C43.4477 37.2181 46 31.1669 46 24.0287Z"
@@ -37,14 +35,11 @@
             Iniciar sesión con Google
           </button>
 
-          <!-- Separador "O" solo para pacientes -->
-          <div class="py-3 flex items-center text-xs text-gray-400 uppercase before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600" 
-          v-if="!mostrarCredencialDoctor">
-          O
-          </div>
+          <div
+            class="py-3 flex items-center text-xs text-gray-400 uppercase before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600">
+            O</div>
 
-
-          <!-- Formulario Pacientes -->
+          <!-- Form -->
           <form @submit.prevent="iniciarSesionPaciente" v-if="!mostrarCredencialDoctor">
             <div class="grid gap-y-4">
               <!-- Correo -->
@@ -66,7 +61,15 @@
                   <input type="password" id="contraseña" name="password"
                     class="border-1 border-gray-300 rounded-lg py-2.5 sm:py-3 px-4 block w-full sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                     aria-describedby="password-error" v-model="contraseña" placeholder="contraseña" required />
+                  <div class="hidden absolute inset-y-0 end-0 pointer-events-none pe-3">
+                    <svg class="size-5 text-red-500" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"
+                      aria-hidden="true">
+                      <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                    </svg>
+                  </div>
                 </div>
+                <p class="hidden text-xs text-red-600 mt-2" id="password-error">8+ characters required</p>
               </div>
 
               <!-- Checkbox -->
@@ -87,39 +90,20 @@
             </div>
           </form>
 
-          <!-- Formulario Doctores -->
-          <form @submit.prevent="iniciarSesionDoctor" v-else>
-            <div>
-              <label for="credential" class="block text-sm font-nunito mb-2">Credencial de doctor</label>
-
-              <input type="text" id="credential"
-                  class="font-nunito py-2.5 sm:py-3 px-4 block w-full border-1 border-gray-300 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                  v-model="credential" 
-                  placeholder="Ingresa tu credencial" required />
-            </div>
-
-            <button type="submit"
-              class="w-full font-nunito bg-medblue text-white mb-2 my-1 w-full py-3  rounded-full px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
-              Acceder como doctor</button>
-
-          </form>
-
-          <!-- Enlace para iniciar sesión como doctor -->
-          <p class="text-center text-sm mt-4">
-            <a class="font-nunito text-healingblue hover:underline font-medium cursor-pointer"
-              @click="mostrarCredencialDoctor = !mostrarCredencialDoctor">
-              {{ mostrarCredencialDoctor ? 'Volver al inicio de sesión para pacientes' : 'Iniciar sesión en el portal médico' }}
-            </a>
-          </p>
         </div>
       </div>
     </div>
+    
+   
+
+
   </div>
 </template>
 
 
+
 <script setup>
-import Titulo from '../components/Titulo.vue';
+import Titulo from '../components/Titulo.vue'
 
 import { ref } from 'vue';
 import { supabase } from '@/config/supabase';
@@ -170,7 +154,7 @@ const iniciarSesionDoctor = async () => {
   }
 
   try {
-    // Verificar la credencial en la tabla doctors
+    // Verificar la credencial en la tabla `doctors`
     const { data: doctor, error } = await supabase
       .from('doctors')
       .select('*')
@@ -194,5 +178,5 @@ const iniciarSesionDoctor = async () => {
 </script>
 
 <style scoped>
-/* Estilos personalizados */
+/* Estilos */
 </style>
