@@ -41,7 +41,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/config/supabase';
-import NavTopD from '../../components/Doctor/NavTopD.vue';
+import NavTopD from '../../components/comp_doctor/NavTopD.vue';
 
 const citasPendientes = ref([]);
 

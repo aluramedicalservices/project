@@ -30,14 +30,14 @@ import RegistroCita from '../views/doctor/RegistroCita.vue';
 
 const routes = [
   {
+    path: '/',
+    name: 'Apertura',
+    component: Apertura,
+  },
+  {
     path: '/dashboard-paciente',
     name: 'inicio-pacientes',
     component: InicioPacientes,
-  },
-  {
-    path: '/apertura',
-    name: 'Apertura',
-    component: Apertura,
   },
   {
     path: '/registro',

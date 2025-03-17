@@ -1,5 +1,5 @@
 <script setup>
-import aluraLogo from '@/assets/alura-logo.png';
+import aluraLogo from '@/assets/imagenes/alura-logo.png';
 </script>
 
 <template>

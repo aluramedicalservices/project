@@ -64,8 +64,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import NavTop from '../../components/paciente/NavTop.vue';
-import NavBottom from '../../components/paciente/NavBottom.vue';
+import NavTop from '../../components/comp_paciente/NavTop.vue';
+import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
 
 // Variables reactivas

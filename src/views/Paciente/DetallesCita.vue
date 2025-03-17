@@ -39,8 +39,8 @@
 </template>
 
 <script setup>
-import NavTop from '../../components/Paciente/NavTop.vue';
-import NavBottom from '../../components/Paciente/NavBottom.vue';
+import NavTop from '../../components/comp_paciente/NavTop.vue';
+import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { supabase } from '@/config/supabase';

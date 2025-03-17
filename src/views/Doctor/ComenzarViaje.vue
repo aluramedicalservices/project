@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import NavTopD from '../../components/Doctor/NavTopD.vue';
+import NavTopD from '../../components/comp_doctor/NavTopD.vue';
 import Titulo from '../../components/Titulo.vue';
 
 </script>

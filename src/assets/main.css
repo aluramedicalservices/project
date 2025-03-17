@@ -21,10 +21,12 @@
 --color-healingbluelight: #E0F9FC; /* Azul claro */
 
 --color-noxgrey: #3d4448; /* Gris oscuro */
---color-sterilgrey: "#e7e7e7"; /* Gris muy claro*/
---color-vitalblue: "#f0f9fe"; /* Blanco azulado*/
+--color-sterilgrey: #e7e7e7; /* Gris muy claro*/
+--color-vitalblue: #F0F9FE; /* Blanco azulado*/
 
---color-fondo: "#FCFEFF"; /* Blanco para el fondo*/
+--color-fondo: #FCFEFF; /* Blanco para el fondo*/
 
+--color-rojo: #FCA5A5; /* Rojo*/
+--color-rojoclaro: #FEE2E2; /* Rojo claro*/
 }
 

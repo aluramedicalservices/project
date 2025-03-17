@@ -1,51 +1,96 @@
 <template>
   <NavTop />
-  <div id="p-patients-home">
-  
+  <div id="p-patients-home" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-4">
+
     <!-- Bienvenida y nombre del paciente -->
-    <div id="s-welcome-card">
+    <div id="s-welcome-card" class="flex justify-center font-nunito gap-4">
       <div>
-        <img id="patient-profile-p" src="" alt="foto-paciente">
+        <img :src="avatar" alt="perfil_usuario" />
       </div>
       <div>
-        <p id="plan-label">Premium</p><br>
-        <p>Bienvenid@ de nuevo,</p><br>
-        <p>{{ nombrePaciente }}</p>
+        <p id="plan-label"
+          class="text-healingblue bg-healingbluelight rounded-b-full inline-block px-3 py-1 text-center">Premium</p>
+        <p class="text-noxgrey mb-1">Bienvenido/a de nuevo,</p>
+        <p class="text-medblue mb-1 text-xl font-semibold">{{ nombrePaciente }}</p>
       </div>
     </div>
+
 
     <!-- Próximas citas (solo si hay citas agendadas) -->
-    <div id="s-upcoming-appointments" v-if="citas.length > 0">
-      <div>
-        <h1>Próximas citas</h1>
+    <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
+
+    <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citas.length > 0">
+      <div class="text-center">
+        <TituloH2 texto="Próximas citas" />
         <p>Hoy es {{ fechaActual }}</p>
       </div>
-      <div class="appointments-container">
-        <div class="appointment-info" v-for="cita in citas" :key="cita.id">
-          <h2>{{ obtenerTipoCita(cita.appointment_type) }}</h2>
-          <p>{{ formatearFecha(cita.appointment_date) }}</p>
-          <p>{{ cita.appointment_time }}</p>
+
+      <!-- Citas agendadas -->
+      <div id="appointments-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
+        <div id="appointment-info" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-vitalblue w-full"
+          v-for="cita in citas" :key="cita.id">
+          <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
+          <div class="flex space-x-2 space-y-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+            </svg>
+            <p>{{ formatearFecha(cita.appointment_date) }}</p>
+          </div>
+          <div class="flex space-x-2 space-y-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+
+            <p>{{ cita.appointment_time }}</p>
+          </div>
           <p>Estado: {{ cita.status }}</p>
           <p v-if="cita.doctor_id">Doctor: {{ cita.doctor_nombre }}</p>
-          <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor(cita.id)">Ver ubicación del doctor</button>
+          <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor(cita.id)">Ver ubicación del
+            doctor</button>
           <button @click="verDetallesCita(cita.id)">Ver detalles</button>
         </div>
+        <button @click="CitasProximas">Ver todas las citas</button>
       </div>
     </div>
 
-    <!-- Solicitar cita -->
-    <div id="s-request-appointment">
-      <h2 class="text-3xl font-bold underline">Solicitar cita</h2>
-      <button @click="irAAgendarCitas">Agendar cita</button>
-      <button @click="irAAgendarCitaOnline">Agendar cita Online</button>
-      <button @click="irAAgendarCitaEnfermeria">Agendar cita con Enfermería</button>
-      <button v-if="esPremium" @click="irAAgendarCitaEspecialista">Agendar cita con Especialista</button>
+    <!-- Solicitar citas -->
+    <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
+
+    <div id="s-request-appointment" class="space-y-3">
+  <TituloH2 texto="Solicitar cita" class="text-center" />
+
+  <div class="flex space-x-2 justify-center">
+    <!-- Agendar cita -->
+    <div @click="irAAgendarCitas" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+      <span>Especialista</span>
     </div>
+
+    <!-- Agendar cita Online -->
+    <div @click="irAAgendarCitaOnline" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+      <img :src="screen" alt="cita_online" class="w-12 h-12 object-contain mx-auto" />
+      <span>Online</span>
+    </div>
+
+    <!-- Agendar cita con Enfermería -->
+    <div @click="irAAgendarCitaEnfermeria" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+      <img :src="nurse" alt="cita_enfermeria" class="w-12 h-12 object-contain mx-auto" />
+      <span>Enfermería</span>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 
     <div id="s-logout">
       <button @click="cerrarSesion">Cerrar sesión</button>
     </div>
-
   </div>
   <NavBottom />
 </template>
@@ -54,13 +99,20 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/config/supabase';
-import NavTop from '../../components/Paciente/NavTop.vue';
-import NavBottom from '../../components/Paciente/NavBottom.vue';
+import NavTop from '../../components/comp_paciente/NavTop.vue';
+import NavBottom from '../../components/comp_paciente/NavBottom.vue';
+import TituloH2 from '../../components/TituloH2.vue';
+import nurse from '../../assets/imagenes/nurse.png';
+import screen from '../../assets/imagenes/screen.png';
+import avatar from '../../assets/imagenes/avatar.png';
+import CitasProximas from '../../views/paciente/ProximasCitas.vue';
+
 
 const nombrePaciente = ref('');
 const fechaActual = ref('');
 const citas = ref([]);
 const router = useRouter();
+
 
 onMounted(async () => {
   try {

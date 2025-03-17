@@ -35,8 +35,8 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { supabase } from '@/config/supabase';
-import NavTop from '../../components/Paciente/NavTop.vue';
-import NavBottom from '../../components/Paciente/NavBottom.vue';
+import NavTop from '../../components/comp_paciente/NavTop.vue';
+import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
 
 const router = useRouter();

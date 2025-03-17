@@ -1,6 +1,5 @@
 <template>
-    <h1 class="tituloH2">{{ texto }}</h1>
-    <hr>
+    <h1 class="tituloH2 font-montserrat text-medblue text-[24px] font-bold">{{ texto }}</h1>
 </template>
 
 <script>
