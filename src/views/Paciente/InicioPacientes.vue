@@ -83,11 +83,6 @@
   </div>
 </div>
 
-
-
-
-
-
     <div id="s-logout">
       <button @click="cerrarSesion">Cerrar sesión</button>
     </div>
@@ -179,6 +174,7 @@ const verUbicacionDoctor = (citaId) => {
 const verDetallesCita = (citaId) => {
   router.push(`/detalles-de-cita/${citaId}`);
 };
+
 </script>
 
 <style scoped>
