@@ -14,7 +14,7 @@ import InicioPacientes from '../views/paciente/InicioPacientes.vue';
 import AgendarCita from '../views/paciente/AgendarCita.vue';
 import ConfirmarCita from '../views/paciente/ConfirmarCita.vue';
 import ProximasCitas from '../views/paciente/ProximasCitas.vue';
-import DetallesCita from '../views/paciente/DetallesCita.vue';
+import DetallesProximaCita from '../views/paciente/DetallesProximaCita.vue';
 import AgendarCitaOnline from '../views/paciente/AgendarCitaOnline.vue';
 import AgendarCitaEnfermeria from '../views/paciente/AgendarCitaEnfermeria.vue';
 import AgendarCitaEspecialista from '../views/paciente/AgendarCitaEspecialista.vue';
@@ -88,8 +88,8 @@ const routes = [
   },
   {
     path: '/detalles-de-cita',
-    name: 'DetallesCita',
-    component: DetallesCita,
+    name: 'DetallesProximaCita',
+    component: DetallesProximaCita,
   },
   {
     path: '/inicio',

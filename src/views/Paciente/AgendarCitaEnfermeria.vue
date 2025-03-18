@@ -2,7 +2,7 @@
   <NavTop />
   <div id="Schedule_appointment">
     <button @click="router.push('/dashboard-paciente')">Volver</button>
-    <Titulo texto="Agendar cita con Enfermería" />
+    <Titulo texto="Agendar Enfermería" />
 
     <!-- Calendario siempre abierto -->
     <div class="calendar-container">

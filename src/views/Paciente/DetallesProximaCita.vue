@@ -1,7 +1,7 @@
 <template>
-  <NavTop />
   <div id="next_appointments">
-    <Titulo texto="Próximas citas" />
+    <NavTop />
+    <Titulo texto="Detalles de cita" />
     <div id="appointment-description">
       <h2>{{ tituloCita }}</h2>
       <ul>

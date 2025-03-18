@@ -36,8 +36,8 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-import TituloH2 from '@/components/TituloH2.vue'
+import { defineProps } from 'vue';
+import TituloH2 from '@/components/TituloH2.vue';
 
 const props = defineProps({
   icon: { type: Object, required: true }, // Pasas el icono importado

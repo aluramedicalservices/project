@@ -2,7 +2,7 @@
   <NavTop />
   <div id="Schedule_appointment">
     <button @click="router.push('/dashboard-paciente')">Volver</button>
-    <Titulo texto="Agendar cita Online" />
+    <Titulo texto="Agendar online" />
 
     <!-- Calendario siempre abierto -->
     <div class="calendar-container">

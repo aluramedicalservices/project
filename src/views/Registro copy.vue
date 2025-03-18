@@ -140,27 +140,30 @@
 
 <!-- POPUP DE REGISTRO EXITOSO -->
 <div class="popup">
-      <PopupMessage
-        v-if="showPopup"
-        :icon="CheckCircle"
-        iconClass="text-green-500"
-        title="¡Su registro de cuenta fue exitoso!"
-        message="¡Bienvenido/a a la App de Alura! Por favor, conteste el siguiente formulario para que podamos valorarle y brindarle el mejor servicio."
-        primaryLabel="Aceptar"
-        :onPrimaryAction="handlePrimaryAction"
-        secondaryLabel="Cancelar"
-        :onSecondaryAction="handleSecondaryAction"
-      />
-    </div>
+  <button @click="showPopup = true">Mostrar popup</button>
+
+  <PopupMessage
+
+    v-if="showPopup"
+    :icon="CheckCircle"
+    iconClass="text-green-500"
+    title="¡Su registro de cuenta fue exitoso!"
+    message="¡Bienvenido/a a la App de Alura!
+    Por favor, conteste el siguiente formulario para que podamos valorarle y brindarle el mejor servicio."
+    primaryLabel="Aceptar"
+    :onPrimaryAction="handlePrimaryAction"
+    secondaryLabel="Cancelar"
+    :onSecondaryAction="handleSecondaryAction"
+  />
+</div> 
 </template>
 
 <script setup>
 import Titulo from '../components/Titulo.vue'
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/config/supabase'
-import PopupMessage from '../components/PopUpMessage.vue'
-import { CheckCircle, AlertCircle } from 'lucide-vue-next'
 
 const router = useRouter()
 
@@ -170,7 +173,6 @@ const repetirContraseña = ref('')
 const aceptoTerminos = ref(false)
 const aceptoPoliticas = ref(false)
 const aceptoRecibirCorreos = ref(false)
-const showPopup = ref(false) // Agregar el estado para el popup
 
 const registrarUsuario = async () => {
   console.log("Intentando registrar usuario...")
@@ -187,21 +189,28 @@ const registrarUsuario = async () => {
 
     if (error) throw error
 
-    showPopup.value = true // Mostrar el popup después de un registro exitoso
-    // No es necesario redirigir inmediatamente
-    // router.push('/apertura') // Puedes redirigir después de que el usuario cierre el popup
+    alert('¡Registro exitoso! Ahora puedes iniciar sesión.')
+    router.push('/apertura')
+
   } catch (err) {
     console.error('Error en el registro:', err.message)
     alert('Ocurrió un error al registrar. Inténtalo de nuevo.')
   }
 }
 
+/* SCRIPT DEL POP UP*/
+
+import PopupMessage from '../components/PopUpMessage.vue';
+import { CheckCircle, AlertCircle } from 'lucide-vue-next';
+
+const showPopup = ref(false)
 const handlePrimaryAction = () => {
+  console.log('Acción principal confirmada')
   showPopup.value = false
-  router.push('/cuestionario-1') // Redirigir al usuario a la página de inicio
 }
 
 const handleSecondaryAction = () => {
+  console.log('Acción secundaria cancelada')
   showPopup.value = false
 }
 </script>
