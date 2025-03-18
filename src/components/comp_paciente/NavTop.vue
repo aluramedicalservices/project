@@ -4,7 +4,7 @@
       <div id="icono-menu-hamburguesa" class="text-white" @click="toggleMenu">
         <Menu />
       </div>
-      <div id="icono-notificaciones" class="text-white">
+      <div @click="irANotificaciones" id="icono-notificaciones" class="text-white">
         <Bell />
       </div>
     </div>
@@ -102,6 +102,9 @@ export default {
     // Función para cerrar el menú al hacer clic en la "X"
     closeMenu() {
       this.isMenuOpen = false;
+    },
+    irANotificaciones() {
+      this.$router.push('/notificaciones-paciente');  // ← Aquí navegas a la vista de notificaciones
     }
   }
 }

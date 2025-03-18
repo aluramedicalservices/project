@@ -18,6 +18,8 @@ import DetallesCita from '../views/paciente/DetallesCita.vue';
 import AgendarCitaOnline from '../views/paciente/AgendarCitaOnline.vue';
 import AgendarCitaEnfermeria from '../views/paciente/AgendarCitaEnfermeria.vue';
 import AgendarCitaEspecialista from '../views/paciente/AgendarCitaEspecialista.vue';
+import Notificaciones from '../views/paciente/Notificaciones.vue';
+import HistorialClinico from '../views/paciente/HistorialClinico.vue';
 
 // Vistas Portal de Doctor
 import InicioDoctor from '../views/doctor/InicioDoctor.vue';
@@ -36,7 +38,7 @@ const routes = [
   },
   {
     path: '/dashboard-paciente',
-    name: 'inicio-pacientes',
+    name: 'InicioPacientes',
     component: InicioPacientes,
   },
   {
@@ -76,7 +78,7 @@ const routes = [
   },
   {
     path: '/confirmar-cita',
-    name: 'confirmar-cita',
+    name: 'ConfirmarCita',
     component: ConfirmarCita,
   },
   {
@@ -134,7 +136,16 @@ const routes = [
     name: 'AgendarCitaEspecialista',
     component: AgendarCitaEspecialista,
   },
-  
+  {
+    path: '/notificaciones-paciente',
+    name: 'NotificacionesPaciente',
+    component: Notificaciones,
+  },
+  {
+    path: '/historial-clinico',
+    name: 'HistorialClinico',
+    component: HistorialClinico,
+  },
 ];
 
 const router = createRouter({
