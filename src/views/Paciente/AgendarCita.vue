@@ -6,18 +6,20 @@
 
       <!-- Tipo de consulta -->
       <label for="appointment_type" class="font-montserrat text-medblue font-bold">Escoger tipo de consulta</label><br>
-      <select v-model="appointment_type" id="appointment_type" required>
-        <option value="" disabled selected>Escoger tipo de consulta</option>
+      <select v-model="appointment_type" id="appointment_type" 
+        class="font-nunito py-2.5 sm:py-3 px-4 block w-full border-1 border-gray-300 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"required>
+        
+        <option value="" disabled selected>Tipo de consulta</option>
         <option value="asesoria">Asesoría médica</option>
         <option value="enfermeria">Cita con enfermería</option>
         <option value="especialista">Cita con especialista</option>
       </select>
 
       <!-- Calendario siempre abierto -->
-      <div class="calendar-container">
+      <div id="calendar-container" class="w-full">
         <label class="font-montserrat text-medblue font-bold">Escoger fecha</label><br>
-        <div class="calendar">
-          <div class="calendar-header">
+        <div id="calendar" class="py-2.5 sm:py-3 px-4 block border-1 border-gray-300 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+          <div class="calendar-header font-montserrat font-semibold">
             <button @click="prevMonth">«</button>
             <span>{{ months[currentMonth] }} {{ currentYear }}</span>
             <button @click="nextMonth">»</button>
@@ -36,8 +38,10 @@
 
       <!-- Horarios -->
       <label for="hour-option" class="font-montserrat text-medblue font-bold">Escoger horario</label><br>
-      <select v-model="hourOption" id="hour-option" required>
-        <option value="" disabled selected>Escoger horario</option>
+      <select v-model="hourOption" id="hour-option" 
+        class="font-nunito py-2.5 sm:py-3 px-4 block w-full border-1 border-gray-300 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+        required>
+        <option value="" disabled selected>Horario de la cita</option>
         <option value="7am">07:00 a.m.</option>
         <option value="8am">08:00 a.m.</option>
         <option value="9am">09:00 a.m.</option>
