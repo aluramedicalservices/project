@@ -1,7 +1,7 @@
 <template>
-    <div id="vista_historial_clinico">
+    <div id="vista_historial_clinico" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-16">
         <NavTop />
-        <Titulo texto="Historial clínico" />
+        <TituloPrincipal texto="Historial clínico" />
             <!--Contenedor de la lista del historial de las citas-->
             <div id="historial_de_citas">
                 <div id="contenedor_cita_pasada">
@@ -47,11 +47,11 @@
 </template>
 
 <script setup>
-import Titulo from '../../components/Titulo.vue';
 import NavTop from '../../components/comp_paciente/NavTop.vue';
 import NavBottom from '../../components/comp_paciente/NavBottom.vue';
+import TituloPrincipal from '@/components/TituloPrincipal.vue';
+import PopupMessage from '@/components/PopUpMessage.vue';
 
-import PopupMessage from '@/components/PopupMessage.vue';
 import { CheckCircle, AlertCircle } from 'lucide-vue-next';
 import { Calendar } from 'lucide-vue-next';
 

@@ -1,84 +1,86 @@
 <template>
-  <NavTop />
-  <div id="p-patients-home" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-4">
+  <div id="vista_agendar_cita" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
+    <NavTop />
+    <div id="p-patients-home" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-20">
 
-    <!-- Bienvenida y nombre del paciente -->
-    <div id="s-welcome-card" class="flex justify-center font-nunito gap-4">
-      <div>
-        <img :src="avatar" alt="perfil_usuario" />
-      </div>
-      <div>
-        <p id="plan-label"
-          class="text-healingblue bg-healingbluelight rounded-b-full inline-block px-3 py-1 text-center">Premium</p>
-        <p class="text-noxgrey mb-1">Bienvenido/a de nuevo,</p>
-        <p class="text-medblue mb-1 text-xl font-semibold">{{ nombrePaciente }}</p>
-      </div>
-    </div>
-
-
-    <!-- Próximas citas (solo si hay citas agendadas) -->
-    <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
-
-    <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citas.length > 0">
-      <div class="text-center">
-        <TituloH2 texto="Próximas citas" />
-        <p>Hoy es {{ fechaActual }}</p>
-      </div>
-
-      <!-- Citas agendadas -->
-      <div id="appointments-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
-        <div id="appointment-info" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-vitalblue w-full"
-          v-for="cita in citas" :key="cita.id">
-          <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
-          <div class="flex space-x-2 space-y-1">
-            <Calendar class="w-5 h-5"/>
-            <p>{{ formatearFecha(cita.appointment_date) }}</p>
-          </div>
-          <div class="flex space-x-2 space-y-1">
-            <Clock class="w-5 h-5"/>
-            <p>{{ cita.appointment_time }}</p>
-          </div>
-          <p>Estado: {{ cita.status }}</p>
-          <p v-if="cita.doctor_id">Doctor: {{ cita.doctor_nombre }}</p>
-          <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor(cita.id)">Ver ubicación del
-            doctor</button>
-          <button @click="verDetallesCita(cita.id)">Ver detalles</button>
+      <!-- Bienvenida y nombre del paciente -->
+      <div id="s-welcome-card" class="flex justify-center font-nunito gap-4">
+        <div>
+          <img :src="avatar" alt="perfil_usuario" />
         </div>
-        <button @click="CitasProximas">Ver todas las citas</button>
+        <div>
+          <p id="plan-label"
+            class="text-healingblue bg-healingbluelight rounded-b-full inline-block px-3 py-1 text-center">Premium</p>
+          <p class="text-noxgrey mb-1">Bienvenido/a de nuevo,</p>
+          <p class="text-medblue mb-1 text-xl font-semibold">{{ nombrePaciente }}</p>
+        </div>
+      </div>
+
+
+      <!-- Próximas citas (solo si hay citas agendadas) -->
+      <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
+
+      <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citas.length > 0">
+        <div class="text-center">
+          <TituloH2 texto="Próximas citas" />
+          <p>Hoy es {{ fechaActual }}</p>
+        </div>
+
+        <!-- Citas agendadas -->
+        <div id="appointments-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
+          <div id="appointment-info" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-vitalblue w-full"
+            v-for="cita in citas" :key="cita.id">
+            <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
+            <div class="flex space-x-2 space-y-1">
+              <Calendar class="w-5 h-5"/>
+              <p>{{ formatearFecha(cita.appointment_date) }}</p>
+            </div>
+            <div class="flex space-x-2 space-y-1">
+              <Clock class="w-5 h-5"/>
+              <p>{{ cita.appointment_time }}</p>
+            </div>
+            <p>Estado: {{ cita.status }}</p>
+            <p v-if="cita.doctor_id">Doctor: {{ cita.doctor_nombre }}</p>
+            <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor(cita.id)">Ver ubicación del
+              doctor</button>
+            <button @click="verDetallesCita(cita.id)">Ver detalles</button>
+          </div>
+          <button @click="CitasProximas">Ver todas las citas</button>
+        </div>
+      </div>
+
+      <!-- Solicitar citas -->
+      <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
+
+      <div id="s-request-appointment" class="space-y-3">
+    <TituloH2 texto="Solicitar cita" class="text-center" />
+
+    <div class="flex space-x-2 justify-center">
+      <!-- Agendar cita -->
+      <div @click="irAAgendarCitas" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+        <span>Especialista</span>
+      </div>
+
+      <!-- Agendar cita Online -->
+      <div @click="irAAgendarCitaOnline" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+        <img :src="screen" alt="cita_online" class="w-12 h-12 object-contain mx-auto" />
+        <span>Online</span>
+      </div>
+
+      <!-- Agendar cita con Enfermería -->
+      <div @click="irAAgendarCitaEnfermeria" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+        <img :src="nurse" alt="cita_enfermeria" class="w-12 h-12 object-contain mx-auto" />
+        <span>Enfermería</span>
       </div>
     </div>
-
-    <!-- Solicitar citas -->
-    <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
-
-    <div id="s-request-appointment" class="space-y-3">
-  <TituloH2 texto="Solicitar cita" class="text-center" />
-
-  <div class="flex space-x-2 justify-center">
-    <!-- Agendar cita -->
-    <div @click="irAAgendarCitas" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
-      <span>Especialista</span>
-    </div>
-
-    <!-- Agendar cita Online -->
-    <div @click="irAAgendarCitaOnline" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
-      <img :src="screen" alt="cita_online" class="w-12 h-12 object-contain mx-auto" />
-      <span>Online</span>
-    </div>
-
-    <!-- Agendar cita con Enfermería -->
-    <div @click="irAAgendarCitaEnfermeria" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
-      <img :src="nurse" alt="cita_enfermeria" class="w-12 h-12 object-contain mx-auto" />
-      <span>Enfermería</span>
-    </div>
   </div>
-</div>
 
-    <div id="s-logout">
-      <button @click="cerrarSesion">Cerrar sesión</button>
+      <div id="s-logout">
+        <button @click="cerrarSesion">Cerrar sesión</button>
+      </div>
     </div>
+    <NavBottom />
   </div>
-  <NavBottom />
 </template>
 
 <script setup>
