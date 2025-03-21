@@ -1,5 +1,5 @@
 <template>
-  <div id="menu-bottom" class="font-nunito text-white flex space-x-2 w-[90%] fixed bottom-3 left-1/2 -translate-x-1/2 z-10">
+  <div id="menu-bottom" class="font-nunito text-white bg-fondo flex space-x-2 w-[90%] fixed bottom-3 left-1/2 -translate-x-1/2 z-10">
     <!--nav-->
     <div id="menu-b-options" class="bg-medblue rounded-full flex w-3/4 items-center justify-center py-2">
 
