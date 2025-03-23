@@ -87,7 +87,7 @@ const routes = [
     component: ProximasCitas,
   },
   {
-    path: '/detalles-de-cita',
+    path: '/detalles-proxima-cita',
     name: 'DetallesProximaCita',
     component: DetallesProximaCita,
   },
