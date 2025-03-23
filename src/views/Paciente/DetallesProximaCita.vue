@@ -1,41 +1,59 @@
 <template>
-  <div id="next_appointments">
+  <div id="next_appointments" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
     <NavTop />
-    <Titulo texto="Detalles de cita" />
-    <div id="appointment-description">
-      <h2>{{ tituloCita }}</h2>
-      <ul>
-        <li>Modalidad: {{ modalidad }}</li>
-        <li>Hora: {{ horaEscogida }}</li>
-        <li>Ubicación: {{ ubicacionPaciente }}</li>
-      </ul>
-      <div id="a-d-personal">
-        <h3>Personal asignado</h3>
-        <i>Icono info</i>
-        <hr>
-        <div id="a-d-p-card">
-          <img src="">
-          <h4>{{ NombrePersonalQueAtiende }}</h4>
-          <p>{{ TituloPersonal }}</p>
+    <div id="detalles_citas_agendadas" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-20 pb-32">
+      <Titulo texto="Detalles de cita" />
+      <!-- Detalles de la cita -->
+      <div id="appointment-container-info" class="space-y-3">
+        <div id="appointment-info"
+          class="border border-vitalblue rounded-xl shadow-2xs py-4 px-6 bg-vitalblue w-full text-center space-y-4">
+
+          <!--Titulo e info general-->
+          <TituloH3 :texto="tituloCita" />
+          <ul>
+            <li>Modalidad: {{ modalidad }}</li>
+            <li>Hora: {{ horaEscogida }}</li>
+            <li>Ubicación: {{ ubicacionPaciente }}</li>
+          </ul>
+
+          <!--Personal asignado-->
+          <div id="a-d-personal"
+            class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
+            <h3 class="font-montserrat font-bold text-center">Personal asignado</h3>
+            <Info class="absolute top-4 right-4" />
+            <hr>
+            <div id="a-d-p-card" class="flex space-x-4 justify-center">
+              <img :src="avatar" alt="perfil_usuario" class="w-16 h-auto" />
+              <div id="a-d-p-card-info" class="text-left">
+                <h4 class="font-bold">{{ NombrePersonalQueAtiende }}</h4>
+                <p>{{ TituloPersonal }}</p>
+              </div>
+            </div>
+          </div>
+ 
+          <!--Instrucciones-->
+          <div id="a-d-instructions"
+            class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
+            <h3 class="font-montserrat font-bold text-center">Instrucciones</h3>
+            <Info class="absolute top-4 right-4" />
+            <hr>
+            <p>{{ mensajeInstrucciones }}</p>
+          </div>
+
+          <!--Estado de la cita-->
+          <div id="a-d-state" class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
+            <h3 class="font-montserrat font-bold text-center">Estado</h3>
+            <Info class="absolute top-4 right-4" />
+            <hr>
+            <i>Imagen sobre el estado</i>
+            <p>{{ mensajeEstado }}</p>
+          </div>
+
         </div>
       </div>
-      <div id="a-d-instrcutions">
-        <h3>Instrucciones</h3>
-        <i>Icono info</i>
-        <hr>
-        <p>{{ mensajeInstrucciones }}</p>
-      </div>
-      <div id="a-d-state">
-        <h3>Estado</h3>
-        <i>Icono info</i>
-        <hr>
-        <i>Icono estado</i>
-        <p>{{ mensajeEstado }}</p>
-      </div>
-      <a href="#">Ver más información de la cita</a>
     </div>
+    <NavBottom />
   </div>
-  <NavBottom />
 </template>
 
 <script setup>
@@ -45,6 +63,9 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { supabase } from '@/config/supabase';
 import Titulo from '../../components/Titulo.vue';
+import TituloH3 from '../../components/TituloH3.vue';
+import { Info } from 'lucide-vue-next';
+import avatar from '../../assets/imagenes/avatar.png';
 
 const route = useRoute();
 const citaId = route.params.id;

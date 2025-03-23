@@ -23,19 +23,28 @@
         <hr class="my-4">
 
         <ul class="space-y-6">
-          <li class="flex items-center space-x-4">
+          <li @click="$router.push('/dashboard-paciente')" 
+          class="flex items-center space-x-4 cursor-pointer">
             <House class="w-4 h-4" />
             <p>Inicio</p>
           </li>
-          <li class="flex items-center space-x-4">
+          <li @click="$router.push('/agendar-citas')"
+          class="flex items-center space-x-4 cursor-pointer">
             <CalendarPlus class="w-4 h-4" />
             <p>Agendar cita</p>
           </li>
-          <li class="flex items-center space-x-4">
+          <li @click="$router.push('/proximas-citas')"
+          class="flex items-center space-x-4 cursor-pointer">
+            <CalendarHeart class="w-4 h-4"/>            
+            <p>Próximas citas</p>
+          </li>
+          <li @click="$router.push('/historial-clinico')"
+          class="flex items-center space-x-4 cursor-pointer">
             <Clipboard class="w-4 h-4" />
             <p>Historial clínico</p>
           </li>
-          <li class="flex items-center space-x-4">
+          <li @click="$router.push('/#')"
+          class="flex items-center space-x-4 cursor-pointer">
             <CreditCard class="w-4 h-4" />
             <p>Mis pagos</p>
           </li>
@@ -44,15 +53,18 @@
         <hr class="my-4">
 
         <ul class="space-y-6">
-          <li class="flex items-center space-x-4">
+          <li @click="$router.push('/#')"
+          class="flex items-center space-x-4 cursor-pointer">
             <User class="w-4 h-4" />
             <p>Mi perfil</p>
           </li>
-          <li class="flex items-center space-x-4">
+          <li @click="$router.push('/#')"
+          class="flex items-center space-x-4 cursor-pointer">
             <BookHeart class="w-4 h-4" />
             <p>Planes disponibles</p>
           </li>
-          <li class="flex items-center space-x-4">
+          <li @click="$router.push('/#')"
+          class="flex items-center space-x-4 cursor-pointer">
             <Settings class="w-4 h-4" />
             <p>Configuración</p>
           </li>
@@ -66,7 +78,7 @@
 </template>
 
 <script>
-import { Bell, Menu, House, CalendarPlus, Clipboard, CreditCard, User, BookHeart, Settings, X } from 'lucide-vue-next';
+import { Bell, Menu, House, CalendarPlus, CalendarHeart, Clipboard, CreditCard, User, BookHeart, Settings, X } from 'lucide-vue-next';
 import AluraLogo from '../AluraLogo.vue';
 
 export default {
@@ -75,6 +87,7 @@ export default {
     Menu,
     House,
     CalendarPlus,
+    CalendarHeart,
     Clipboard,
     CreditCard,
     User,

@@ -10,19 +10,24 @@
         </div>
         <div>
           <p id="plan-label"
-            class="text-healingblue bg-healingbluelight rounded-b-full inline-block px-3 py-1 text-center">Premium</p>
+            class="text-healingblue bg-healingbluelight inline-block rounded-b-full px-1 text-sm/6">
+            {{TipoPlan}}ponerPlan
+          </p>
           <p class="text-noxgrey mb-1">Bienvenido/a de nuevo,</p>
           <p class="text-medblue mb-1 text-xl font-semibold">{{ nombrePaciente }}</p>
         </div>
       </div>
 
-
       <!-- Próximas citas (solo si hay citas agendadas) -->
       <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
-      <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citas.length > 0">
+      <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3"
+        v-if="citas.length > 0">
         <div class="text-center">
-          <TituloH2 texto="Próximas citas" />
+          <div @click="$router.push('/proximas-citas')" class="flex justify-center relative cursor-pointer">
+            <TituloH2 texto="Próximas citas" class="text-center" />
+            <ChevronRight class="absolute right-1 top-1/2 -translate-y-1/2 text-medblue" />
+          </div>
           <p>Hoy es {{ fechaActual }}</p>
         </div>
 
@@ -32,48 +37,61 @@
             v-for="cita in citas" :key="cita.id">
             <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
             <div class="flex space-x-2 space-y-1">
-              <Calendar class="w-5 h-5"/>
+              <Calendar class="w-5 h-5" />
               <p>{{ formatearFecha(cita.appointment_date) }}</p>
             </div>
+
             <div class="flex space-x-2 space-y-1">
-              <Clock class="w-5 h-5"/>
+              <Clock class="w-5 h-5" />
               <p>{{ cita.appointment_time }}</p>
             </div>
+
+            <!--Esto no va en esta vista
             <p>Estado: {{ cita.status }}</p>
+            <button @click="verDetallesCita(cita.id)">Ver detalles</button>
+            -->
+
             <p v-if="cita.doctor_id">Doctor: {{ cita.doctor_nombre }}</p>
+
             <button v-if="cita.status === 'accepted'" @click="verUbicacionDoctor(cita.id)">Ver ubicación del
               doctor</button>
-            <button @click="verDetallesCita(cita.id)">Ver detalles</button>
           </div>
-          <button @click="CitasProximas">Ver todas las citas</button>
         </div>
+
+        <button @click="$router.push('/proximas-citas')" class="underline cursor-pointer">
+          Ver todas las citas
+        </button>
       </div>
 
       <!-- Solicitar citas -->
       <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
       <div id="s-request-appointment" class="space-y-3">
-    <TituloH2 texto="Solicitar cita" class="text-center" />
+        <div @click="$router.push('/agendar-citas')" class="flex justify-center relative cursor-pointer">
+          <TituloH2 texto="Solicitar cita" />
+          <ChevronRight class="absolute right-1 top-1/2 -translate-y-1/2 text-medblue" />
+        </div>
 
-    <div class="flex space-x-2 justify-center">
-      <!-- Agendar cita -->
-      <div @click="irAAgendarCitas" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
-        <span>Especialista</span>
+        <div class="flex space-x-2 justify-center pb-2">
+          <!-- Agendar cita -->
+          <div @click="irAAgendarCitas"
+            class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+            <span>Especialista</span>
+          </div>
+          <!-- Agendar cita Online -->
+          <div @click="irAAgendarCitaOnline"
+            class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+            <img :src="screen" alt="cita_online" class="w-12 h-12 object-contain mx-auto" />
+            <span>Online</span>
+          </div>
+          <!-- Agendar cita con Enfermería -->
+          <div @click="irAAgendarCitaEnfermeria"
+            class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
+            <img :src="nurse" alt="cita_enfermeria" class="w-12 h-12 object-contain mx-auto" />
+            <span>Enfermería</span>
+          </div>
+        </div>
       </div>
-
-      <!-- Agendar cita Online -->
-      <div @click="irAAgendarCitaOnline" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
-        <img :src="screen" alt="cita_online" class="w-12 h-12 object-contain mx-auto" />
-        <span>Online</span>
-      </div>
-
-      <!-- Agendar cita con Enfermería -->
-      <div @click="irAAgendarCitaEnfermeria" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer">
-        <img :src="nurse" alt="cita_enfermeria" class="w-12 h-12 object-contain mx-auto" />
-        <span>Enfermería</span>
-      </div>
-    </div>
-  </div>
 
       <div id="s-logout">
         <button @click="cerrarSesion">Cerrar sesión</button>
@@ -95,10 +113,8 @@ import TituloH2 from '../../components/TituloH2.vue';
 import nurse from '../../assets/imagenes/nurse.png';
 import screen from '../../assets/imagenes/screen.png';
 import avatar from '../../assets/imagenes/avatar.png';
-import CitasProximas from '../../views/paciente/ProximasCitas.vue';
 
-import { Calendar } from 'lucide-vue-next';
-import { Clock } from 'lucide-vue-next';
+import { Calendar, Clock, ChevronRight } from 'lucide-vue-next';
 
 const nombrePaciente = ref('');
 const fechaActual = ref('');
@@ -152,7 +168,7 @@ const cerrarSesion = async () => {
   try {
     await supabase.auth.signOut();
     sessionStorage.clear();
-    router.push('/');
+    router.push('/apertura');
   } catch (error) {
     console.error('Error al cerrar sesión:', error.message);
   }
