@@ -1,9 +1,10 @@
 <template>
-    <div id="vista_historial_clinico" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-16">
+    <div id="vista_historial_clinico" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
         <NavTop />
+        <div id="contenedor_historial_clinico" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-20">
         <TituloPrincipal texto="Historial clínico" />
             <!--Contenedor de la lista del historial de las citas-->
-            <div id="historial_de_citas">
+            <div id="historial_de_citas" >
                 <div id="contenedor_cita_pasada">
                     <h3>{{tituloDeLaCita}}</h3> <!--Agregar el titulo de la cita-->
                     <ul>
@@ -26,6 +27,7 @@
                         Descargar archivo</button>
                 </div>
             </div>
+        </div>
         <NavBottom />
     </div>
 

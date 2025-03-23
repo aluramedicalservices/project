@@ -92,7 +92,7 @@ const routes = [
     component: DetallesProximaCita,
   },
   {
-    path: '/inicio',
+    path: '/dashboard-doctor',
     name: 'InicioDoctor',
     component: InicioDoctor,
   },

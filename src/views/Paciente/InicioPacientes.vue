@@ -46,7 +46,7 @@
               <p>{{ cita.appointment_time }}</p>
             </div>
 
-            <!--Esto no va en esta vista
+            <!--Esto no va en esta vista:
             <p>Estado: {{ cita.status }}</p>
             <button @click="verDetallesCita(cita.id)">Ver detalles</button>
             -->

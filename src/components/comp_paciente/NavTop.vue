@@ -13,16 +13,16 @@
     <div id="menu-desplegable"
       :class="{ 'transform -translate-x-full': !isMenuOpen, 'transform translate-x-0': isMenuOpen }"
       class="z-60 fixed inset-0 bg-white text-noxgrey font-nunito w-3/4 sm:w-64 transition-transform ease-in-out duration-300">
-      <div class="px-4 py-6 relative">
+      <div class="px-8 py-8 relative">
         <!-- Icono de cerrar (X) en la esquina superior derecha -->
         <div id="icono-cerrar" class="absolute top-4 right-4 text-2xl cursor-pointer" @click="closeMenu">
           <X />
         </div>
 
-        <AluraLogo />
-        <hr class="my-4">
+        <AluraLogo class="w-40 h-auto"/>
+        <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
-        <ul class="space-y-6">
+        <ul class="space-y-8">
           <li @click="$router.push('/dashboard-paciente')" 
           class="flex items-center space-x-4 cursor-pointer">
             <House class="w-4 h-4" />
@@ -50,9 +50,9 @@
           </li>
         </ul>
 
-        <hr class="my-4">
+        <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
-        <ul class="space-y-6">
+        <ul class="space-y-8">
           <li @click="$router.push('/#')"
           class="flex items-center space-x-4 cursor-pointer">
             <User class="w-4 h-4" />
@@ -70,7 +70,7 @@
           </li>
         </ul>
 
-        <hr class="my-4">
+        <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
       </div>
     </div>
