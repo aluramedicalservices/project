@@ -53,7 +53,7 @@
                 <label for="correo" class="block text-sm font-nunito mb-2">Correo electrónico</label>
                 <input type="email" id="correo"
                   class="font-nunito py-2.5 sm:py-3 px-4 block w-full border-1 border-gray-300 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                  placeholder="tu@sitio.com" v-model="correo" required />
+                  placeholder="correo" v-model="correo" required />
               </div>
 
               <!-- Contraseña-->
@@ -171,27 +171,27 @@ const iniciarSesionDoctor = async () => {
   }
 
   try {
-    // Verificar la credencial en la tabla doctors
+    // Verificar si existe un doctor con la credencial única ingresada
     const { data: doctor, error } = await supabase
       .from('doctors')
-      .select('*')
+      .select('nombre_completo')  // Seleccionar solo el campo necesario para optimizar
       .eq('credential', credential.value)
       .single();
 
-    if (error) throw error;
-
-    if (!doctor) {
-      alert('Credencial inválida.');
+    if (error || !doctor) {
+      alert('Credencial inválida o no registrada.');
       return;
     }
 
-    // Redirigir al dashboard de doctores
+    // Redirigir al dashboard del doctor si la credencial es válida
+    alert(`Bienvenido/a, ${doctor.nombre_completo}`);
     router.push('/dashboard-doctor');
   } catch (error) {
     console.error('Error al verificar la credencial:', error.message);
-    alert('Error al verificar la credencial: ' + error.message);
+    alert('Error al iniciar sesión. Inténtalo nuevamente.');
   }
 };
+
 </script>
 
 <style scoped>

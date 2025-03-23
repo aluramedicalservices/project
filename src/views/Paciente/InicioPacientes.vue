@@ -152,7 +152,7 @@ const cerrarSesion = async () => {
   try {
     await supabase.auth.signOut();
     sessionStorage.clear();
-    router.push('/apertura');
+    router.push('/');
   } catch (error) {
     console.error('Error al cerrar sesión:', error.message);
   }

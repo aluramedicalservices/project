@@ -144,8 +144,8 @@
         v-if="showPopup"
         :icon="CheckCircle"
         iconClass="text-green-500"
-        title="¡Su registro de cuenta fue exitoso!"
-        message="¡Bienvenido/a a la App de Alura! Por favor, conteste el siguiente formulario para que podamos valorarle y brindarle el mejor servicio."
+        title="¡Registro exitoso!"
+        message="¡Bienvenido/a a la App de Alura! Hemos enviado un correo de verificación. Por favor, confirma tu cuenta antes de iniciar sesión. "
         primaryLabel="Aceptar"
         :onPrimaryAction="handlePrimaryAction"
         secondaryLabel="Cancelar"
@@ -198,7 +198,7 @@ const registrarUsuario = async () => {
 
 const handlePrimaryAction = () => {
   showPopup.value = false
-  router.push('/cuestionario-1') // Redirigir al usuario a la página de inicio
+  router.push('/') // Redirigir al usuario a la página de inicio
 }
 
 const handleSecondaryAction = () => {

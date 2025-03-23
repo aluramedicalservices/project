@@ -85,12 +85,35 @@ const confirmarCita = async () => {
     return;
   }
 
+  // Convertir la hora a formato 24 horas
+  const horaConvertida = convertirHora(hourOption.value);
+
+  // Verificar si ya existe una cita con la misma fecha y hora
+  const { data, error: checkError } = await supabase
+    .from('appointments')
+    .select('*')
+    .eq('appointment_date', fechaSeleccionada.value)
+    .eq('appointment_time', horaConvertida)
+    .single(); // Solo nos interesa saber si existe una coincidencia
+
+  if (checkError) {
+    console.error('Error al verificar la cita:', checkError);
+    alert('Hubo un problema al verificar la disponibilidad. Intenta nuevamente.');
+    return;
+  }
+
+  if (data) {
+    // Si ya existe una cita, notificar al usuario
+    alert('Ya existe una cita agendada para esta fecha y hora. Por favor, selecciona otra.');
+    return;
+  }
+
   // Datos de la cita a guardar en la base de datos
   const citaData = {
     user_id: user.id,
     appointment_type: appointmentType.value.toLowerCase(),
     appointment_date: fechaSeleccionada.value,
-    appointment_time: convertirHora(hourOption.value),
+    appointment_time: horaConvertida,
     status: 'agendada',
     doctor_id: null,
   };
@@ -106,7 +129,7 @@ const confirmarCita = async () => {
       console.error('Error al agendar la cita:', error);
       alert(`Error al agendar la cita: ${error.message}`);
     } else {
-      alert(`Cita confirmada para el ${fechaSeleccionada.value} a las ${convertirHora(hourOption.value)}.`);
+      alert(`Cita confirmada para el ${fechaSeleccionada.value} a las ${horaConvertida}.`);
       router.push('/dashboard-paciente'); // Redirigir al dashboard del paciente
     }
   } catch (error) {
@@ -116,7 +139,7 @@ const confirmarCita = async () => {
 };
 
 const cancelarCita = () => {
-  router.push('/agendar-cita'); // Redirigir al formulario de agendar cita
+  router.push('/dashboard-paciente'); // Redirigir al formulario de agendar cita
 };
 </script>
 

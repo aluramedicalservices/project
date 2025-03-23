@@ -20,6 +20,7 @@ import AgendarCitaEnfermeria from '../views/paciente/AgendarCitaEnfermeria.vue';
 import AgendarCitaEspecialista from '../views/paciente/AgendarCitaEspecialista.vue';
 import Notificaciones from '../views/paciente/Notificaciones.vue';
 import HistorialClinico from '../views/paciente/HistorialClinico.vue';
+import Perfil from '../views/paciente/Perfil.vue';
 
 // Vistas Portal de Doctor
 import InicioDoctor from '../views/doctor/InicioDoctor.vue';
@@ -92,7 +93,7 @@ const routes = [
     component: DetallesProximaCita,
   },
   {
-    path: '/inicio',
+    path: '/dashboard-doctor',
     name: 'InicioDoctor',
     component: InicioDoctor,
   },
@@ -145,6 +146,11 @@ const routes = [
     path: '/historial-clinico',
     name: 'HistorialClinico',
     component: HistorialClinico,
+  },
+  {
+    path: '/perfil',
+    name: 'Perfil',
+    component: Perfil,
   },
 ];
 
