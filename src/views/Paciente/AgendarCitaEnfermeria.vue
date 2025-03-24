@@ -7,7 +7,7 @@
     >
       ← Volver
     </button>
-    <Titulo texto="Agendar Enfermería" />
+    <Titulo texto="Agendar cita a Domicilio" />
 
     <!-- Selector de fecha -->
     <div class="mb-8">

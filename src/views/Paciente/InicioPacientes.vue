@@ -18,7 +18,7 @@
       <!-- Próximas citas (solo si hay citas agendadas) -->
       <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
-      <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citas.length > 0">
+      <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citasLimitadas.length > 0">
         <div class="text-center">
           <TituloH2 texto="Próximas citas" />
           <p>Hoy es {{ fechaActual }}</p>
@@ -26,7 +26,7 @@
 
         <!-- Citas agendadas -->
         <div id="appointments-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
-          <div v-for="cita in citas" :key="cita.id" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-white w-full">
+          <div v-for="cita in citasLimitadas" :key="cita.id" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-white w-full">
             <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
             <div class="flex items-center space-x-2">
               <Calendar class="w-5 h-5 text-gray-600" />
@@ -66,7 +66,7 @@
           <!-- Agendar cita con Enfermería -->
           <div @click="irAAgendarCitaEnfermeria" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer hover:bg-blue-50 transition-colors">
             <img :src="nurse" alt="cita_enfermeria" class="w-12 h-12 object-contain mx-auto" />
-            <span>Enfermería</span>
+            <span>A Domicilio</span>
           </div>
         </div>
       </div>
@@ -100,6 +100,7 @@ import avatar from '../../assets/imagenes/avatar.png';
 const nombrePaciente = ref('');
 const fechaActual = ref('');
 const citas = ref([]);
+const citasLimitadas = ref([]); // Variable para las 3 citas más próximas
 const router = useRouter();
 
 // Formateadores con zona horaria de Tijuana
@@ -171,6 +172,9 @@ onMounted(async () => {
       doctor_nombre: cita.doctors?.nombre_completo || 'No asignado',
       appointment_time: cita.appointment_time?.slice(0, 5) || '--:--'
     })) || []; // Si no hay citas, asignar un array vacío
+
+    // Limitar las citas a las 3 más próximas
+    citasLimitadas.value = citas.value.slice(0, 3);
 
     // Fecha actual en Tijuana
     fechaActual.value = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: es });

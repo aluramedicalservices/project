@@ -88,9 +88,10 @@ const routes = [
     component: ProximasCitas,
   },
   {
-    path: '/detalles-de-cita',
+    path: '/detalles-de-cita/:id', // Agrega el parámetro dinámico `:id`
     name: 'DetallesProximaCita',
     component: DetallesProximaCita,
+    props: true, // Opcional: Pasar el parámetro `id` como prop al componente
   },
   {
     path: '/dashboard-doctor',

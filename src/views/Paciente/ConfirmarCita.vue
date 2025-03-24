@@ -73,9 +73,9 @@ const obtenerProfesional = async () => {
   try {
     let nombre;
     if (tipoCita.value === 'online') {
-      nombre = 'María José Alvarado Escobar'; // Enfermera para online
+      nombre = 'María José Alvarado Escobar';
     } else {
-      nombre = 'Juan José Moreno Argueta'; // Cambiar por el nombre real
+      nombre = 'Juan José Moreno Argueta'; 
     }
 
     const { data, error } = await supabase

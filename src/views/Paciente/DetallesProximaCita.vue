@@ -5,20 +5,18 @@
       <Titulo texto="Detalles de cita" />
       <!-- Detalles de la cita -->
       <div id="appointment-container-info" class="space-y-3">
-        <div id="appointment-info"
-          class="border border-vitalblue rounded-xl shadow-2xs py-4 px-6 bg-vitalblue w-full text-center space-y-4">
-
-          <!--Titulo e info general-->
+        <div id="appointment-info" class="border border-vitalblue rounded-xl shadow-2xs py-4 px-6 bg-vitalblue w-full text-center space-y-4">
+          <!-- Titulo e info general -->
           <TituloH3 :texto="tituloCita" />
           <ul>
             <li>Modalidad: {{ modalidad }}</li>
+            <li>Fecha: {{ formatearFecha(cita.appointment_date) }}</li>
             <li>Hora: {{ horaEscogida }}</li>
             <li>Ubicación: {{ ubicacionPaciente }}</li>
           </ul>
 
-          <!--Personal asignado-->
-          <div id="a-d-personal"
-            class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
+          <!-- Personal asignado -->
+          <div id="a-d-personal" class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
             <h3 class="font-montserrat font-bold text-center">Personal asignado</h3>
             <Info class="absolute top-4 right-4" />
             <hr>
@@ -30,17 +28,16 @@
               </div>
             </div>
           </div>
- 
-          <!--Instrucciones-->
-          <div id="a-d-instructions"
-            class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
+
+          <!-- Instrucciones -->
+          <div id="a-d-instructions" class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
             <h3 class="font-montserrat font-bold text-center">Instrucciones</h3>
             <Info class="absolute top-4 right-4" />
             <hr>
             <p>{{ mensajeInstrucciones }}</p>
           </div>
 
-          <!--Estado de la cita-->
+          <!-- Estado de la cita -->
           <div id="a-d-state" class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
             <h3 class="font-montserrat font-bold text-center">Estado</h3>
             <Info class="absolute top-4 right-4" />
@@ -48,7 +45,6 @@
             <i>Imagen sobre el estado</i>
             <p>{{ mensajeEstado }}</p>
           </div>
-
         </div>
       </div>
     </div>
@@ -57,11 +53,13 @@
 </template>
 
 <script setup>
-import NavTop from '../../components/comp_paciente/NavTop.vue';
-import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { supabase } from '@/config/supabase';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import NavTop from '../../components/comp_paciente/NavTop.vue';
+import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
 import TituloH3 from '../../components/TituloH3.vue';
 import { Info } from 'lucide-vue-next';
@@ -70,48 +68,63 @@ import avatar from '../../assets/imagenes/avatar.png';
 const route = useRoute();
 const citaId = route.params.id;
 
-const tituloCita = ref('Consulta Médica');
-const modalidad = ref('Presencial');
-const horaEscogida = ref('10:00 AM');
+const cita = ref({});
+const tituloCita = ref('Detalles de la cita');
+const modalidad = ref('');
+const horaEscogida = ref('');
 const ubicacionPaciente = ref('Clínica Central');
-const mensajeEstado = ref('La cita está confirmada');
-const NombrePersonalQueAtiende = ref('Dr. Juan Pérez');
-const TituloPersonal = ref('Cardiólogo');
+const mensajeEstado = ref('');
+const NombrePersonalQueAtiende = ref('');
+const TituloPersonal = ref('');
 const mensajeInstrucciones = ref('Por favor, llegue 15 minutos antes de su cita.');
+
+// Función corregida para formatear la fecha
+const formatearFecha = (fecha) => {
+  if (!fecha) return 'Fecha no disponible'; // Manejo de valores nulos o indefinidos
+
+  try {
+    const fechaObj = new Date(fecha);
+    if (isNaN(fechaObj.getTime())) {
+      throw new Error('Fecha inválida');
+    }
+    return format(fechaObj, "d 'de' MMMM 'de' yyyy", { locale: es });
+  } catch (error) {
+    console.error('Error al formatear la fecha:', error);
+    return 'Fecha inválida';
+  }
+};
+
+// Función para formatear la hora
+const formatearHora = (hora) => {
+  return hora ? hora.slice(0, 5) : '--:--'; // Manejo de valores nulos o indefinidos
+};
 
 onMounted(async () => {
   try {
-    const { data: cita, error } = await supabase
+    // Obtener los detalles de la cita
+    const { data, error } = await supabase
       .from('appointments')
-      .select('*')
+      .select('*, doctors:doctor_id(nombre_completo, especialidad)')
       .eq('id', citaId)
       .single();
 
     if (error) throw error;
 
-    tituloCita.value = cita.appointment_type;
-    modalidad.value = cita.appointment_type;
-    horaEscogida.value = cita.appointment_time;
-    mensajeEstado.value = cita.status;
+    cita.value = data;
 
-    if (cita.doctor_id) {
-      const { data: doctor, error: doctorError } = await supabase
-        .from('doctors')
-        .select('nombre, especialidad')
-        .eq('id', cita.doctor_id)
-        .single();
+    // Asignar valores a las variables reactivas
+    modalidad.value = data.appointment_type === 'online' ? 'Cita Online' : 'Cita a Domicilio';
+    horaEscogida.value = formatearHora(data.appointment_time);
+    mensajeEstado.value = data.status === 'agendada' ? 'Cita agendada' : 'Cita confirmada';
 
-      if (!doctorError) {
-        NombrePersonalQueAtiende.value = doctor.nombre;
-        TituloPersonal.value = doctor.especialidad;
-      }
+    if (data.doctors) {
+      NombrePersonalQueAtiende.value = data.doctors.nombre_completo;
+      TituloPersonal.value = data.doctors.especialidad;
     }
+
   } catch (error) {
     console.error('Error al cargar los detalles de la cita:', error);
+    alert('Error al cargar los detalles de la cita. Inténtalo de nuevo.');
   }
 });
 </script>
-
-<style scoped>
-/* Estilos específicos de esta vista */
-</style>
