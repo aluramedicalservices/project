@@ -1,181 +1,155 @@
 <template>
   <NavTop />
-  <div id="Confirm_appointment">
+  <div id="Confirm_appointment" class="p-4 max-w-2xl mx-auto">
     <Titulo texto="Confirmar cita" />
 
-    <ul>
-      <li>
-        <span class="icon">📅</span> Fecha: <strong>{{ fechaSeleccionada }}</strong>
-      </li>
-      <li>
-        <span class="icon">⏰</span> Hora: <strong>{{ hourOption }}</strong>
-      </li>
-      <li>
-        <span class="icon">🩺</span> Modalidad: <strong>{{ appointmentType }}</strong>
-      </li>
-      <li v-if="metodoPago">
-        <span class="icon">💳</span> Método de Pago: <strong>{{ metodoPago }}</strong>
-      </li>
-      <li v-if="especialidad">
-        <span class="icon">👨‍⚕️</span> Especialidad: <strong>{{ especialidad }}</strong>
-      </li>
-    </ul>
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div class="space-y-4 text-lg">
+        <!-- Fecha corregida (manejo de zona horaria) -->
+        <div class="flex items-center">
+          <span class="mr-2">📅</span>
+          <span>Fecha: <strong>{{ formattedDate }}</strong></span>
+        </div>
+        
+        <!-- Hora -->
+        <div class="flex items-center">
+          <span class="mr-2">⏰</span>
+          <span>Hora: <strong>{{ route.query.hora }} hrs</strong></span>
+        </div>
+        
+        <!-- Profesional asignado -->
+        <div class="flex items-center">
+          <span class="mr-2">👩⚕️</span>
+          <span>Profesional: <strong>{{ nombreProfesional }}</strong></span>
+        </div>
+        
+        <!-- Tipo de cita -->
+        <div class="flex items-center">
+          <span class="mr-2">💻</span>
+          <span>Modalidad: <strong>{{ tipoCitaFormateado }}</strong></span>
+        </div>
 
-    <hr />
+        <!-- Método de pago (solo para domicilio) -->
+        <div v-if="route.query.metodoPago" class="flex items-center">
+          <span class="mr-2">💳</span>
+          <span>Método de pago: <strong>{{ metodoPagoFormateado }}</strong></span>
+        </div>
+      </div>
+    </div>
 
-    <div class="buttons">
-      <button @click="confirmarCita" class="btn-confirmar">Confirmar</button>
+    <!-- Botones -->
+    <div class="flex gap-4 justify-end">
       <button @click="cancelarCita" class="btn-cancelar">Cancelar</button>
+      <button @click="confirmarCita" class="btn-confirmar">Confirmar</button>
     </div>
   </div>
   <NavBottom />
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { format, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { supabase } from '@/config/supabase';
-import NavTop from '../../components/comp_paciente/NavTop.vue';
-import NavBottom from '../../components/comp_paciente/NavBottom.vue';
-import Titulo from '../../components/Titulo.vue';
 
 const router = useRouter();
 const route = useRoute();
 
-// Lista de valores permitidos para "appointment_type"
-const tiposPermitidos = ["online", "domicilio", "especialista"];
+// Datos de la cita
+const nombreProfesional = ref('');
+const doctorId = ref(null);
+const tipoCita = computed(() => route.query.modalidad || 'online');
 
-// Obtener los datos de la cita desde los parámetros de la ruta
-const fechaSeleccionada = ref(route.query.fecha || 'Pendiente');
-const hourOption = ref(route.query.hora || 'Pendiente');
-const appointmentType = ref(route.query.modalidad || 'Pendiente');
-const metodoPago = ref(route.query.metodoPago || '');
-const especialidad = ref(route.query.especialidad || '');
+// Formatear fecha corrigiendo zona horaria
+const formattedDate = computed(() => {
+  if (!route.query.fecha) return 'Fecha no seleccionada';
+  const fechaLocal = parseISO(route.query.fecha + 'T00:00:00'); // Fuerza zona horaria local
+  return format(fechaLocal, "d 'de' MMMM 'de' yyyy", { locale: es });
+});
 
-// Función para convertir la hora a formato de 24 horas (HH:MM:SS)
-const convertirHora = (hora) => {
-  if (!hora) return null;
-  const match = hora.match(/^(\d{1,2}):?(\d{2})?\s?(AM|PM)?$/i);
-  if (!match) return null;
-
-  let [_, horas, minutos, periodo] = match;
-  horas = parseInt(horas, 10);
-  minutos = minutos ? minutos.padStart(2, "0") : "00";
-
-  if (periodo && periodo.toUpperCase() === "PM" && horas !== 12) {
-    horas += 12;
-  } else if (periodo && periodo.toUpperCase() === "AM" && horas === 12) {
-    horas = 0;
-  }
-
-  return `${horas.toString().padStart(2, "0")}:${minutos}:00`;
-};
-
-const confirmarCita = async () => {
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    alert('Debes iniciar sesión para agendar una cita.');
-    return;
-  }
-
-  // Validar el tipo de cita
-  if (!tiposPermitidos.includes(appointmentType.value.toLowerCase())) {
-    alert(`Error: Tipo de cita inválido (${appointmentType.value}).`);
-    return;
-  }
-
-  // Convertir la hora a formato 24 horas
-  const horaConvertida = convertirHora(hourOption.value);
-
-  // Verificar si ya existe una cita con la misma fecha y hora
-  const { data, error: checkError } = await supabase
-    .from('appointments')
-    .select('*')
-    .eq('appointment_date', fechaSeleccionada.value)
-    .eq('appointment_time', horaConvertida)
-    .single(); // Solo nos interesa saber si existe una coincidencia
-
-  if (checkError) {
-    console.error('Error al verificar la cita:', checkError);
-    alert('Hubo un problema al verificar la disponibilidad. Intenta nuevamente.');
-    return;
-  }
-
-  if (data) {
-    // Si ya existe una cita, notificar al usuario
-    alert('Ya existe una cita agendada para esta fecha y hora. Por favor, selecciona otra.');
-    return;
-  }
-
-  // Datos de la cita a guardar en la base de datos
-  const citaData = {
-    user_id: user.id,
-    appointment_type: appointmentType.value.toLowerCase(),
-    appointment_date: fechaSeleccionada.value,
-    appointment_time: horaConvertida,
-    status: 'agendada',
-    doctor_id: null,
-  };
-
-  if (metodoPago.value) citaData.metodo_pago = metodoPago.value;
-  if (especialidad.value) citaData.especialidad = especialidad.value;
-
+// Asignar profesional según tipo de cita
+const obtenerProfesional = async () => {
   try {
-    // Insertar la cita en la base de datos
-    const { error } = await supabase.from('appointments').insert([citaData]);
-
-    if (error) {
-      console.error('Error al agendar la cita:', error);
-      alert(`Error al agendar la cita: ${error.message}`);
+    let nombre;
+    if (tipoCita.value === 'online') {
+      nombre = 'María José Alvarado Escobar'; // Enfermera para online
     } else {
-      alert(`Cita confirmada para el ${fechaSeleccionada.value} a las ${horaConvertida}.`);
-      router.push('/dashboard-paciente'); // Redirigir al dashboard del paciente
+      nombre = 'Juan José Moreno Argueta'; // Cambiar por el nombre real
     }
+
+    const { data, error } = await supabase
+      .from('doctors')
+      .select('id, nombre_completo')
+      .eq('nombre_completo', nombre)
+      .single();
+
+    if (error) throw error;
+    
+    nombreProfesional.value = data.nombre_completo;
+    doctorId.value = data.id;
   } catch (error) {
-    console.error('Error inesperado:', error);
-    alert('Hubo un problema inesperado al agendar la cita. Inténtalo de nuevo.');
+    alert('Error al asignar profesional');
+    router.push('/dashboard-paciente');
   }
 };
 
-const cancelarCita = () => {
-  router.push('/dashboard-paciente'); // Redirigir al formulario de agendar cita
+// Confirmar cita en Supabase
+const confirmarCita = async () => {
+  try {
+    // Validar campos
+    if (!doctorId.value || !route.query.fecha || !route.query.hora) {
+      throw new Error('Datos incompletos');
+    }
+
+    // Verificar disponibilidad
+    const { data: citasExistentes, error: errorCitas } = await supabase
+      .from('appointments')
+      .select('*')
+      .eq('doctor_id', doctorId.value)
+      .eq('appointment_date', route.query.fecha)
+      .eq('appointment_time', route.query.hora + ':00');
+
+    if (citasExistentes?.length > 0) {
+      alert('Horario no disponible');
+      return;
+    }
+
+    // Insertar cita
+    const { error } = await supabase.from('appointments').insert([{
+      user_id: (await supabase.auth.getUser()).data.user.id,
+      doctor_id: doctorId.value,
+      appointment_type: tipoCita.value,
+      appointment_date: route.query.fecha,
+      appointment_time: route.query.hora + ':00',
+      status: 'agendada',
+      metodo_pago: route.query.metodoPago || null,
+      created_at: new Date().toISOString()
+    }]);
+
+    if (error) throw error;
+
+    alert('Cita agendada correctamente');
+    router.push('/dashboard-paciente');
+  } catch (error) {
+    alert(error.message || 'Error al guardar la cita');
+  }
 };
+
+// Inicialización
+onMounted(() => obtenerProfesional());
 </script>
 
 <style scoped>
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-.icon {
-  margin-right: 5px;
-}
-
 .btn-confirmar {
   background-color: #007bff;
   color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.btn-confirmar:hover {
-  background-color: #0056b3;
+  padding: 10px 20px;
 }
 
 .btn-cancelar {
   background-color: #dc3545;
   color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.btn-cancelar:hover {
-  background-color: #c82333;
+  padding: 10px 20px;
 }
 </style>
