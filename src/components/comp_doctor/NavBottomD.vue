@@ -14,13 +14,13 @@
       <div id="m-b-schedule" @click="goTo('Calendario')"
         class="cursor-pointer flex flex-col w-1/3 justify-center items-center py-2 space-y-1">
         <Calendar />
-        <h3 class="text-sm">Calendario</h3>
+        <h3 class="text-sm">Agenda</h3>
       </div>
 
       <!-- Historial -->
       <div id="m-b-history" @click="goTo('HistorialCitas')"
         class="cursor-pointer flex flex-col w-1/3 justify-center items-center py-2 space-y-1">
-        <ClipboardPlus />
+        <History />
         <h3 class="text-sm">Historial</h3>
       </div>
 
@@ -39,7 +39,7 @@
   import { useRouter } from 'vue-router';
   import { Home } from 'lucide-vue-next';
   import { Calendar } from 'lucide-vue-next';
-  import { ClipboardPlus } from 'lucide-vue-next';
+  import { History } from 'lucide-vue-next';
   import { Users } from 'lucide-vue-next';
 
 // Instancia de router

@@ -16,6 +16,8 @@
 
 --color-medblue: #5b5ea7; /* Morado principal */
 --color-medbluelight: #ABBAF0; /* Morado claro */
+--color-medbluehover: #3E3A99; /* Morado hover */
+--color-medbluefocus: #6F81D3; /* Morado focus */
 
 --color-healingblue: #76c7d0; /* Azul turquesa principal */
 --color-healingbluelight: #E0F9FC; /* Azul claro */

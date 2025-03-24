@@ -11,9 +11,9 @@
           <!--Titulo e info general-->
           <TituloH3 :texto="tituloCita" />
           <ul>
-            <li>Modalidad: {{ modalidad }}</li>
-            <li>Hora: {{ horaEscogida }}</li>
-            <li>Ubicación: {{ ubicacionPaciente }}</li>
+            <li><span class="font-bold">Modalidad: </span> {{ modalidad }}</li>
+            <li><span class="font-bold">Hora: </span> {{ horaEscogida }}</li>
+            <li><span class="font-bold">Ubicación: </span> {{ ubicacionPaciente }}</li>
           </ul>
 
           <!--Personal asignado-->
@@ -21,7 +21,7 @@
             class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
             <h3 class="font-montserrat font-bold text-center">Personal asignado</h3>
             <Info class="absolute top-4 right-4" />
-            <hr>
+            <hr class="w-full h-[1px] my-4 bg-gray-300 border-0">
             <div id="a-d-p-card" class="flex space-x-4 justify-center">
               <img :src="avatar" alt="perfil_usuario" class="w-16 h-auto" />
               <div id="a-d-p-card-info" class="text-left">
@@ -30,13 +30,13 @@
               </div>
             </div>
           </div>
- 
+
           <!--Instrucciones-->
           <div id="a-d-instructions"
             class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
             <h3 class="font-montserrat font-bold text-center">Instrucciones</h3>
             <Info class="absolute top-4 right-4" />
-            <hr>
+            <hr class="w-full h-[1px] my-4 bg-gray-300 border-0">
             <p>{{ mensajeInstrucciones }}</p>
           </div>
 
@@ -44,9 +44,11 @@
           <div id="a-d-state" class="bg-white border text-noxgrey border-vitalblue rounded-xl relative p-4 space-y-4">
             <h3 class="font-montserrat font-bold text-center">Estado</h3>
             <Info class="absolute top-4 right-4" />
-            <hr>
-            <i>Imagen sobre el estado</i>
-            <p>{{ mensajeEstado }}</p>
+            <hr class="w-full h-[1px] my-4 bg-gray-300 border-0">
+            <div class="flex">
+              <i>Icono sobre el estado</i>
+              <p class="text-start">{{ mensajeEstado }}</p>
+            </div>
           </div>
 
         </div>

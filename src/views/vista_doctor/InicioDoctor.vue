@@ -1,159 +1,69 @@
 <template>
-    <div id="vista_inicio_doctores" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
+  <div id="vista_inicio_doctores" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
     <NavTopD />
     <div id="contenedor_inicio" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-20">
-    
+
       <!-- Bienvenida y nombre del paciente -->
       <div id="s-welcome-card" class="flex justify-center font-nunito gap-4">
-          <div>
-            <img :src="avatar" alt="perfil_usuario" />
-          </div>
-          <div>
-            <p class="text-noxgrey mb-1">Bienvenido/a de nuevo,</p>
-            <p class="text-medblue mb-1 text-xl font-semibold">{{ nombrePersonal }}</p> <!--Agregar el nombre del doctor aqui-->
-          </div>
-        </div>
-  
-        <!-- Próximas citas (solo si hay citas agendadas) -->
-        <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
-  
-        <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3"
-          v-if="citas.length > 0">
-          <div class="text-center">
-            <div @click="$router.push('/proximas-citas')" class="flex justify-center relative cursor-pointer">
-              <TituloH2 texto="Próximas citas!!" class="text-center" />
-              <ChevronRight class="absolute right-1 top-1/2 -translate-y-1/2 text-medblue" />
-            </div>
-            <p>Hoy es {{ fechaActual }}</p>
-          </div>
-        </div>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-    <!-- Citas Pendientes -->
-    <div id="p-patients-home">
-      <div id="s-upcoming-appointments">
         <div>
-          <h1 class="font-mono text-3xl font-bold underline">Citas Pendientes</h1>
+          <img :src="avatar" alt="perfil_usuario" />
         </div>
-        <div class="appointments-container">
-          <div class="appointment-info" v-for="cita in citasPendientes" :key="cita.id">
-            <h2>{{ obtenerTipoCita(cita.appointment_type) }}</h2>
-            <p>{{ formatearFecha(cita.appointment_date) }}</p>
-            <p>{{ cita.appointment_time }}</p>
-            <p>Paciente: {{ cita.paciente_nombre }}</p>
-            <button @click="aceptarCita(cita.id)">Aceptar Cita</button>
-          </div>
+        <div>
+          <p id="plan-label"
+            class="text-healingblue bg-healingbluelight inline-block rounded-b-full px-1 text-sm/6">
+            {{TipoRol}}ponerRol <!-- Poner aqui el rol del personal (Ej. Doctor, enfermero, etc) -->
+          </p>
+          <p class="text-noxgrey mb-1">Bienvenido/a de nuevo,</p>
+          <p class="text-medblue mb-1 text-xl font-semibold">{{ nombrePersonal }}NombrePersonal</p> <!--Agregar el nombre del doctor aqui-->
         </div>
       </div>
+
+      <!-- Próximas citas (solo si hay citas agendadas) -->
+      <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
+
+      <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3">
+        <div class="text-center">
+          <div @click="$router.push('/#')" class="flex justify-center relative cursor-pointer">
+            <TituloH2 texto="Agenda" class="text-center" />
+            <ChevronRight class="" />
+          </div>
+          <p>Hoy es {{ fechaActual }}</p>
+        </div>
+      </div>
+
+      <!-- Citas agendadas -->
+      <div id="appointments-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
+          <div id="appointment-info" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-vitalblue w-full">
+            <h2 class="font-bold text-medblue">Hola{{ TipoDeCita }}</h2> <!--Aqui va el nombre/titulo de la cita-->
+            
+            <div class="flex space-x-2 space-y-1">
+              <Calendar class="w-5 h-5" />
+              <p>Hola{{ FechaCita }}</p> <!--Aqui va la fecha de la cita-->
+            </div>
+
+            <div class="flex space-x-2 space-y-1">
+              <Clock class="w-5 h-5" />
+              <p>Hola{{ HoraSalidaACita }}</p> <!--Aqui va la hora de la cita o la hora en que debe salir el personal para llegar a la cita-->
+            </div>
+          </div>
+        </div>
+
+        <button @click="$router.push('/proximas-citas')" class="underline cursor-pointer">
+          Ver todas las citas
+        </button>
+      </div>
+      <NavBottomD />
     </div>
-    
-  </div>
-  <NavBottomD />
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import { supabase } from '@/config/supabase';
-  import NavTopD from '../../components/comp_doctor/NavTopD.vue';
-  import NavBottomD from '../../components/comp_doctor/NavBottomD.vue';
-  
-  import TituloH2 from '../../components/TituloH2.vue';
-  
-  import nurse from '../../assets/imagenes/nurse.png';
-  import screen from '../../assets/imagenes/screen.png';
-  import avatar from '../../assets/imagenes/avatar.png';
-  
-  const citasPendientes = ref([]);
-  
-  // Obtener citas pendientes al cargar la vista
-  onMounted(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-  
-      if (user) {
-        // Obtener citas pendientes con los datos del paciente
-        const { data: citasData, error } = await supabase
-          .from('appointments')
-          .select('*, users:user_id(nombre)') // Obtener el nombre del paciente
-          .eq('status', 'scheduled'); // Solo citas pendientes
-  
-        if (error) throw error;
-  
-        // Mapear los datos para incluir el nombre del paciente
-        citasPendientes.value = citasData.map(cita => ({
-          ...cita,
-          paciente_nombre: cita.users.nombre,
-        }));
-      }
-    } catch (error) {
-      console.error('Error al obtener citas pendientes:', error.message);
-    }
-  });
-  
-  // Función para aceptar una cita
-  const aceptarCita = async (citaId) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-  
-      if (!user) {
-        alert('Debes iniciar sesión para aceptar una cita.');
-        return;
-      }
-  
-      // Actualizar la cita con el ID del doctor
-      const { error } = await supabase
-        .from('appointments')
-        .update({ doctor_id: user.id, status: 'accepted' }) // Asignar el doctor y cambiar el estado
-        .eq('id', citaId);
-  
-      if (error) throw error;
-  
-      alert('Cita aceptada.');
-      // Actualizar la lista de citas pendientes
-      citasPendientes.value = citasPendientes.value.filter(cita => cita.id !== citaId);
-    } catch (error) {
-      console.error('Error al aceptar la cita:', error.message);
-      alert('Error al aceptar la cita.');
-    }
-  };
-  
-  // Función para formatear la fecha
-  const formatearFecha = (fecha) => {
-    const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(fecha).toLocaleDateString('es-ES', opcionesFecha);
-  };
-  
-  // Función para obtener el tipo de cita
-  const obtenerTipoCita = (tipo) => {
-    switch (tipo) {
-      case 'asesoria':
-        return 'Asesoría Médica';
-      case 'enfermeria':
-        return 'Cita con Enfermería';
-      case 'especialista':
-        return 'Cita con Especialista';
-      default:
-        return 'Cita';
-    }
-  };
-  </script>
-  
-  <style scoped>
-  /* Estilos específicos de esta vista */
-  </style>
+
+</template>
+
+<script setup>
+
+import NavTopD from '../../components/comp_doctor/NavTopD.vue';
+import NavBottomD from '../../components/comp_doctor/NavBottomD.vue';
+import TituloH2 from '../../components/TituloH2.vue';
+import avatar from '../../assets/imagenes/avatar.png';
+
+import { Calendar, Clock, ChevronRight } from 'lucide-vue-next';
+
+</script>

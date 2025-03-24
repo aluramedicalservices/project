@@ -28,18 +28,14 @@ import DetallesCitaD from '../views/vista_doctor/DetallesCitaD.vue';
 import ComenzarViaje from '../views/vista_doctor/ComenzarViaje.vue';
 import Viaje from '../views/vista_doctor/Viaje.vue';
 import RegistroCita from '../views/vista_doctor/RegistroCita.vue';
-
+import NotificacionesD from '../views/vista_doctor/NotificacionesD.vue';
 
 const routes = [
+  // URLs generales de la App -------------------
   {
     path: '/',
     name: 'Apertura',
     component: Apertura,
-  },
-  {
-    path: '/dashboard-paciente',
-    name: 'InicioPacientes',
-    component: InicioPacientes,
   },
   {
     path: '/registro',
@@ -71,6 +67,13 @@ const routes = [
     name: 'RestablecerContrasena',
     component: RestablecerContrasena,
   },
+
+    // URLs del dashboard de pacientes -------------------
+  {
+    path: '/dashboard-paciente',
+    name: 'InicioPacientes',
+    component: InicioPacientes,
+  },
   {
     path: '/agendar-citas',
     name: 'AgendarCita',
@@ -92,7 +95,34 @@ const routes = [
     component: DetallesProximaCita,
   },
   {
-    path: '/dashboard-doctor',
+    path: '/agendar-cita-online',
+    name: 'AgendarCitaOnline',
+    component: AgendarCitaOnline,
+  },
+  {
+    path: '/agendar-cita-enfermeria',
+    name: 'AgendarCitaEnfermeria',
+    component: AgendarCitaEnfermeria,
+  },
+  {
+    path: '/agendar-cita-especialista',
+    name: 'AgendarCitaEspecialista',
+    component: AgendarCitaEspecialista,
+  },
+  {
+    path: '/notificaciones-paciente',
+    name: 'NotificacionesPaciente',
+    component: Notificaciones,
+  },
+  {
+    path: '/historial-clinico',
+    name: 'HistorialClinico',
+    component: HistorialClinico,
+  },
+
+  // URLs del dashboard de doctores -------------------
+  {
+    path: '/dashboard-medico',
     name: 'InicioDoctor',
     component: InicioDoctor,
   },
@@ -122,29 +152,9 @@ const routes = [
     component: RegistroCita,
   },
   {
-    path: '/agendar-cita-online',
-    name: 'AgendarCitaOnline',
-    component: AgendarCitaOnline,
-  },
-  {
-    path: '/agendar-cita-enfermeria',
-    name: 'AgendarCitaEnfermeria',
-    component: AgendarCitaEnfermeria,
-  },
-  {
-    path: '/agendar-cita-especialista',
-    name: 'AgendarCitaEspecialista',
-    component: AgendarCitaEspecialista,
-  },
-  {
-    path: '/notificaciones-paciente',
-    name: 'NotificacionesPaciente',
-    component: Notificaciones,
-  },
-  {
-    path: '/historial-clinico',
-    name: 'HistorialClinico',
-    component: HistorialClinico,
+    path: '/notificaciones-medicas',
+    name: 'NotificacionesDoctor',
+    component: NotificacionesD,
   },
 ];
 
