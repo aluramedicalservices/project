@@ -53,7 +53,8 @@
 
         <div class="flex space-x-2 justify-center">
           <!-- Agendar cita -->
-          <div @click="irAAgendarCitas" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer hover:bg-blue-50 transition-colors">
+          <div @click="irAAgendarCitaEspecialista" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer hover:bg-blue-50 transition-colors">
+            <img :src="nurse" alt="cita_especialista" class="w-12 h-12 object-contain mx-auto" />
             <span>Especialista</span>
           </div>
 
@@ -191,7 +192,7 @@ const cerrarSesion = async () => {
 };
 
 // Navegación
-const irAAgendarCitas = () => router.push('/agendar-citas');
+const irAAgendarCitaEspecialista = () => router.push('/agendar-cita-especialista');
 const irAAgendarCitaOnline = () => router.push('/agendar-cita-online');
 const irAAgendarCitaEnfermeria = () => router.push('/agendar-cita-enfermeria');
 const irAProximasCitas = () => router.push('/proximas-citas');

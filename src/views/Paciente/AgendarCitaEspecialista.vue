@@ -1,62 +1,45 @@
 <template>
   <NavTop />
-  <div id="Schedule_appointment">
-    <button @click="router.push('/dashboard-paciente')">Volver</button>
-    <Titulo texto="Agendar cita con Especialista" />
+  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32"> <!-- Añade pb-32 -->
+    <button 
+      @click="router.push('/dashboard-paciente')"
+      class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+    >
+      ← Volver
+    </button>
+    <Titulo texto="Cita con Especialista" />
 
-    <!-- Calendario siempre abierto -->
-    <div class="calendar-container">
-      <label>Escoger fecha</label><br>
-      <div class="calendar">
-        <div class="calendar-header">
-          <button @click="prevMonth">«</button>
-          <span>{{ months[currentMonth] }} {{ currentYear }}</span>
-          <button @click="nextMonth">»</button>
-        </div>
-        <div class="calendar-body">
-          <div class="calendar-day" v-for="day in weekDays" :key="day">{{ day }}</div>
-          <div class="calendar-date" v-for="day in blankDays" :key="'blank-' + day"></div>
-          <div class="calendar-date" v-for="day in daysInMonth" :key="day"
-               :class="{ selected: isSelected(day) }" @click="selectDate(day)">
-            {{ day }}
-          </div>
-        </div>
-      </div>
-      <p>Fecha seleccionada: {{ selectedDate || 'Ninguna' }}</p>
+    <!-- Selector de fecha -->
+    <div class="mb-8">
+      <label class="block text-lg font-medium mb-2">Fecha de la cita</label>
+      <Calendar 
+        :selected-date="selectedDate"
+        @date-selected="handleDateSelect"
+      />
+      <p class="mt-2 text-gray-600">
+        Fecha seleccionada: {{ formattedSelectedDate || 'Selecciona una fecha' }}
+      </p>
     </div>
 
-    <!-- Horarios -->
-    <label for="hour-option">Escoger horario</label><br>
-    <select v-model="hourOption" id="hour-option" required>
-      <option value="" disabled selected>Escoger horario</option>
-      <option value="7am">07:00 a.m.</option>
-      <option value="8am">08:00 a.m.</option>
-      <option value="9am">09:00 a.m.</option>
-      <option value="10am">10:00 a.m.</option>
-      <option value="11am">11:00 a.m.</option>
-      <option value="12pm">12:00 p.m.</option>
-      <option value="1pm">01:00 p.m.</option>
-      <option value="2pm">02:00 p.m.</option>
-      <option value="3pm">03:00 p.m.</option>
-      <option value="4pm">04:00 p.m.</option>
-      <option value="5pm">05:00 p.m.</option>
-      <option value="6pm">06:00 p.m.</option>
-      <option value="7pm">07:00 p.m.</option>
-      <option value="8pm">08:00 p.m.</option>
-    </select>
-
-    <!-- Especialidad -->
-    <div>
-      <label for="especialidad">Especialidad:</label><br>
-      <select v-model="especialidad" required>
-        <option value="neumologia">Neumología</option>
-        <option value="cardiologia">Cardiología</option>
-      </select>
+    <!-- Selector de hora -->
+    <div class="mb-8">
+      <label class="block text-lg font-medium mb-2">Hora de la cita</label>
+      <TimeSelector 
+        :selected-time="selectedTime"
+        @time-selected="handleTimeSelect"
+      />
+      <p class="mt-2 text-gray-600">
+        Hora seleccionada: {{ selectedTime || 'Selecciona una hora' }}
+      </p>
     </div>
 
-    <!-- Botón agendar -->
-    <br>
-    <button @click="irAConfirmarCita" class="btn-agendar">Agendar</button>
+    <!-- Botón de confirmación -->
+    <button 
+      @click="irAConfirmarCita"
+      class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+    >
+      Continuar
+    </button>
   </div>
   <NavBottom />
 </template>
@@ -64,125 +47,87 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import Calendar from '@/components/Calendar.vue';
+import TimeSelector from '@/components/TimeSelector.vue';
 import NavTop from '../../components/comp_paciente/NavTop.vue';
 import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
+import { supabase } from '@/config/supabase';
 
-// Variables reactivas
-const selectedDate = ref('');
-const hourOption = ref('');
-const especialidad = ref('');
 const router = useRouter();
+const selectedDate = ref(new Date());
+const selectedTime = ref('');
+const doctorId = ref(null); 
 
-const today = new Date();
-const currentYear = ref(today.getFullYear());
-const currentMonth = ref(today.getMonth());
-
-const months = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-];
-const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-
-// Cálculo de días en el mes
-const daysInMonth = computed(() => {
-  return new Date(currentYear.value, currentMonth.value + 1, 0).getDate();
+// Formatear la fecha seleccionada
+const formattedSelectedDate = computed(() => {
+  return format(selectedDate.value, "d 'de' MMMM 'de' yyyy", { locale: es });
 });
 
-// Calcular espacios en blanco antes del primer día del mes
-const blankDays = computed(() => {
-  return new Date(currentYear.value, currentMonth.value, 1).getDay();
-});
-
-// Función para seleccionar la fecha
-const selectDate = (day) => {
-  selectedDate.value = `${currentYear.value}-${String(currentMonth.value + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+// Manejar selección de fecha
+const handleDateSelect = (date) => {
+  selectedDate.value = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
 };
 
-// Funciones para cambiar de mes
-const prevMonth = () => {
-  if (currentMonth.value === 0) {
-    currentMonth.value = 11;
-    currentYear.value -= 1;
-  } else {
-    currentMonth.value -= 1;
+// Manejar selección de hora
+const handleTimeSelect = (time) => {
+  selectedTime.value = time;
+};
+
+// Obtener el ID del doctor
+const obtenerDoctor = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('doctors')
+      .select('id')
+      .eq('nombre_completo', 'Dra. Amy Saraí Moreno Ramírez')
+      .single();
+
+    if (error || !data) {
+      alert('Error al asignar doctor. Contacte al administrador.');
+      throw new Error('Doctor no encontrado');
+    }
+
+    doctorId.value = data.id; 
+  } catch (error) {
+    console.error('Error al obtener doctor:', error);
+    router.push('/dashboard-paciente');
   }
 };
 
-const nextMonth = () => {
-  if (currentMonth.value === 11) {
-    currentMonth.value = 0;
-    currentYear.value += 1;
-  } else {
-    currentMonth.value += 1;
-  }
-};
-
-// Resaltar fecha seleccionada
-const isSelected = (day) => {
-  return selectedDate.value === `${currentYear.value}-${String(currentMonth.value + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-};
-
-// Función para redirigir a ConfirmarCita.vue
-const irAConfirmarCita = () => {
-  if (!selectedDate.value || !hourOption.value || !especialidad.value) {
+// Redirigir a confirmar cita
+const irAConfirmarCita = async () => {
+  if (!selectedDate.value || !selectedTime.value) {
     alert('Por favor, completa todos los campos.');
     return;
   }
 
+  // Obtener el ID del doctor
+  if (!doctorId.value) {
+    await obtenerDoctor();
+  }
+
+  // Redirigir a la vista de confirmación
   router.push({
     path: '/confirmar-cita',
     query: {
-      modalidad: 'especialista', // Tipo de cita
-      fecha: selectedDate.value,
-      hora: hourOption.value,
-      especialidad: especialidad.value,
+      modalidad: 'domicilio', // Tipo de cita
+      fecha: format(selectedDate.value, 'yyyy-MM-dd'),
+      hora: selectedTime.value,
+      doctorId: doctorId.value, 
     },
   });
 };
 </script>
 
 <style scoped>
-.calendar-container {
-  margin-top: 1rem;
-}
-
-.calendar {
-  border: 1px solid #ccc;
-  width: 280px;
-  text-align: center;
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  background-color: #f2f2f2;
-  padding: 0.5rem;
-}
-
-.calendar-body {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  padding: 0.5rem;
-}
-
-.calendar-day {
-  font-weight: bold;
-}
-
-.calendar-date {
-  padding: 5px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.calendar-date:hover {
-  background-color: #dfe6e9;
-}
-
-.selected {
-  background-color: #74b9ff;
-  color: white;
+#Schedule_appointment {
+  min-height: calc(100vh - 128px);
 }
 </style>
