@@ -23,7 +23,7 @@
         <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
         <ul class="space-y-8">
-          <li @click="$router.push('/dashboard-doctor')" class="flex items-center space-x-4 cursor-pointer">
+          <li @click="$router.push('/dashboard-medico')" class="flex items-center space-x-4 cursor-pointer">
             <House class="w-4 h-4" />
             <p>Inicio</p>
           </li>
