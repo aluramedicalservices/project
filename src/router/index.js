@@ -10,24 +10,24 @@ import RecuperarContrasena from '../views/RecuperarContrasena.vue';
 import RestablecerContrasena from '../views/RestablecerContrasena.vue';
 
 // Vistas Portal de Pacientes
-import InicioPacientes from '../views/paciente/InicioPacientes.vue';
-import AgendarCita from '../views/paciente/AgendarCita.vue';
-import ConfirmarCita from '../views/paciente/ConfirmarCita.vue';
-import ProximasCitas from '../views/paciente/ProximasCitas.vue';
-import DetallesProximaCita from '../views/paciente/DetallesProximaCita.vue';
-import AgendarCitaOnline from '../views/paciente/AgendarCitaOnline.vue';
-import AgendarCitaEnfermeria from '../views/paciente/AgendarCitaEnfermeria.vue';
-import AgendarCitaEspecialista from '../views/paciente/AgendarCitaEspecialista.vue';
-import Notificaciones from '../views/paciente/Notificaciones.vue';
-import HistorialClinico from '../views/paciente/HistorialClinico.vue';
+import InicioPacientes from '../views/vista_paciente/InicioPacientes.vue';
+import AgendarCita from '../views/vista_paciente/AgendarCita.vue';
+import ConfirmarCita from '../views/vista_paciente/ConfirmarCita.vue';
+import ProximasCitas from '../views/vista_paciente/ProximasCitas.vue';
+import DetallesProximaCita from '../views/vista_paciente/DetallesProximaCita.vue';
+import AgendarCitaOnline from '../views/vista_paciente/AgendarCitaOnline.vue';
+import AgendarCitaEnfermeria from '../views/vista_paciente/AgendarCitaEnfermeria.vue';
+import AgendarCitaEspecialista from '../views/vista_paciente/AgendarCitaEspecialista.vue';
+import Notificaciones from '../views/vista_paciente/Notificaciones.vue';
+import HistorialClinico from '../views/vista_paciente/HistorialClinico.vue';
 
 // Vistas Portal de Doctor
-import InicioDoctor from '../views/doctor/InicioDoctor.vue';
-import Agenda from '../views/doctor/Agenda.vue';
-import DetallesCitaD from '../views/doctor/DetallesCitaD.vue';
-import ComenzarViaje from '../views/doctor/ComenzarViaje.vue';
-import Viaje from '../views/doctor/Viaje.vue';
-import RegistroCita from '../views/doctor/RegistroCita.vue';
+import InicioDoctor from '../views/vista_doctor/InicioDoctor.vue';
+import Agenda from '../views/vista_doctor/Agenda.vue';
+import DetallesCitaD from '../views/vista_doctor/DetallesCitaD.vue';
+import ComenzarViaje from '../views/vista_doctor/ComenzarViaje.vue';
+import Viaje from '../views/vista_doctor/Viaje.vue';
+import RegistroCita from '../views/vista_doctor/RegistroCita.vue';
 
 
 const routes = [
