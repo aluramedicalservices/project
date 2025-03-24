@@ -21,7 +21,7 @@
           v-if="citas.length > 0">
           <div class="text-center">
             <div @click="$router.push('/proximas-citas')" class="flex justify-center relative cursor-pointer">
-              <TituloH2 texto="Próximas citas" class="text-center" />
+              <TituloH2 texto="Próximas citas!!" class="text-center" />
               <ChevronRight class="absolute right-1 top-1/2 -translate-y-1/2 text-medblue" />
             </div>
             <p>Hoy es {{ fechaActual }}</p>
