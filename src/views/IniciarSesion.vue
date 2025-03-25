@@ -171,24 +171,34 @@ const iniciarSesionDoctor = async () => {
   }
 
   try {
-    // Verificar si existe un doctor con la credencial única ingresada
+    // 1. Verificar credencial en tabla doctors
     const { data: doctor, error } = await supabase
       .from('doctors')
-      .select('nombre_completo')  // Seleccionar solo el campo necesario para optimizar
-      .eq('credential', credential.value)
+      .select('id, nombre_completo, credential, especialidad')
+      .eq('credential', credential.value.trim())
       .single();
 
     if (error || !doctor) {
-      alert('Credencial inválida o no registrada.');
-      return;
+      throw new Error('Credencial inválida o no registrada');
     }
 
-    // Redirigir al dashboard del doctor si la credencial es válida
-    alert(`Bienvenido/a, ${doctor.nombre_completo}`);
+    // 2. Guardar información del doctor en localStorage
+    localStorage.setItem('doctorId', doctor.id);
+    localStorage.setItem('doctorNombre', doctor.nombre_completo);
+    localStorage.setItem('doctorEspecialidad', doctor.especialidad);
+    localStorage.setItem('doctorCredential', doctor.credential);
+
+    // 3. Redirigir al dashboard del doctor
     router.push('/dashboard-doctor');
+    
   } catch (error) {
-    console.error('Error al verificar la credencial:', error.message);
-    alert('Error al iniciar sesión. Inténtalo nuevamente.');
+    console.error('Error al iniciar sesión como doctor:', error);
+    alert('Error: ' + (error.message || 'No se pudo iniciar sesión'));
+    // Limpiar datos en caso de error
+    localStorage.removeItem('doctorId');
+    localStorage.removeItem('doctorNombre');
+    localStorage.removeItem('doctorEspecialidad');
+    localStorage.removeItem('doctorCredential');
   }
 };
 
