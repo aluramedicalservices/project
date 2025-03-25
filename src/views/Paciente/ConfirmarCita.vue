@@ -1,11 +1,11 @@
 <template>
   <NavTop />
   <div id="Confirm_appointment" class="p-4 max-w-2xl mx-auto">
-    <Titulo texto="Confirmar cita" />
+    <Titulo :texto="tituloConfirmacion" />
 
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
       <div class="space-y-4 text-lg">
-        <!-- Fecha corregida (manejo de zona horaria) -->
+        <!-- Fecha -->
         <div class="flex items-center">
           <span class="mr-2">📅</span>
           <span>Fecha: <strong>{{ formattedDate }}</strong></span>
@@ -29,8 +29,14 @@
           <span>Modalidad: <strong>{{ tipoCitaFormateado }}</strong></span>
         </div>
 
+        <!-- Especialidad (solo para especialista) -->
+        <div v-if="tipoCita === 'especialista'" class="flex items-center">
+          <span class="mr-2">🏥</span>
+          <span>Especialidad: <strong>{{ route.query.especialidad || 'No especificada' }}</strong></span>
+        </div>
+
         <!-- Método de pago (solo para domicilio) -->
-        <div v-if="route.query.metodoPago" class="flex items-center">
+        <div v-if="tipoCita === 'domicilio' && route.query.metodoPago" class="flex items-center">
           <span class="mr-2">💳</span>
           <span>Método de pago: <strong>{{ metodoPagoFormateado }}</strong></span>
         </div>
@@ -61,27 +67,62 @@ const nombreProfesional = ref('');
 const doctorId = ref(null);
 const tipoCita = computed(() => route.query.modalidad || 'online');
 
-// Formatear fecha corrigiendo zona horaria
+// Título dinámico
+const tituloConfirmacion = computed(() => {
+  return tipoCita.value === 'especialista' 
+    ? 'Confirmar cita con especialista' 
+    : 'Confirmar cita';
+});
+
+// Formateadores
 const formattedDate = computed(() => {
   if (!route.query.fecha) return 'Fecha no seleccionada';
-  const fechaLocal = parseISO(route.query.fecha + 'T00:00:00'); // Fuerza zona horaria local
+  const fechaLocal = parseISO(route.query.fecha + 'T00:00:00');
   return format(fechaLocal, "d 'de' MMMM 'de' yyyy", { locale: es });
 });
 
-// Asignar profesional según tipo de cita
+const tipoCitaFormateado = computed(() => {
+  const tipos = {
+    'online': 'Consulta Online',
+    'domicilio': 'Visita a Domicilio',
+    'especialista': 'Consulta con Especialista'
+  };
+  return tipos[tipoCita.value] || tipoCita.value;
+});
+
+const metodoPagoFormateado = computed(() => {
+  return route.query.metodoPago === 'efectivo' ? 'Efectivo' : 'Tarjeta';
+});
+
+// Obtener profesional según tipo de cita
 const obtenerProfesional = async () => {
   try {
-    let nombre;
-    if (tipoCita.value === 'online') {
-      nombre = 'María José Alvarado Escobar'; // Enfermera para online
-    } else {
-      nombre = 'Juan José Moreno Argueta'; // Cambiar por el nombre real
+    // Para citas con especialista, usamos los datos pasados por query
+    if (tipoCita.value === 'especialista') {
+      nombreProfesional.value = route.query.doctorNombre || 'Especialista no asignado';
+      doctorId.value = route.query.doctorId || null;
+      return;
     }
+
+    // Para otros tipos de cita, mantenemos la lógica original
+    const profesionales = {
+      online: {
+        nombre: 'María José Alvarado Escobar',
+        email: 'mariajoseae19@gmail.com'
+      },
+      domicilio: {
+        nombre: 'Juan José Moreno Argueta',
+        email: 'canamash83@gmail.com'
+      }
+    };
+
+    const profesional = profesionales[tipoCita.value];
+    if (!profesional) return;
 
     const { data, error } = await supabase
       .from('doctors')
       .select('id, nombre_completo')
-      .eq('nombre_completo', nombre)
+      .eq('correo', profesional.email)
       .single();
 
     if (error) throw error;
@@ -89,7 +130,8 @@ const obtenerProfesional = async () => {
     nombreProfesional.value = data.nombre_completo;
     doctorId.value = data.id;
   } catch (error) {
-    alert('Error al asignar profesional');
+    console.error('Error al asignar profesional:', error);
+    alert('Error al cargar información del profesional');
     router.push('/dashboard-paciente');
   }
 };
@@ -97,43 +139,60 @@ const obtenerProfesional = async () => {
 // Confirmar cita en Supabase
 const confirmarCita = async () => {
   try {
-    // Validar campos
+    // Validación común para todos los tipos de cita
     if (!doctorId.value || !route.query.fecha || !route.query.hora) {
       throw new Error('Datos incompletos');
     }
 
-    // Verificar disponibilidad
+    // Verificar disponibilidad (excluyendo citas canceladas)
     const { data: citasExistentes, error: errorCitas } = await supabase
       .from('appointments')
       .select('*')
       .eq('doctor_id', doctorId.value)
       .eq('appointment_date', route.query.fecha)
-      .eq('appointment_time', route.query.hora + ':00');
+      .eq('appointment_time', route.query.hora + ':00')
+      .neq('status', 'cancelada');
 
     if (citasExistentes?.length > 0) {
       alert('Horario no disponible');
       return;
     }
 
-    // Insertar cita
-    const { error } = await supabase.from('appointments').insert([{
+    // Datos base para todos los tipos de cita
+    const citaData = {
       user_id: (await supabase.auth.getUser()).data.user.id,
       doctor_id: doctorId.value,
       appointment_type: tipoCita.value,
       appointment_date: route.query.fecha,
       appointment_time: route.query.hora + ':00',
       status: 'agendada',
-      metodo_pago: route.query.metodoPago || null,
       created_at: new Date().toISOString()
-    }]);
+    };
+
+    // Campos adicionales según tipo de cita
+    if (tipoCita.value === 'domicilio') {
+      citaData.metodo_pago = route.query.metodoPago || null;
+    }
+    
+    if (tipoCita.value === 'especialista') {
+      citaData.especialidad = route.query.especialidad || null;
+    }
+
+    // Insertar cita
+    const { error } = await supabase.from('appointments').insert([citaData]);
 
     if (error) throw error;
 
     alert('Cita agendada correctamente');
     router.push('/dashboard-paciente');
   } catch (error) {
+    console.error('Error al guardar cita:', error);
     alert(error.message || 'Error al guardar la cita');
   }
+};
+
+const cancelarCita = () => {
+  router.push('/dashboard-paciente');
 };
 
 // Inicialización
@@ -145,11 +204,13 @@ onMounted(() => obtenerProfesional());
   background-color: #007bff;
   color: white;
   padding: 10px 20px;
+  border-radius: 6px;
 }
 
 .btn-cancelar {
   background-color: #dc3545;
   color: white;
   padding: 10px 20px;
+  border-radius: 6px;
 }
 </style>
