@@ -20,6 +20,7 @@
     "axios": "^1.8.4",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
+    "gapi-script": "^1.2.0",
     "lucide-vue-next": "^0.482.0",
     "pinia": "^3.0.1",
     "preline": "^3.0.1",
