@@ -67,7 +67,7 @@
           <!-- Agendar cita con Enfermería -->
           <div @click="irAAgendarCitaEnfermeria" class="bg-medbluelight rounded-lg flex flex-col justify-center items-center w-28 p-3 cursor-pointer hover:bg-blue-50 transition-colors">
             <img :src="nurse" alt="cita_enfermeria" class="w-12 h-12 object-contain mx-auto" />
-            <span>A Domicilio</span>
+            <span>Domicilio</span>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ const formatearHora = (hora) => {
 };
 
 const obtenerTipoCita = (tipo) => {
-  return tipo === 'online' ? 'Cita Online' : tipo === 'domicilio' ? 'Cita a Domicilio' : 'Cita';
+  return tipo === 'online' ? 'Cita Online' : tipo === 'domicilio' ? 'Cita a Domicilio' : 'Cita con Especialista';
 };
 
 onMounted(async () => {

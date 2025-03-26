@@ -58,7 +58,7 @@ const formatearHora = (hora) => {
 };
 
 const obtenerTipoCita = (tipo) => {
-  return tipo === 'online' ? 'Cita Online' : tipo === 'domicilio' ? 'Cita a Domicilio' : 'Cita';
+  return tipo === 'online' ? 'Cita Online' : tipo === 'domicilio' ? 'Cita a Domicilio' : 'Cita con Especialista';
 };
 
 // Función para ver detalles de la cita

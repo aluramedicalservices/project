@@ -69,14 +69,14 @@ const route = useRoute();
 const citaId = route.params.id;
 
 const cita = ref({});
-const tituloCita = ref('Detalles de la cita');
+const tituloCita = ref('');
 const modalidad = ref('');
 const horaEscogida = ref('');
 const ubicacionPaciente = ref('Clínica Central');
 const mensajeEstado = ref('');
 const NombrePersonalQueAtiende = ref('');
 const TituloPersonal = ref('');
-const mensajeInstrucciones = ref('Por favor, llegue 15 minutos antes de su cita.');
+const mensajeInstrucciones = ref('Por favor, confirme su asistencia a la cita 1 hora antes.');
 
 // Función corregida para formatear la fecha
 const formatearFecha = (fecha) => {
