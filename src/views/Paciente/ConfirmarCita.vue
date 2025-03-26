@@ -29,6 +29,12 @@
           <span>Modalidad: <strong>{{ tipoCitaFormateado }}</strong></span>
         </div>
 
+        <!-- Enlace de Google Meet (solo para online) -->
+        <div v-if="tipoCita === 'online'" class="flex items-center">
+          <span class="mr-2">🌐</span>
+          <span>Enlace de Google Meet: <strong><a :href="googleMeetLink" target="_blank">{{ googleMeetLink }}</a></strong></span>
+        </div>
+
         <!-- Especialidad (solo para especialista) -->
         <div v-if="tipoCita === 'especialista'" class="flex items-center">
           <span class="mr-2">🏥</span>
@@ -66,6 +72,7 @@ const route = useRoute();
 const nombreProfesional = ref('');
 const doctorId = ref(null);
 const tipoCita = computed(() => route.query.modalidad || 'online');
+const googleMeetLink = ref('');
 
 // Título dinámico
 const tituloConfirmacion = computed(() => {
@@ -94,17 +101,21 @@ const metodoPagoFormateado = computed(() => {
   return route.query.metodoPago === 'efectivo' ? 'Efectivo' : 'Tarjeta';
 });
 
+// Función para generar enlace de Google Meet
+const generateGoogleMeetLink = () => {
+  const randomString = Math.random().toString(36).substring(2, 15);
+  return `https://meet.google.com/${randomString}`;
+};
+
 // Obtener profesional según tipo de cita
 const obtenerProfesional = async () => {
   try {
-    // Para citas con especialista, usamos los datos pasados por query
     if (tipoCita.value === 'especialista') {
       nombreProfesional.value = route.query.doctorNombre || 'Especialista no asignado';
       doctorId.value = route.query.doctorId || null;
       return;
     }
 
-    // Para otros tipos de cita, mantenemos la lógica original
     const profesionales = {
       online: {
         nombre: 'María José Alvarado Escobar',
@@ -139,12 +150,10 @@ const obtenerProfesional = async () => {
 // Confirmar cita en Supabase
 const confirmarCita = async () => {
   try {
-    // Validación común para todos los tipos de cita
     if (!doctorId.value || !route.query.fecha || !route.query.hora) {
       throw new Error('Datos incompletos');
     }
 
-    // Verificar disponibilidad (excluyendo citas canceladas)
     const { data: citasExistentes, error: errorCitas } = await supabase
       .from('appointments')
       .select('*')
@@ -158,7 +167,12 @@ const confirmarCita = async () => {
       return;
     }
 
-    // Datos base para todos los tipos de cita
+    // Generar enlace de Google Meet solo para citas online
+    let meetLink = '';
+    if (tipoCita.value === 'online') {
+      meetLink = generateGoogleMeetLink();
+    }
+
     const citaData = {
       user_id: (await supabase.auth.getUser()).data.user.id,
       doctor_id: doctorId.value,
@@ -166,19 +180,18 @@ const confirmarCita = async () => {
       appointment_date: route.query.fecha,
       appointment_time: route.query.hora + ':00',
       status: 'agendada',
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      google_meet_link: meetLink || null, // Guardar el enlace de Google Meet si es online
     };
 
-    // Campos adicionales según tipo de cita
     if (tipoCita.value === 'domicilio') {
       citaData.metodo_pago = route.query.metodoPago || null;
     }
-    
+
     if (tipoCita.value === 'especialista') {
       citaData.especialidad = route.query.especialidad || null;
     }
 
-    // Insertar cita
     const { error } = await supabase.from('appointments').insert([citaData]);
 
     if (error) throw error;
@@ -196,7 +209,12 @@ const cancelarCita = () => {
 };
 
 // Inicialización
-onMounted(() => obtenerProfesional());
+onMounted(() => {
+  obtenerProfesional();
+  if (tipoCita.value === 'online') {
+    googleMeetLink.value = generateGoogleMeetLink();
+  }
+});
 </script>
 
 <style scoped>
