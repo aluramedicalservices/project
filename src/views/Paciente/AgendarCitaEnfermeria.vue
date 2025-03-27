@@ -1,6 +1,6 @@
 <template>
   <NavTop />
-  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32"> <!-- Añade pb-32 -->
+  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32">
     <button 
       @click="router.push('/dashboard-paciente')"
       class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
@@ -47,6 +47,11 @@
       </select>
     </div>
 
+    <!-- Mostrar el botón de PayPal solo cuando se seleccione "Pagar en línea" -->
+    <div v-if="metodoPago === 'online'" class="mb-8">
+      <div id="paypal-button-container"></div>
+    </div>
+
     <!-- Botón de confirmación -->
     <button 
       @click="irAConfirmarCita"
@@ -59,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -140,6 +145,68 @@ const irAConfirmarCita = async () => {
     },
   });
 };
+
+// Función para manejar el pago exitoso
+const onPaymentSuccess = (details) => {
+  console.log('Pago exitoso', details);
+  alert('¡Pago exitoso! El ID de transacción es: ' + details.id);
+};
+
+// Cargar el script de PayPal solo cuando el componente se monta y el método de pago es "online"
+onMounted(() => {
+  // Si el método de pago es "online", carga el script de PayPal y renderiza el botón
+  if (metodoPago.value === 'online') {
+    const script = document.createElement('script');
+    script.src = 'https://www.paypal.com/sdk/js?client-id=AWlLFrixm6dNXeH0qKmPqGyepzhRpR84-h70Y4lcHbUpxn_N7_mA4nq9gb4_wiFXaerJitttJrqJXGMB&currency=USD';
+    script.onload = () => {
+      paypal.Buttons({
+        createOrder(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: '10.00' // Aquí puedes poner el monto de la cita
+              }
+            }]
+          });
+        },
+        onApprove(data, actions) {
+          return actions.order.capture().then((details) => {
+            onPaymentSuccess(details);
+          });
+        }
+      }).render('#paypal-button-container'); // Renderiza el botón en el contenedor
+    };
+    document.body.appendChild(script);
+  }
+});
+
+// Escuchar cambios en el método de pago para cargar el script de PayPal si es necesario
+watch(metodoPago, (newMetodo) => {
+  if (newMetodo === 'online') {
+    // Solo cargar el script si se selecciona "Pagar en línea"
+    const script = document.createElement('script');
+    script.src = 'https://www.paypal.com/sdk/js?client-id=AWlLFrixm6dNXeH0qKmPqGyepzhRpR84-h70Y4lcHbUpxn_N7_mA4nq9gb4_wiFXaerJitttJrqJXGMB&currency=USD';
+    script.onload = () => {
+      paypal.Buttons({
+        createOrder(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: '10.00' // Aquí puedes poner el monto de la cita
+              }
+            }]
+          });
+        },
+        onApprove(data, actions) {
+          return actions.order.capture().then((details) => {
+            onPaymentSuccess(details);
+          });
+        }
+      }).render('#paypal-button-container'); // Renderiza el botón de PayPal
+    };
+    document.body.appendChild(script);
+  }
+});
 </script>
 
 <style scoped>
