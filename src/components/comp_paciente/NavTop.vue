@@ -58,7 +58,7 @@
             <User class="w-4 h-4" />
             <p>Mi perfil</p>
           </li>
-          <li @click="$router.push('/#')"
+          <li @click="$router.push('/planes-disponibles')"
           class="flex items-center space-x-4 cursor-pointer">
             <BookHeart class="w-4 h-4" />
             <p>Planes disponibles</p>

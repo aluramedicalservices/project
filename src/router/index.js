@@ -21,6 +21,7 @@ import AgendarCitaEspecialista from '../views/paciente/AgendarCitaEspecialista.v
 import Notificaciones from '../views/paciente/Notificaciones.vue';
 import HistorialClinico from '../views/paciente/HistorialClinico.vue';
 import Perfil from '../views/paciente/Perfil.vue';
+import PlanesDisponibles from '../views/paciente/PlanesDisponibles.vue';  // <- Aquí está la nueva importación
 
 // Vistas Portal de Doctor
 import InicioDoctor from '../views/doctor/InicioDoctor.vue';
@@ -29,7 +30,6 @@ import DetallesCitaD from '../views/doctor/DetallesCitaD.vue';
 import ComenzarViaje from '../views/doctor/ComenzarViaje.vue';
 import Viaje from '../views/doctor/Viaje.vue';
 import RegistroCita from '../views/doctor/RegistroCita.vue';
-
 
 const routes = [
   {
@@ -152,6 +152,11 @@ const routes = [
     path: '/perfil',
     name: 'Perfil',
     component: Perfil,
+  },
+  {
+    path: '/planes-disponibles',  // <- Nueva ruta añadida para PlanesDisponibles
+    name: 'PlanesDisponibles',
+    component: PlanesDisponibles,
   },
 ];
 

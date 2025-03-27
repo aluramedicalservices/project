@@ -1,7 +1,7 @@
 <template>
   <div>
+    <!-- El botón de PayPal solo se muestra si el script está cargado -->
     <PayPalButtons
-      v-if="isPaypalReady"
       :create-order="createOrder"
       :onApprove="onApprove"
       :onError="onError"
@@ -10,34 +10,40 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import { ref, watchEffect } from 'vue';
+import { usePayPalScriptReducer, PayPalButtons } from '@paypal/react-paypal-js';
 
-// Aquí configuramos el estado de la integración
-const isPaypalReady = ref(false);
+const props = defineProps({
+  monto: {
+    type: Number,
+    required: true,
+  },
+});
+
 const { isLoaded } = usePayPalScriptReducer();
+const isPaypalReady = ref(false);
 
-// Cuando se carga el script de PayPal
-onMounted(() => {
+// Asegurarse de que el SDK de PayPal se haya cargado
+watchEffect(() => {
   if (isLoaded) {
     isPaypalReady.value = true;
   }
 });
 
-// Crear la orden de pago
+// Función para crear la orden de pago con PayPal
 const createOrder = (data, actions) => {
   return actions.order.create({
     purchase_units: [
       {
         amount: {
-          value: "10.00", // Cambia el valor a lo que se va a cobrar
+          value: props.monto, // Usar el monto que se pasa desde el componente de planes
         },
       },
     ],
   });
 };
 
-// Manejar la aprobación del pago
+// Función cuando se aprueba el pago
 const onApprove = (data, actions) => {
   return actions.order.capture().then((details) => {
     console.log("Pago exitoso", details);
@@ -45,7 +51,7 @@ const onApprove = (data, actions) => {
   });
 };
 
-// Manejar errores en el pago
+// Función cuando ocurre un error en el pago
 const onError = (error) => {
   console.log("Error de pago", error);
 };
