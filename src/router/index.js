@@ -21,6 +21,7 @@ import AgendarCitaEspecialista from '../views/paciente/AgendarCitaEspecialista.v
 import Notificaciones from '../views/paciente/Notificaciones.vue';
 import HistorialClinico from '../views/paciente/HistorialClinico.vue';
 import Perfil from '../views/paciente/Perfil.vue';
+import PlanesDisponibles from '../views/paciente/PlanesDisponibles.vue';  
 
 // Vistas Portal de Doctor
 import InicioDoctor from '../views/doctor/InicioDoctor.vue';
@@ -88,10 +89,10 @@ const routes = [
     component: ProximasCitas,
   },
   {
-    path: '/detalles-de-cita/:id', // Agrega el parámetro dinámico `:id`
+    path: '/detalles-de-cita/:id',
     name: 'DetallesProximaCita',
     component: DetallesProximaCita,
-    props: true, // Opcional: Pasar el parámetro `id` como prop al componente
+    props: true, 
   },
   {
     path: '/dashboard-doctor',
@@ -104,7 +105,7 @@ const routes = [
     component: Agenda,
   },
   {
-    path: '/detalles-cita',
+    path: '/detalles-cita:id',
     name: 'DetallesCitaD',
     component: DetallesCitaD,
   },
@@ -119,7 +120,7 @@ const routes = [
     component: Viaje,
   },
   {
-    path: '/cita-registro',
+    path: '/registro-cita/:id',
     name: 'RegistroCita',
     component: RegistroCita,
   },
@@ -152,6 +153,11 @@ const routes = [
     path: '/perfil',
     name: 'Perfil',
     component: Perfil,
+  },
+  {
+    path: '/planes-disponibles', 
+    name: 'PlanesDisponibles',
+    component: PlanesDisponibles,
   },
 ];
 

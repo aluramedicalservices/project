@@ -1,66 +1,80 @@
 <template>
-  <div id="vista_detallescita_dashboardmedico"
-    class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
-    <NavTopD />
-    <div id="comenzarViaje" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-20 pb-32 text-center">
-      <Titulo texto="Viaje" />
-      <br>
-
-      <div id="mapa_contenedor" class="text-center">
-        <div id="mapa_tiempo_real" class="">
-          //Aqui irá el mapa en tiempo real
-        </div>
-
-        <ul>
-          <li><span class="font-bold">Ubicación: </span>
-            <br>{{ ubicacionPaciente }}hola
-          </li>
-          <li><span class="font-bold">Hora de la cita: </span>
-            <br>{{ horaDeCita }}hola
-          </li>
-        </ul>
+  <div class="min-h-screen bg-fondo p-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Mapa -->
+      <div class="h-96 bg-white rounded-xl shadow-lg mb-6">
+        <div ref="mapContainer" class="h-full w-full rounded-xl"></div>
       </div>
 
-      <!--Viaje (comenzar): Esta parte solo debe aparecer cuando aun no inicia el viaje (ver figma)-->
-      <div>
-        <BotonMorado texto="Comenzar el viaje" />
-        <p><span class="font-bold">Duración estimada del viaje: </span>
-          <br>{{ horaDeCita }}hola
-        </p>
+      <!-- Información del Paciente -->
+      <div class="bg-white p-4 rounded-xl shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">En camino a la consulta</h2>
+        <p>Paciente: {{ pacienteNombre }}</p>
+        <p>Dirección: {{ cita.ubicacion }}</p>
+        <p>Tiempo estimado: {{ tiempoEstimado }}</p>
       </div>
-
-      <!--Viaje (en curso): Esta parte solo debe aparecer cuando el viaje esta en curso(ver figma)-->
-      <div id="horaestimada-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
-        <div id="horaestimada-c-hijo"
-          class="border border-vitalblue rounded-xl shadow-2xs py-4 px-6 bg-vitalblue w-full text-center space-y-4">
-          <p><span class="font-bold">Hora de llegada estimada: </span>
-          <br>{{ horaDeCita }}hola
-          </p>
-        </div>
-      </div>
-
-      <button><a href="#">Cancelar cita</a></button>
-
     </div>
-    <NavBottomD />
   </div>
 </template>
 
 <script setup>
-import NavTopD from '../../components/comp_doctor/NavTopD.vue';
-import NavBottomD from '../../components/comp_doctor/NavBottomD.vue';
-import Titulo from '../../components/Titulo.vue';
-import BotonMorado from '@/components/BotonMorado.vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { supabase } from '@/config/supabase';
 
-/*
-import GoogleMap from "../../components/MapView.vue";
+const route = useRoute();
+const citaId = route.params.id;
+const mapContainer = ref(null);
+const cita = ref({});
+const pacienteNombre = ref('');
+const tiempoEstimado = ref('Calculando...');
 
-export default {
-  name: "App",
-  components: {
-    GoogleMap,
-  },
+const loadMap = async () => {
+  // Implementar lógica de Google Maps API
+  const { Map } = await google.maps.importLibrary("maps");
+  const { DirectionsService, DirectionsRenderer } = await google.maps.importLibrary("routes");
+
+  const map = new Map(mapContainer.value, {
+    center: { lat: 32.5149, lng: -117.0382 }, // Coordenadas de Tijuana
+    zoom: 12,
+  });
+
+  const directionsService = new DirectionsService();
+  const directionsRenderer = new DirectionsRenderer({ map });
+
+  // Obtener ubicación en tiempo real del doctor
+  navigator.geolocation.watchPosition((position) => {
+    const doctorPos = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+    };
+
+    directionsService.route({
+      origin: doctorPos,
+      destination: cita.value.ubicacion,
+      travelMode: google.maps.TravelMode.DRIVING
+    }, (result, status) => {
+      if (status === 'OK') {
+        directionsRenderer.setDirections(result);
+        tiempoEstimado.value = result.routes[0].legs[0].duration.text;
+      }
+    });
+  });
 };
- */
 
+const cargarDatos = async () => {
+  const { data } = await supabase
+    .from('appointments')
+    .select('*, patients:user_id(nombre, apellido_paterno)')
+    .eq('id', citaId)
+    .single();
+
+  cita.value = data;
+  pacienteNombre.value = `${data.patients.nombre} ${data.patients.apellido_paterno}`;
+};
+
+onMounted(async () => {
+  await cargarDatos();
+  if (window.google) loadMap();
+});
 </script>
