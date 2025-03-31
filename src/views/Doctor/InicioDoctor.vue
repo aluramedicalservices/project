@@ -1,8 +1,8 @@
 <template>
   <div id="vista_inicio_doctores" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
     <NavTopD />
-    <div id="contenedor_inicio" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-20">
-
+    <!-- Se aumenta el padding inferior para que no quede tapado por NavBottom -->
+    <div id="contenedor_inicio" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto pt-20 pb-32">
       <!-- Bienvenida y nombre del doctor -->
       <div id="s-welcome-card" class="flex justify-center font-nunito gap-4">
         <div>
@@ -22,14 +22,23 @@
 
       <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citasPendientes.length > 0">
         <div class="text-center">
-          <TituloH2 texto="Citas Agendadas" />
+          <TituloH2 texto="Agenda" />
           <p>Hoy es {{ fechaActual }}</p>
         </div>
 
-        <!-- Citas agendadas -->
+        <!-- Citas agendadas (se muestran máximo 3) -->
         <div id="appointments-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
-          <div v-for="cita in citasPendientes" :key="cita.id" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-white w-full">
-            <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
+          <div v-for="cita in citasPendientes.slice(0, 3)" :key="cita.id" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-white w-full">
+            <!-- Encabezado: Tipo de consulta y, si corresponde, botón "En curso" -->
+            <div class="flex items-center space-x-2">
+              <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
+              <button 
+                v-if="cita.status === 'en_proceso'" 
+                @click="continuarConsulta(cita.id)"
+                class="bg-[#76C7D0] text-white rounded-full px-2 py-1 text-xs">
+                En curso
+              </button>
+            </div>
             <div class="flex items-center space-x-2">
               <Calendar class="w-5 h-5 text-gray-600" />
               <p>{{ formatearFecha(cita.appointment_date) }}</p>
@@ -41,7 +50,8 @@
               <span v-if="cita.estaPorComenzar" class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Próxima</span>
             </div>
             <p>Paciente: {{ cita.paciente_nombre || 'No asignado' }}</p>
-            <p>Estado: <span :class="claseEstado(cita.status)">{{ formatearEstado(cita.status) }}</span></p>
+            <!-- Estado solo se muestra para estados distintos a 'en_proceso' -->
+            <p v-if="cita.status !== 'en_proceso'">Estado: <span :class="claseEstado(cita.status)">{{ formatearEstado(cita.status) }}</span></p>
             
             <!-- Mostrar link de Google Meet para citas online cuando falten 10 min -->
             <div v-if="cita.mostrarMeetLink" class="mt-2 p-2 bg-blue-50 rounded-lg">
@@ -52,31 +62,34 @@
             </div>
 
             <div class="flex justify-end space-x-2 mt-2">
-              <!-- Botón Iniciar Consulta -->
+              <!-- Botón Iniciar Consulta (sólo si la cita está agendada y no hay otra consulta en curso) -->
               <button 
                 v-if="cita.status === 'agendada' && cita.appointment_type === 'online'"
                 @click="iniciarConsulta(cita.id)" 
-                class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                :disabled="hayConsultaEnProceso"
+                class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:opacity-50">
                 Iniciar consulta
               </button>
               
-              <!-- Botón Continuar Consulta -->
-              <button 
-                v-if="cita.status === 'en_proceso' && cita.appointment_type === 'online'"
-                @click="continuarConsulta(cita.id)" 
-                class="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">
-                Continuar consulta
-              </button>
-              
-              <!-- Botón Iniciar Viaje -->
+              <!-- Botón Iniciar Viaje (sólo si la cita está agendada y no hay otra consulta en curso) -->
               <button 
                 v-if="cita.status === 'agendada' && cita.appointment_type !== 'online'"
                 @click="iniciarViaje(cita.id)" 
-                class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                :disabled="hayConsultaEnProceso"
+                class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:opacity-50">
                 Iniciar viaje
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Botón para ver todas las citas -->
+        <div class="w-full flex justify-center mt-4">
+          <button 
+            @click="verTodasLasCitas"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">
+            Ver todas las citas
+          </button>
         </div>
       </div>
 
@@ -109,6 +122,11 @@ const especialidadDoctor = ref(localStorage.getItem('doctorEspecialidad') || 'Es
 const fechaActual = ref('');
 const citasPendientes = ref([]);
 const router = useRouter();
+
+// Computado para saber si hay alguna consulta en proceso
+const hayConsultaEnProceso = computed(() => {
+  return citasPendientes.value.some(cita => cita.status === 'en_proceso');
+});
 
 // Formateadores
 const formatearFecha = (fecha) => {
@@ -149,7 +167,7 @@ const formatearEstado = (estado) => {
     'agendada': 'Agendada',
     'aceptada': 'Aceptada',
     'rechazada': 'Rechazada',
-    'en_proceso': 'En proceso',
+    'en_proceso': 'En curso',
     'completada': 'Completada',
     'cancelada': 'Cancelada'
   };
@@ -172,7 +190,6 @@ const claseEstado = (estado) => {
 const cargarCitasDoctor = async () => {
   try {
     const doctorId = localStorage.getItem('doctorId');
-    
     if (!doctorId) {
       router.push('/dashboard-doctor');
       return;
@@ -229,6 +246,9 @@ const cargarCitasDoctor = async () => {
 
 const iniciarConsulta = async (citaId) => {
   try {
+    // Solo se permite iniciar la consulta si no hay otra en proceso
+    if (hayConsultaEnProceso.value) return;
+
     const { error } = await supabase
       .from('appointments')
       .update({ 
@@ -263,6 +283,9 @@ const continuarConsulta = async (citaId) => {
 
 const iniciarViaje = async (citaId) => {
   try {
+    // Solo se permite iniciar el viaje si no hay otra consulta en proceso
+    if (hayConsultaEnProceso.value) return;
+
     const { error } = await supabase
       .from('appointments')
       .update({ 
@@ -281,6 +304,11 @@ const iniciarViaje = async (citaId) => {
   } catch (error) {
     console.error('Error al iniciar viaje:', error);
   }
+};
+
+// Navegar a la vista de "Próximas citas" donde se muestran todas las citas completas
+const verTodasLasCitas = () => {
+  router.push({ name: 'ProximasCitas' });
 };
 
 // Suscripción a cambios en tiempo real y verificación periódica
