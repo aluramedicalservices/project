@@ -38,7 +38,7 @@
             <CalendarHeart class="w-4 h-4"/>            
             <p>Próximas citas</p>
           </li>
-          <li @click="$router.push('/historial-clinico')"
+          <li @click="$router.push(`/historial-clinico/${userId}`)"
           class="flex items-center space-x-4 cursor-pointer">
             <Clipboard class="w-4 h-4" />
             <p>Historial clínico</p>
@@ -53,12 +53,12 @@
         <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
         <ul class="space-y-8">
-          <li @click="$router.push('/perfil')"
+          <li @click="$router.push(`/perfil/${userId}`)"
           class="flex items-center space-x-4 cursor-pointer">
             <User class="w-4 h-4" />
             <p>Mi perfil</p>
-          </li>
-          <li @click="$router.push('/#')"
+          </li> 
+          <li @click="$router.push('/planes-disponibles')"
           class="flex items-center space-x-4 cursor-pointer">
             <BookHeart class="w-4 h-4" />
             <p>Planes disponibles</p>

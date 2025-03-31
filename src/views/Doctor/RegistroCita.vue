@@ -1,29 +1,23 @@
 <template>
-  <div class="min-h-screen bg-fondo p-4">
+  <div class="min-h-screen bg-fondo p-4 pt-20 pb-32">
     <NavTopD />
     <div class="max-w-4xl mx-auto">
-      <div class="flex justify-between items-center mb-8">
-        <h1 class="text-2xl font-bold text-medblue">Consulta en Progreso</h1>
-        <div class="flex gap-2">
-          <button 
-            @click="guardarDatos"
-            :disabled="isLoading"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
-            Guardar Borrador
-          </button>
-          <button 
-            @click="finalizarConsulta"
-            :disabled="isLoading || !diagnostico"
-            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
-            Finalizar Consulta
-          </button>
-        </div>
+      <!-- Título centrado -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-medblue text-center">Consulta en Progreso</h1>
       </div>
 
-      <!-- Datos del Paciente -->
-      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <h2 class="text-lg font-semibold mb-4">Datos del Paciente</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Datos del Paciente con botón Ver perfil -->
+      <div class="bg-[#F0F9FE] rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-[#5B5EA7]">Datos del Paciente</h2>
+          <router-link 
+            :to="'/perfil/' + paciente.id" 
+            class="px-4 py-2 bg-[#76C7D0] text-white rounded-full hover:bg-[#5aa7bd]">
+            Ver perfil
+          </router-link>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
           <div>
             <p><span class="font-medium">Nombre:</span> {{ paciente.nombre }}</p>
             <p><span class="font-medium">Apellidos:</span> {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}</p>
@@ -37,8 +31,17 @@
         </div>
       </div>
 
+      <!-- Botón para ver historial clínico -->
+      <div class="mb-6 flex justify-center">
+        <router-link 
+          :to="'/historial-clinico/' + paciente.id" 
+          class="px-4 py-2 bg-[#5B5EA7] text-white rounded-full hover:bg-[#4e4b8b]">
+          Ver historial clínico
+        </router-link>
+      </div>
+
       <!-- Formulario Médico -->
-      <div class="bg-white rounded-xl shadow-lg p-6 space-y-6">
+      <div class="bg-[#F0F9FE] rounded-xl shadow-lg p-6 space-y-6 mb-6">
         <div>
           <label class="block text-sm font-medium mb-2">Diagnóstico *</label>
           <textarea 
@@ -65,8 +68,25 @@
         </div>
       </div>
 
+      <!-- Mensaje de carga -->
       <div v-if="isLoading" class="mt-4 text-center">
         <p class="text-blue-600">Guardando datos...</p>
+      </div>
+
+      <!-- Botones al final de la vista -->
+      <div class="flex justify-center gap-2 mt-8 mb-8">
+        <button 
+          @click="guardarDatos"
+          :disabled="isLoading"
+          class="px-4 py-2 bg-[#5B5EA7] text-white rounded-full hover:bg-[#4e4b8b] disabled:opacity-50">
+          Guardar Borrador
+        </button>
+        <button 
+          @click="finalizarConsulta"
+          :disabled="isLoading || !diagnostico"
+          class="px-4 py-2 bg-[#5B5EA7] text-white rounded-full hover:bg-[#4e4b8b] disabled:opacity-50">
+          Finalizar Consulta
+        </button>
       </div>
     </div>
     <NavBottomD />
@@ -234,7 +254,7 @@ const generarPDF = async () => {
       format: 'a4'
     });
     
-    const imgWidth = 210; // A4 width in mm
+    const imgWidth = 210; // A4 width en mm
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);

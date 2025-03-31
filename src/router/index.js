@@ -30,6 +30,9 @@ import DetallesCitaD from '../views/doctor/DetallesCitaD.vue';
 import ComenzarViaje from '../views/doctor/ComenzarViaje.vue';
 import Viaje from '../views/doctor/Viaje.vue';
 import RegistroCita from '../views/doctor/RegistroCita.vue';
+import CitasAgendadas from '../views/doctor/CitasAgendadas.vue';
+import NotificacionesD from '../views/doctor/NotificacionesD.vue';
+
 
 
 const routes = [
@@ -115,7 +118,7 @@ const routes = [
     component: ComenzarViaje,
   },
   {
-    path: '/viaje',
+    path: '/viaje:id',
     name: 'Viaje',
     component: Viaje,
   },
@@ -145,12 +148,12 @@ const routes = [
     component: Notificaciones,
   },
   {
-    path: '/historial-clinico',
+    path: '/historial-clinico/:id',
     name: 'HistorialClinico',
     component: HistorialClinico,
   },
   {
-    path: '/perfil',
+    path: '/perfil/:id',
     name: 'Perfil',
     component: Perfil,
   },
@@ -158,6 +161,16 @@ const routes = [
     path: '/planes-disponibles', 
     name: 'PlanesDisponibles',
     component: PlanesDisponibles,
+  },
+  {
+    path: '/citas-agendadas',
+    name: 'CitasAgendadas',
+    component: CitasAgendadas,
+  },
+  {
+    path: '/notificaciones-medicas',
+    name: 'NotificacionesMedicas',
+    component: NotificacionesD,
   },
 ];
 

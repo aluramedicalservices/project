@@ -27,11 +27,11 @@
             <House class="w-4 h-4" />
             <p>Inicio</p>
           </li>
-          <li @click="$router.push('/#')" class="flex items-center space-x-4 cursor-pointer">
+          <li @click="$router.push('/agenda')" class="flex items-center space-x-4 cursor-pointer">
             <Calendar class="w-4 h-4" />
             <p>Agenda</p>
           </li>
-          <li @click="$router.push('/proximas-citas')" class="flex items-center space-x-4 cursor-pointer">
+          <li @click="$router.push('/citas-agendadas')" class="flex items-center space-x-4 cursor-pointer">
             <Cross class="w-4 h-4" />
             <p>Próximas citas</p>
           </li>

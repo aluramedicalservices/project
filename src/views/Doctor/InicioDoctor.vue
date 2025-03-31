@@ -308,7 +308,7 @@ const iniciarViaje = async (citaId) => {
 
 // Navegar a la vista de "Próximas citas" donde se muestran todas las citas completas
 const verTodasLasCitas = () => {
-  router.push({ name: 'ProximasCitas' });
+  router.push({ name: 'CitasAgendadas' });
 };
 
 // Suscripción a cambios en tiempo real y verificación periódica

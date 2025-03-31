@@ -1,40 +1,51 @@
 <template>
-  <div class="container mx-auto py-10 px-6">
-    <h1 class="text-2xl font-bold mb-6">Planes Disponibles</h1>
+  <div>
+    <NavTop />
+    <div class="container mx-auto py-16 px-6"> <!-- Ajuste de padding top -->
+      <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Planes Disponibles</h1>
 
-    <div class="grid gap-6 md:grid-cols-2">
-      <!-- Plan Básico -->
-      <div class="border p-6 rounded-lg shadow-md bg-white">
-        <h2 class="text-xl font-semibold">Plan Básico</h2>
-        <p class="text-gray-600">Acceso a consultas médicas básicas.</p>
-        <p class="text-lg font-bold mt-2">$20,000 MXN / 6 meses</p>
-        <!-- Botón para iniciar el pago del plan básico -->
-        <button @click="pagar(20000)" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-          Pagar con PayPal
-        </button>
+      <div class="grid gap-8 md:grid-cols-2">
+        <!-- Plan Básico -->
+        <div class="border p-8 rounded-lg shadow-lg bg-white transition-transform transform hover:scale-105">
+          <h2 class="text-2xl font-semibold text-gray-700">Plan Básico</h2>
+          <p class="text-gray-500 mt-2">Acceso a consultas médicas básicas.</p>
+          <p class="text-xl font-bold mt-4 text-blue-600">$20,000 MXN / 6 meses</p>
+          <!-- Botón para iniciar el pago del plan básico -->
+          <button @click="pagar(20000)" class="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors">
+            Pagar con PayPal
+          </button>
+        </div>
+
+        <!-- Plan Premium -->
+        <div class="border p-8 rounded-lg shadow-lg bg-white transition-transform transform hover:scale-105">
+          <h2 class="text-2xl font-semibold text-gray-700">Plan Premium</h2>
+          <p class="text-gray-500 mt-2">Acceso completo a consultas con especialistas.</p>
+          <p class="text-xl font-bold mt-4 text-blue-600">$60,000 MXN / 6 meses</p>
+          <!-- Botón para iniciar el pago del plan premium -->
+          <button @click="pagar(60000)" class="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors">
+            Pagar con PayPal
+          </button>
+        </div>
       </div>
 
-      <!-- Plan Premium -->
-      <div class="border p-6 rounded-lg shadow-md bg-white">
-        <h2 class="text-xl font-semibold">Plan Premium</h2>
-        <p class="text-gray-600">Acceso completo a consultas con especialistas.</p>
-        <p class="text-lg font-bold mt-2">$60,000 MXN / 6 meses</p>
-        <!-- Botón para iniciar el pago del plan premium -->
-        <button @click="pagar(60000)" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-          Pagar con PayPal
-        </button>
+      <!-- Aquí es donde se carga el componente de PayPal -->
+      <div v-if="monto" class="mt-8">
+        <div id="paypal-button-container"></div>
       </div>
     </div>
-
-    <!-- Aquí es donde se carga el componente de PayPal -->
-    <div v-if="monto">
-      <div id="paypal-button-container"></div>
-    </div>
+    <NavBottom />
   </div>
 </template>
 
 <script>
+import NavTop from '@/components/comp_paciente/NavTop.vue';
+import NavBottom from '@/components/comp_paciente/NavBottom.vue';
+
 export default {
+  components: {
+    NavTop,
+    NavBottom
+  },
   data() {
     return {
       monto: null,
@@ -79,6 +90,6 @@ export default {
 
 <style scoped>
 .container {
-  max-width: 800px;
+  max-width: 900px;
 }
 </style>

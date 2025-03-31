@@ -75,8 +75,13 @@ const router = useRouter();
 const mostrarModal = ref(false);
 
 const goTo = (routeName) => {
-  router.push({ name: routeName });
-};
+  if (routeName === 'HistorialClinico') {
+    const userId = 'ID_DEL_USUARIO'; // Reemplaza con la forma real en que obtienes el ID del usuario
+    router.push({ name: 'HistorialClinico', params: { id: userId } });
+  } else {
+    router.push({ name: routeName });
+  }
+};;
 
 const mostrarConfirmacion = () => {
   // Vibrar el dispositivo si es soportado

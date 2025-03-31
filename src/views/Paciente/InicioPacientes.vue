@@ -45,7 +45,7 @@
       <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citasLimitadas.length > 0">
         <!-- El título es clickable y redirige a "Ver todas las citas" -->
         <div class="text-center cursor-pointer" @click="irAProximasCitas">
-          <TituloH2 texto="Próximas citas" />
+          <TituloH2 texto="Próximas citas >" />
           <p>Hoy es {{ fechaActual }}</p>
         </div>
 

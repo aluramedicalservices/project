@@ -4,14 +4,14 @@
     <div id="menu-b-options" class="bg-healingblue rounded-full flex w-full items-center justify-center p-2">
 
       <!-- Inicio -->
-      <div id="m-b-home" @click="goTo('InicioDoctores')"
+      <div id="m-b-home" @click="goTo('InicioDoctor')"
         class="cursor-pointer flex flex-col w-1/3 justify-center items-center py-2 space-y-1">
         <Home />
         <h3 class="text-sm">Inicio</h3>
       </div>
 
       <!-- Calendario -->
-      <div id="m-b-schedule" @click="goTo('Calendario')"
+      <div id="m-b-schedule" @click="goTo('Agenda')"
         class="cursor-pointer flex flex-col w-1/3 justify-center items-center py-2 space-y-1">
         <Calendar />
         <h3 class="text-sm">Agenda</h3>
