@@ -124,6 +124,7 @@ import { useRouter } from 'vue-router';
 import { supabase } from '@/config/supabase';
 import NavTop from '@/components/comp_paciente/NavTop.vue';
 import NavBottom from '@/components/comp_paciente/NavBottom.vue';
+import { ElLoading, ElNotification } from 'element-plus';
 
 const router = useRouter();
 const historial = ref([]);
@@ -189,38 +190,89 @@ const verDetalles = (citaId) => {
 
 const descargarPDF = async (registro) => {
   if (!registro.pdf_url) {
-    alert('No hay PDF disponible para esta consulta');
+    ElNotification({
+      title: 'Error',
+      message: 'No hay PDF disponible para esta consulta',
+      type: 'error',
+      duration: 3000
+    });
     return;
   }
-  
+
+  const loadingInstance = ElLoading.service({
+    lock: true,
+    text: 'Preparando PDF para descarga...',
+    background: 'rgba(0, 0, 0, 0.7)'
+  });
+
   try {
-    // Extraer el nombre del archivo de la URL
-    const nombreArchivo = registro.pdf_url.split('/').pop();
-    
-    // Descargar desde Supabase Storage
-    const { data, error: downloadError } = await supabase.storage
-      .from('consultas')
-      .download(nombreArchivo);
-    
-    if (downloadError) throw downloadError;
-    
-    // Crear enlace de descarga
-    const url = URL.createObjectURL(data);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `consulta_${registro.id}_${registro.appointment_date}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Liberar memoria después de 1 minuto
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 60000);
-    
+    // Opción 1: Descargar directamente desde la URL pública
+    try {
+      const response = await fetch(registro.pdf_url);
+      if (!response.ok) throw new Error('Error al obtener el PDF');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `consulta_${registro.id}_${new Date(registro.appointment_date).toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Liberar memoria
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
+      loadingInstance.close();
+      return;
+    } catch (directError) {
+      console.log('Descarga directa falló, intentando con Supabase Storage...', directError);
+    }
+
+    // Opción 2: Descargar usando Supabase Storage
+    try {
+      // Extraer el nombre del archivo de la URL
+      const fileName = registro.pdf_url.split('/').pop();
+      
+      const { data, error: downloadError } = await supabase.storage
+        .from('consultas')
+        .download(fileName);
+
+      if (downloadError) throw downloadError;
+
+      const url = URL.createObjectURL(data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `consulta_${registro.id}.pdf`;
+      link.click();
+      
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
+
+    } catch (storageError) {
+      console.error('Error con Supabase Storage:', storageError);
+      throw new Error('No se pudo descargar el PDF desde ninguna fuente');
+    }
+
   } catch (error) {
     console.error('Error descargando PDF:', error);
-    alert('Error al descargar el PDF. Inténtalo nuevamente.');
+    
+    // Opción 3: Abrir en nueva pestaña como último recurso
+    if (registro.pdf_url) {
+      window.open(registro.pdf_url, '_blank');
+    }
+    
+    ElNotification({
+      title: 'Error',
+      message: error.message || 'Error al descargar el PDF',
+      type: 'error',
+      duration: 5000
+    });
+  } finally {
+    loadingInstance.close();
   }
 };
 
