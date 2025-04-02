@@ -46,6 +46,12 @@
           <span class="mr-2">💳</span>
           <span>Método de pago: <strong>{{ metodoPagoFormateado }}</strong></span>
         </div>
+
+        <!-- Ubicación (solo para domicilio) -->
+        <div v-if="tipoCita === 'domicilio'" class="flex items-center">
+          <span class="mr-2">📍</span>
+          <span>Ubicación: <strong>{{ route.query.ubicacion || 'No especificada' }}</strong></span>
+        </div>
       </div>
     </div>
 
@@ -181,7 +187,8 @@ const confirmarCita = async () => {
       appointment_time: route.query.hora + ':00',
       status: 'agendada',
       created_at: new Date().toISOString(),
-      google_meet_link: meetLink || null, // Guardar el enlace de Google Meet si es online
+      google_meet_link: meetLink || null,
+      direccion: tipoCita.value === 'domicilio' ? route.query.ubicacion : null // Cambiado de 'location' a 'direccion'
     };
 
     if (tipoCita.value === 'domicilio') {
@@ -230,5 +237,13 @@ onMounted(() => {
   color: white;
   padding: 10px 20px;
   border-radius: 6px;
+}
+
+.btn-confirmar:hover {
+  background-color: #0056b3;
+}
+
+.btn-cancelar:hover {
+  background-color: #c82333;
 }
 </style>
