@@ -1,6 +1,6 @@
 <template>
   <NavTop />
-  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32"> <!-- Añade pb-32 -->
+  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32">
     <button 
       @click="router.push('/dashboard-paciente')"
       class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
@@ -108,37 +108,53 @@ const obtenerEnfermero = async () => {
       alert('Error al asignar enfermero. Contacte al administrador.');
       throw new Error('Enfermero no encontrado');
     }
-
-    doctorId.value = data.id; // Guardar el ID del enfermero
+    doctorId.value = data.id;
   } catch (error) {
     console.error('Error al obtener enfermero:', error);
     router.push('/dashboard-paciente');
   }
 };
 
-// Redirigir a confirmar cita
+// Redirigir a confirmar cita, incluyendo la ubicación en tiempo real del paciente
 const irAConfirmarCita = async () => {
   if (!selectedDate.value || !selectedTime.value || !metodoPago.value) {
     alert('Por favor, completa todos los campos.');
     return;
   }
 
-  // Obtener el ID del enfermero si no está asignado
   if (!doctorId.value) {
     await obtenerEnfermero();
   }
 
-  // Redirigir a la vista de confirmación
-  router.push({
-    path: '/confirmar-cita',
-    query: {
-      modalidad: 'domicilio', // Tipo de cita
-      fecha: format(selectedDate.value, 'yyyy-MM-dd'),
-      hora: selectedTime.value,
-      metodoPago: metodoPago.value,
-      doctorId: doctorId.value, // Pasar el ID del enfermero
-    },
-  });
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // Guardamos la ubicación en formato JSON
+        const ubicacion = JSON.stringify({ 
+          lat: position.coords.latitude, 
+          lng: position.coords.longitude 
+        });
+        router.push({
+          path: '/confirmar-cita',
+          query: {
+            modalidad: 'domicilio',
+            fecha: format(selectedDate.value, 'yyyy-MM-dd'),
+            hora: selectedTime.value,
+            metodoPago: metodoPago.value,
+            doctorId: doctorId.value,
+            ubicacion
+          },
+        });
+      },
+      (error) => {
+        console.error('Error al obtener la ubicación:', error);
+        alert('No se pudo obtener tu ubicación, intenta de nuevo.');
+      },
+      { enableHighAccuracy: true }
+    );
+  } else {
+    alert('Tu navegador no soporta geolocalización.');
+  }
 };
 </script>
 

@@ -138,8 +138,8 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { supabase } from '@/config/supabase';
-import NavTop from '@/components/comp_paciente/NavTop.vue';
-import NavBottom from '@/components/comp_paciente/NavBottom.vue';
+import NavTop from '@/components/comp_doctor/NavTopD.vue';
+import NavBottom from '@/components/comp_doctor/NavBottomD.vue';
 
 const route = useRoute();
 const router = useRouter();

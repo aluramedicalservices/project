@@ -32,6 +32,7 @@ import Viaje from '../views/doctor/Viaje.vue';
 import RegistroCita from '../views/doctor/RegistroCita.vue';
 import CitasAgendadas from '../views/doctor/CitasAgendadas.vue';
 import NotificacionesD from '../views/doctor/NotificacionesD.vue';
+import HistorialCitas from '../views/doctor/HistorialCitas.vue';
 
 
 
@@ -171,6 +172,11 @@ const routes = [
     path: '/notificaciones-medicas',
     name: 'NotificacionesMedicas',
     component: NotificacionesD,
+  },
+  {
+    path: '/historial-citas',
+    name: 'HistorialCitas',
+    component: HistorialCitas,
   },
 ];
 

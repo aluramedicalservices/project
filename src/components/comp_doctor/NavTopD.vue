@@ -35,7 +35,7 @@
             <Cross class="w-4 h-4" />
             <p>Próximas citas</p>
           </li>
-          <li @click="$router.push('/historial-clinico')" class="flex items-center space-x-4 cursor-pointer">
+          <li @click="$router.push('/historial-citas')" class="flex items-center space-x-4 cursor-pointer">
             <History class="w-4 h-4" />
             <p>Historial de citas</p>
           </li>
