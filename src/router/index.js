@@ -114,7 +114,7 @@ const routes = [
     component: DetallesCitaD,
   },
   {
-    path: '/comenzar-viaje',
+    path: '/comenzar-viaje:id',
     name: 'ComenzarViaje',
     component: ComenzarViaje,
   },

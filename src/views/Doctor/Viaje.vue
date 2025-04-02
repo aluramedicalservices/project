@@ -2,35 +2,73 @@
   <div class="min-h-screen bg-fondo p-6 flex flex-col items-center">
     <NavTopD />
     <div class="max-w-4xl w-full bg-white p-6 rounded-xl shadow-xl mt-4">
-      <!-- Muestra el mapa si se tienen ambas coordenadas -->
-      <Mapview 
-        v-if="doctorLocation && patientLocation" 
-        :doctorLocation="doctorLocation" 
-        :patientLocation="patientLocation" 
-        class="rounded-xl overflow-hidden"
-      />
+      <!-- Estado del viaje -->
+      <div class="mb-4 text-center">
+        <h2 class="text-xl font-bold text-gray-800 mb-2">
+          {{ viajeIniciado ? 'Viaje en curso' : 'Detalles del viaje' }}
+        </h2>
+        <div class="bg-blue-50 p-3 rounded-lg">
+          <p class="text-blue-800">
+            {{ viajeIniciado ? 'En camino al domicilio del paciente' : 'Presiona "Comenzar viaje" cuando estés listo' }}
+          </p>
+        </div>
+      </div>
 
       <!-- Información de la consulta -->
-      <div class="mt-6 space-y-4 text-center">
-        <h2 class="text-xl font-bold text-gray-800">En camino a la consulta</h2>
-        <p class="text-gray-600"><strong>Paciente:</strong> {{ pacienteNombre }}</p>
-        <p class="text-gray-600"><strong>Dirección:</strong> {{ direccionMostrada }}</p>
-        <p class="text-gray-600"><strong>Tiempo estimado:</strong> {{ tiempoEstimado }}</p>
-        
-        <!-- Botones: si aún no se inició el viaje se muestra "Comenzar viaje"; si ya inició y el doctor está cerca, se muestra "Registrar consulta" -->
+      <div class="mb-6 space-y-3">
+        <div class="flex items-center space-x-2">
+          <UserIcon class="w-5 h-5 text-gray-600" />
+          <p><strong>Paciente:</strong> {{ pacienteNombre }}</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <MapPinIcon class="w-5 h-5 text-gray-600" />
+          <p><strong>Dirección:</strong> {{ direccionMostrada }}</p>
+        </div>
+        <div v-if="tiempoEstimado" class="flex items-center space-x-2">
+          <ClockIcon class="w-5 h-5 text-gray-600" />
+          <p><strong>Tiempo estimado:</strong> {{ tiempoEstimado }}</p>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div 
+        v-if="doctorLocation && patientLocation" 
+        class="relative rounded-xl overflow-hidden mb-6"
+        style="height: 400px;"
+      >
+        <Mapview 
+          :doctorLocation="doctorLocation" 
+          :patientLocation="patientLocation"
+          :showRoute="viajeIniciado"
+          @route-calculated="handleRouteCalculated"
+        />
+      </div>
+      <div v-else class="bg-gray-100 rounded-xl p-4 text-center mb-6">
+        <p>Cargando mapa...</p>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex justify-center space-x-4">
         <button 
           v-if="!viajeIniciado" 
-          @click="iniciarViaje" 
-          class="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all"
+          @click="ComenzarViaje" 
+          class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all"
         >
           Comenzar viaje
         </button>
         <button 
           v-else-if="haLlegado" 
           @click="registrarConsulta" 
-          class="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-all"
+          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-all"
         >
           Registrar consulta
+        </button>
+        <button 
+          v-if="viajeIniciado" 
+          @click="abrirGoogleMaps" 
+          class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-md transition-all"
+        >
+          Abrir en Google Maps
         </button>
       </div>
     </div>
@@ -39,226 +77,234 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { supabase } from '@/config/supabase';
 import Mapview from '@/components/Mapview.vue';
 import NavTopD from '@/components/comp_doctor/NavTopD.vue';
-import NavBottomD from '@/components/comp_doctor/NavBottomD.vue';
-import { Loader } from '@googlemaps/js-api-loader';
+import { UserIcon, MapPinIcon, ClockIcon } from 'lucide-vue-next';
+import { initGoogleMaps } from '@/utils/maps';
 
 const route = useRoute();
 const router = useRouter();
 const citaId = route.params.id;
 
+// Estados
 const cita = ref({});
 const pacienteNombre = ref('');
-const tiempoEstimado = ref('Calculando...');
+const direccionMostrada = ref('');
+const tiempoEstimado = ref('');
 const doctorLocation = ref(null);
 const patientLocation = ref(null);
 const direccionPorDefecto = "P.º del Centenario 9580-9, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.";
-
-// Estados para el viaje
 const viajeIniciado = ref(false);
 const haLlegado = ref(false);
+let watchId = null;
 
-// Si la cita tiene una ubicación en formato JSON (coordenadas) se usará, de lo contrario se mostrará como dirección
-const direccionMostrada = computed(() => {
-  try {
-    const parsed = JSON.parse(cita.value.ubicacion);
-    if (parsed && parsed.lat && parsed.lng) {
-      return `Coordenadas: ${parsed.lat.toFixed(5)}, ${parsed.lng.toFixed(5)}`;
-    }
-  } catch (e) {
-    // No es JSON, se asume que es una dirección
-  }
-  return cita.value.ubicacion || direccionPorDefecto;
-});
-
-// Carga los datos de la cita desde Supabase
+// Función para cargar los datos de la cita
 const cargarDatos = async () => {
-  const { data, error } = await supabase
-    .from('appointments')
-    .select('*, patients:user_id(nombre, apellido_paterno)')
-    .eq('id', citaId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        patients:user_id(
+          nombre, 
+          apellido_paterno, 
+          apellido_materno
+        )
+      `)
+      .eq('id', citaId)
+      .single();
 
-  if (error) {
-    console.error("Error al cargar datos de la cita:", error);
-    return;
-  }
-  cita.value = data;
-  pacienteNombre.value = `${data.patients.nombre} ${data.patients.apellido_paterno}`;
-  // Si no se ha registrado la ubicación, se utiliza la dirección por defecto
-  if (!cita.value.ubicacion) {
-    cita.value.ubicacion = direccionPorDefecto;
+    if (error) throw error;
+
+    cita.value = data;
+    pacienteNombre.value = `${data.patients.nombre} ${data.patients.apellido_paterno}`;
+    
+    // Set direccionMostrada based on ubicacion or default address
+    const addressToUse = data.ubicacion || direccionPorDefecto;
+    direccionMostrada.value = addressToUse;
+
+    try {
+      // Try to parse as JSON only if it looks like a JSON string
+      if (addressToUse.startsWith('{') || addressToUse.startsWith('[')) {
+        const ubicacionData = JSON.parse(addressToUse);
+        if (ubicacionData && ubicacionData.lat && ubicacionData.lng) {
+          patientLocation.value = ubicacionData;
+          return;
+        }
+      }
+
+      // If not JSON or no valid coordinates, geocode the address
+      const google = await initGoogleMaps();
+      const geocoder = new google.maps.Geocoder();
+      
+      const resultado = await new Promise((resolve, reject) => {
+        geocoder.geocode({ address: addressToUse }, (results, status) => {
+          if (status === "OK" && results[0]) {
+            const location = results[0].geometry.location;
+            resolve({
+              lat: location.lat(),
+              lng: location.lng()
+            });
+          } else {
+            reject(new Error("No se pudo geocodificar la dirección"));
+          }
+        });
+      });
+      
+      patientLocation.value = resultado;
+
+    } catch (e) {
+      console.error("Error procesando ubicación:", e);
+      throw new Error("No se pudo procesar la ubicación");
+    }
+
+    // Obtener ubicación del doctor
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          doctorLocation.value = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+        },
+        (error) => {
+          console.error("Error obteniendo ubicación del doctor:", error);
+          alert("No se pudo obtener tu ubicación. Verifica los permisos de ubicación.");
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+    alert("Error al cargar los datos de la consulta. Por favor, intenta nuevamente.");
   }
 };
 
-// Función que utiliza la API de geocodificación de Google para convertir una dirección en coordenadas
-const geocodeAddress = async (google, address) => {
-  const geocoder = new google.maps.Geocoder();
-  return new Promise((resolve, reject) => {
-    geocoder.geocode({ address }, (results, status) => {
-      if (status === "OK" && results[0]) {
-        const location = results[0].geometry.location;
-        resolve({ lat: location.lat(), lng: location.lng() });
-      } else {
-        reject("No se pudo geocodificar la dirección: " + status);
+// Función para iniciar el seguimiento de ubicación del doctor
+const trackDoctorLocation = () => {
+  if (!navigator.geolocation) {
+    alert("Tu navegador no soporta geolocalización");
+    return;
+  }
+
+  watchId = navigator.geolocation.watchPosition(
+    (position) => {
+      doctorLocation.value = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      if (patientLocation.value) {
+        const distancia = calcularDistancia(
+          doctorLocation.value,
+          patientLocation.value
+        );
+        haLlegado.value = distancia < 0.2; // 200 metros
+
+        // Actualizar tiempo estimado
+        actualizarTiempoEstimado();
+      }
+    },
+    (error) => {
+      console.error("Error en seguimiento:", error);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    }
+  );
+};
+
+// Función para actualizar tiempo estimado
+const actualizarTiempoEstimado = async () => {
+  if (!doctorLocation.value || !patientLocation.value) return;
+
+  try {
+    const google = await initGoogleMaps();
+    const duration = await computeRouteAndTime(
+      google,
+      doctorLocation.value,
+      patientLocation.value
+    );
+    tiempoEstimado.value = duration;
+  } catch (error) {
+    console.error("Error actualizando tiempo estimado:", error);
+  }
+};
+
+const handleRouteCalculated = (duration) => {
+  tiempoEstimado.value = duration;
+};
+
+const ComenzarViaje = async () => {
+  try {
+    if (!doctorLocation.value || !patientLocation.value) {
+      alert("No se pueden obtener las ubicaciones necesarias para iniciar el viaje");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('appointments')
+      .update({ status: 'en_proceso' })
+      .eq('id', citaId);
+
+    if (error) throw error;
+
+    viajeIniciado.value = true;
+    
+    router.push({
+      name: 'ComenzarViaje',
+      query: {
+        doctorLat: doctorLocation.value.lat,
+        doctorLng: doctorLocation.value.lng,
+        patientLat: patientLocation.value.lat,
+        patientLng: patientLocation.value.lng,
+        direccion: direccionMostrada.value,
+        citaId: citaId
       }
     });
-  });
-};
-
-// Calcula el tiempo estimado de ruta entre dos puntos
-const computeRouteAndTime = async (google, origin, destination) => {
-  const directionsService = new google.maps.DirectionsService();
-  return new Promise((resolve, reject) => {
-    directionsService.route(
-      {
-        origin,
-        destination,
-        travelMode: google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
-        if (status === "OK") {
-          const durationText = result.routes[0].legs[0].duration.text;
-          resolve(durationText);
-        } else {
-          reject("Error al calcular la ruta: " + status);
-        }
-      }
-    );
-  });
-};
-
-// Función para calcular la distancia en kilómetros entre dos coordenadas (usando la fórmula Haversine)
-const calcularDistancia = (pos1, pos2) => {
-  const R = 6371; // Radio de la Tierra en km
-  const dLat = (pos2.lat - pos1.lat) * (Math.PI / 180);
-  const dLon = (pos2.lng - pos1.lng) * (Math.PI / 180);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(pos1.lat * (Math.PI / 180)) *
-      Math.cos(pos2.lat * (Math.PI / 180)) *
-      Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
-
-// Carga la ubicación del paciente y del doctor y calcula el tiempo estimado
-const loadMapData = async () => {
-  const loader = new Loader({
-    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    version: "weekly",
-  });
-  const google = await loader.load();
-
-  // Primero se obtiene la ubicación actual del doctor
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        doctorLocation.value = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        let patientLoc;
-        try {
-          // Se intenta parsear la ubicación almacenada en la cita
-          const parsed = JSON.parse(cita.value.ubicacion);
-          if (parsed && parsed.lat && parsed.lng) {
-            patientLoc = parsed;
-          }
-        } catch (e) {
-          // Si no es JSON, se asume que es una dirección y se geocodifica
-          try {
-            patientLoc = await geocodeAddress(google, cita.value.ubicacion);
-          } catch (err) {
-            console.error(err);
-            tiempoEstimado.value = "No disponible";
-            return;
-          }
-        }
-        patientLocation.value = patientLoc;
-
-        // Se calcula el tiempo estimado de ruta
-        try {
-          const duration = await computeRouteAndTime(google, doctorLocation.value, patientLocation.value);
-          tiempoEstimado.value = duration;
-        } catch (err) {
-          console.error(err);
-          tiempoEstimado.value = "No disponible";
-        }
-      },
-      (error) => {
-        console.error("Error obteniendo geolocalización del doctor:", error);
-      },
-      { enableHighAccuracy: true }
-    );
-  } else {
-    console.error("Geolocalización no soportada");
-  }
-};
-
-// Función para iniciar el viaje: se actualiza el estado en la base de datos y se activa el tracking en tiempo real
-const iniciarViaje = async () => {
-  const { error } = await supabase
-    .from('appointments')
-    .update({ status: 'en camino' })
-    .eq('id', citaId);
-  if (error) {
+  } catch (error) {
     console.error("Error al iniciar viaje:", error);
-    return;
-  }
-  viajeIniciado.value = true;
-  // Inicia el tracking en tiempo real del doctor
-  trackDoctorLocation();
-};
-
-// Función que utiliza watchPosition para actualizar la ubicación del doctor y calcular la distancia con el paciente
-const trackDoctorLocation = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(
-      (position) => {
-        doctorLocation.value = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        if (patientLocation.value) {
-          const distance = calcularDistancia(doctorLocation.value, patientLocation.value);
-          // Si la distancia es menor a 0.2 km (200 metros), consideramos que el doctor ha llegado
-          haLlegado.value = distance < 0.2;
-        }
-      },
-      (error) => console.error("Error tracking location:", error),
-      { enableHighAccuracy: true }
-    );
+    alert("Error al iniciar el viaje. Por favor, intenta nuevamente.");
   }
 };
 
-// Función para registrar la consulta y actualizar su estado a 'completada'
 const registrarConsulta = async () => {
-  const { error } = await supabase
-    .from('appointments')
-    .update({
-      status: 'completada',
-      fin_consulta: new Date().toISOString()
-    })
-    .eq('id', citaId);
-  if (error) {
-    console.error("Error al registrar la consulta:", error);
-    return;
+  try {
+    await supabase
+      .from('appointments')
+      .update({ status: 'completada' })
+      .eq('id', citaId);
+
+    router.push(`/registro-cita/${citaId}`);
+  } catch (error) {
+    console.error("Error al registrar consulta:", error);
   }
-  router.push(`/registro-cita/${citaId}`);
 };
+
+const abrirGoogleMaps = () => {
+  if (patientLocation.value) {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${patientLocation.value.lat},${patientLocation.value.lng}`;
+    window.open(url, '_blank');
+  }
+};
+
+// Limpieza al desmontar el componente
+onUnmounted(() => {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+  }
+});
 
 onMounted(async () => {
   await cargarDatos();
-  await loadMapData();
+  if (!patientLocation.value) {
+    alert("No se pudo obtener la ubicación del paciente. Verifica la dirección.");
+  }
 });
 </script>
-
-<style scoped>
-/* Agrega estilos adicionales si es necesario */
-</style>
