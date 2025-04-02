@@ -1,10 +1,9 @@
 <template>
-  <div id="vista_inicio_doctores" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
+  <div id="vista_inicio_doctores" class="flex flex-col justify-between min-h-screen" style="background-color: #F0F9FE;">
     <NavTopD />
-    <!-- Se aumenta el padding inferior para que no quede tapado por NavBottom -->
-    <div id="contenedor_inicio" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto pt-20 pb-32">
+    <div id="contenedor_inicio" class="w-4/5 max-w-[1200px] mx-auto pt-20 pb-32">
       <!-- Bienvenida y nombre del doctor -->
-      <div id="s-welcome-card" class="flex justify-center font-nunito gap-4">
+      <div id="s-welcome-card" class="flex justify-center gap-4 p-6 rounded-xl mb-8" style="background-color: #E0F9FC;">
         <div>
           <img :src="avatar" alt="perfil_usuario" class="w-16 h-16 rounded-full" />
         </div>
@@ -18,83 +17,103 @@
       </div>
 
       <!-- Próximas citas -->
-      <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
-
-      <div id="s-upcoming-appointments" class="font-nunito flex flex-col items-center space-y-3" v-if="citasPendientes.length > 0">
-        <div class="text-center">
-          <TituloH2 texto="Agenda" />
-          <p>Hoy es {{ fechaActual }}</p>
+      <div id="s-upcoming-appointments" class="font-nunito" v-if="citasPendientes.length > 0">
+        <div class="text-center mb-8">
+          <TituloH2 texto="Agenda" class="text-2xl font-bold mb-2" style="color: #76C7D0;" />
+          <p class="text-lg" style="color: #5B5EA7;">Hoy es {{ fechaActual }}</p>
         </div>
 
-        <!-- Citas agendadas (se muestran máximo 3) -->
-        <div id="appointments-container" class="border border-gray-200 rounded-xl shadow-2xs p-2 space-y-2 w-full">
-          <div v-for="cita in citasPendientes.slice(0, 3)" :key="cita.id" class="border border-vitalblue rounded-xl shadow-2xs py-2 px-3 bg-white w-full">
-            <!-- Encabezado: Tipo de consulta y, si corresponde, botón "En curso" -->
-            <div class="flex items-center space-x-2">
-              <h2 class="font-bold text-medblue">{{ obtenerTipoCita(cita.appointment_type) }}</h2>
-              <button 
-                v-if="cita.status === 'en_proceso'" 
-                @click="continuarConsulta(cita.id)"
-                class="bg-[#76C7D0] text-white rounded-full px-2 py-1 text-xs">
-                En curso
-              </button>
-            </div>
-            <div class="flex items-center space-x-2">
-              <Calendar class="w-5 h-5 text-gray-600" />
-              <p>{{ formatearFecha(cita.appointment_date) }}</p>
-              <span v-if="esHoy(cita.appointment_date)" class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Hoy</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <Clock class="w-5 h-5 text-gray-600" />
-              <p>{{ formatearHora(cita.appointment_time) }}</p>
-              <span v-if="cita.estaPorComenzar" class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Próxima</span>
-            </div>
-            <p>Paciente: {{ cita.paciente_nombre || 'No asignado' }}</p>
-            <!-- Estado solo se muestra para estados distintos a 'en_proceso' -->
-            <p v-if="cita.status !== 'en_proceso'">Estado: <span :class="claseEstado(cita.status)">{{ formatearEstado(cita.status) }}</span></p>
+        <!-- Grid de citas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div v-for="cita in citasPendientes.slice(0, 4)" :key="cita.id" 
+               class="rounded-xl shadow-lg p-5 transition-all hover:shadow-xl transform hover:-translate-y-1"
+               style="background-color: #E0F9FC;">
             
-            <!-- Mostrar link de Google Meet para citas online cuando falten 10 min -->
-            <div v-if="cita.mostrarMeetLink" class="mt-2 p-2 bg-blue-50 rounded-lg">
-              <p class="text-blue-800">La consulta comenzará pronto</p>
-              <p class="text-sm">
-                <a :href="cita.google_meet_link" target="_blank" class="text-blue-600 underline">Unirse a Google Meet</a>
-              </p>
+            <!-- Badges en la parte superior -->
+            <div class="flex gap-2 mb-3">
+              <span v-if="esHoy(cita.appointment_date)" 
+                    class="px-3 py-1 rounded-full text-sm font-medium"
+                    style="background-color: #F0F9FE; color: #76C7D0;">
+                Hoy
+              </span>
+              <span v-if="cita.estaPorComenzar" 
+                    class="px-3 py-1 rounded-full text-sm font-medium"
+                    style="background-color: #F0F9FE; color: #76C7D0;">
+                Próxima
+              </span>
             </div>
 
-            <div class="flex justify-end space-x-2 mt-2">
-              <!-- Botón Iniciar Consulta (sólo si la cita está agendada y no hay otra consulta en curso) -->
-              <button 
-                v-if="cita.status === 'agendada' && cita.appointment_type === 'online'"
-                @click="iniciarConsulta(cita.id)" 
-                :disabled="hayConsultaEnProceso"
-                class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:opacity-50">
-                Iniciar consulta
+            <!-- Nombre del paciente y tipo de consulta -->
+            <div class="space-y-3">
+              <div class="flex items-center gap-2">
+                <User class="w-6 h-6" style="color: #76C7D0;"/>
+                <h3 class="text-lg font-bold" style="color: #5B5EA7;">
+                  {{ cita.paciente_nombre || 'No asignado' }}
+                </h3>
+              </div>
+              
+              <div class="flex items-center gap-2">
+                <Stethoscope class="w-5 h-5" style="color: #76C7D0;"/>
+                <h2 class="font-medium" style="color: #76C7D0;">
+                  {{ obtenerTipoCita(cita.appointment_type) }}
+                </h2>
+              </div>
+            </div>
+
+            <hr class="my-3 border-t border-blue-100">
+
+            <!-- Fecha y hora -->
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="flex items-center gap-2">
+                <Calendar class="w-4 h-4" style="color: #76C7D0;"/>
+                <p class="text-sm text-gray-700">{{ formatearFecha(cita.appointment_date) }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <Clock class="w-4 h-4" style="color: #76C7D0;"/>
+                <p class="text-sm text-gray-700">{{ formatearHora(cita.appointment_time) }}</p>
+              </div>
+            </div>
+
+            <!-- Estado y botones -->
+            <div class="flex items-center justify-between mt-4">
+              <div v-if="cita.status !== 'en_proceso'" class="flex items-center gap-2">
+                <ActivitySquare class="w-4 h-4" style="color: #76C7D0;"/>
+                <span :class="claseEstado(cita.status)" class="text-sm">
+                  {{ formatearEstado(cita.status) }}
+                </span>
+              </div>
+              
+              <button v-if="cita.status === 'agendada'"
+                      @click="iniciarConsulta(cita.id)"
+                      :disabled="hayConsultaEnProceso"
+                      class="px-4 py-1.5 text-white rounded-lg text-sm transition-all hover:opacity-90 disabled:opacity-50 flex items-center gap-2 ml-auto"
+                      style="background-color: #76C7D0;">
+                <Play class="w-3 h-3"/>
+                {{ cita.appointment_type === 'online' ? 'Iniciar' : 'Iniciar viaje' }}
               </button>
               
-              <!-- Botón Iniciar Viaje (sólo si la cita está agendada y no hay otra consulta en curso) -->
-              <button 
-                v-if="cita.status === 'agendada' && cita.appointment_type !== 'online'"
-                @click="iniciarViaje(cita.id)" 
-                :disabled="hayConsultaEnProceso"
-                class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:opacity-50">
-                Iniciar viaje
+              <button v-if="cita.status === 'en_proceso'"
+                      @click="continuarConsulta(cita.id)"
+                      class="px-4 py-1.5 text-white rounded-lg text-sm transition-all hover:opacity-90 ml-auto"
+                      style="background-color: #76C7D0;">
+                Continuar
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Botón para ver todas las citas -->
-        <div class="w-full flex justify-center mt-4">
-          <button 
-            @click="verTodasLasCitas"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">
+        <!-- Botón ver todas -->
+        <div class="flex justify-center mt-8">
+          <button @click="verTodasLasCitas"
+                  class="px-8 py-3 text-white rounded-lg transition-all hover:opacity-90 hover:scale-105"
+                  style="background-color: #76C7D0;">
             Ver todas las citas
           </button>
         </div>
       </div>
 
-      <div v-else class="text-center py-8">
-        <p class="text-gray-500">No tienes citas agendadas pendientes</p>
+      <div v-else class="text-center py-8 rounded-xl" style="background-color: #E0F9FC;">
+        <p style="color: #76C7D0;">No tienes citas agendadas pendientes</p>
       </div>
     </div>
     <NavBottomD />
@@ -114,7 +133,7 @@ import NavBottomD from '@/components/comp_doctor/NavBottomD.vue';
 import TituloH2 from '@/components/TituloH2.vue';
 
 // Icons
-import { Calendar, Clock } from 'lucide-vue-next';
+import { Calendar, Clock, User, Stethoscope, ActivitySquare, Play } from 'lucide-vue-next';
 import avatar from '@/assets/imagenes/avatar.png';
 
 const nombreDoctor = ref(localStorage.getItem('doctorNombre') || 'Doctor');
@@ -334,3 +353,41 @@ onMounted(() => {
   };
 });
 </script>
+
+<style scoped>
+.rounded-xl {
+  border-radius: 1rem;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 
+              0 4px 6px -2px rgba(0, 0, 0, 0.03);
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 
+              0 10px 10px -5px rgba(0, 0, 0, 0.03);
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.transform {
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Estado colors */
+.text-yellow-600 { color: #76C7D0; }
+.text-green-600 { color: #4A90E2; }
+.text-red-600 { color: #E74C3C; }
+.text-blue-600 { color: #76C7D0; }
+
+hr {
+  border-color: rgba(118, 199, 208, 0.2);
+}
+</style>

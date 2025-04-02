@@ -44,7 +44,7 @@
         <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
         <ul class="space-y-8">
-          <li @click="$router.push('/#')" class="flex items-center space-x-4 cursor-pointer">
+          <li @click="$router.push('/pacientes')" class="flex items-center space-x-4 cursor-pointer">
             <Users class="w-4 h-4" />
             <p>Pacientes</p>
           </li>
@@ -64,6 +64,10 @@
             <Settings class="w-4 h-4" />
             <p>Configuración</p>
           </li>
+          <li @click="cerrarSesion" class="flex items-center space-x-4 cursor-pointer text-red-500">
+            <LogOut class="w-4 h-4" />
+            <p>Cerrar sesión</p>
+          </li>
         </ul>
 
         <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
@@ -74,7 +78,7 @@
 </template>
 
 <script>
-import { Bell, Menu, House, Calendar, Cross, History, CreditCard, User, Users, Map, Settings, X } from 'lucide-vue-next';
+import { Bell, Menu, House, Calendar, Cross, History, CreditCard, User, Users, Map, Settings, X, LogOut } from 'lucide-vue-next';
 import AluraLogo from '../AluraLogo.vue';
 
 export default {
@@ -91,7 +95,8 @@ export default {
     Map,
     Settings,
     X, // Icono de "X" para cerrar
-    AluraLogo
+    AluraLogo,
+    LogOut
   },
   data() {
     return {
@@ -109,6 +114,10 @@ export default {
     },
     irANotificaciones() {
       this.$router.push('/notificaciones-medicas');  // ← Aquí navegas a la vista de notificaciones
+    },
+    cerrarSesion() {
+      // Aquí puedes agregar la lógica de cierre de sesión
+      this.$router.push('/');
     }
   }
 }

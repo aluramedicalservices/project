@@ -33,7 +33,7 @@ import RegistroCita from '../views/doctor/RegistroCita.vue';
 import CitasAgendadas from '../views/doctor/CitasAgendadas.vue';
 import NotificacionesD from '../views/doctor/NotificacionesD.vue';
 import HistorialCitas from '../views/doctor/HistorialCitas.vue';
-
+import Pacientes from '../views/doctor/Pacientes.vue';
 
 
 const routes = [
@@ -177,6 +177,11 @@ const routes = [
     path: '/historial-citas',
     name: 'HistorialCitas',
     component: HistorialCitas,
+  },
+  {
+    path: '/pacientes',
+    name: 'Pacientes',
+    component: Pacientes,
   },
 ];
 

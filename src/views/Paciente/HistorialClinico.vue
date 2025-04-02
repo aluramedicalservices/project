@@ -1,17 +1,16 @@
 <template>
-  <div class="bg-fondo min-h-screen pb-20 pt-16"> <!-- Añadido pt-16 para espacio con NavTop -->
+  <div class="bg-gradient-to-b from-[#F0F9FE] to-white min-h-screen pb-20 pt-16">
     <NavTop />
     <div class="max-w-4xl mx-auto px-4 py-6">
-      <!-- Título centrado con más margen superior -->
       <div class="text-center mb-10 mt-1">
-        <h1 class="text-4xl font-bold text-[#5B5EA7]">Historial Clínico</h1>
+        <h1 class="text-4xl font-bold text-[#5B5EA7] drop-shadow-sm">Historial Clínico</h1>
+        <p class="text-[#5B5EA7]/70 mt-2">Consulta tus registros médicos anteriores</p>
       </div>
       
-      <!-- Filtros con botones redondeados -->
-      <div class="flex flex-col md:flex-row gap-4 mb-8">
+      <div class="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-2xl shadow-sm">
         <select 
           v-model="filtroTipo"
-          class="px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-[#76C7D0]">
+          class="px-6 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#76C7D0] bg-[#F0F9FE] text-[#5B5EA7] font-medium transition-all hover:border-[#76C7D0]">
           <option value="">Todos los tipos</option>
           <option value="online">Online</option>
           <option value="domicilio">A domicilio</option>
@@ -19,14 +18,12 @@
         </select>
       </div>
       
-      <!-- Estado de carga -->
-      <div v-if="loading" class="text-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#76C7D0] mx-auto"></div>
-        <p class="text-[#5B5EA7] mt-2">Cargando historial médico...</p>
+      <div v-if="loading" class="text-center py-12 bg-white rounded-2xl shadow-sm">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#76C7D0] mx-auto"></div>
+        <p class="text-[#5B5EA7] mt-4 font-medium">Cargando tu historial médico...</p>
       </div>
       
-      <!-- Mensaje de error -->
-      <div v-else-if="error" class="text-center py-12">
+      <div v-else-if="error" class="text-center py-12 bg-white rounded-2xl shadow-sm border border-red-200">
         <div class="mx-auto w-16 h-16 text-red-500 mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -40,76 +37,77 @@
         </button>
       </div>
       
-      <!-- Sin resultados -->
-      <div v-else-if="historialFiltrado.length === 0" class="text-center py-12">
-        <div class="mx-auto w-16 h-16 text-gray-400 mb-4">
+      <div v-else-if="historialFiltrado.length === 0" class="text-center py-12 bg-white rounded-2xl shadow-sm border-2 border-dashed border-[#76C7D0]/30">
+        <div class="mx-auto w-20 h-20 text-[#76C7D0] mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <p class="text-[#5B5EA7]">No se encontraron registros médicos</p>
+        <p class="text-[#5B5EA7] font-medium">No se encontraron registros médicos</p>
+        <p class="text-[#5B5EA7]/70 mt-2">Tus futuras consultas aparecerán aquí</p>
       </div>
       
-      <!-- Lista de citas con contenedores de color #F0F9FE -->
       <div v-else class="space-y-6">
         <div 
           v-for="registro in historialFiltrado" 
           :key="registro.id"
-          class="bg-[#F0F9FE] rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow border border-[#76C7D0]/20">
-          
-          <!-- Encabezado -->
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <h3 class="text-lg font-bold text-[#5B5EA7]">{{ formatoTipoCita(registro.appointment_type) }}</h3>
-              <p class="text-sm text-[#5B5EA7]/80">{{ formatoFecha(registro.appointment_date) }}</p>
+          class="bg-gradient-to-br from-white to-[#F0F9FE] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-[#E0F9FC] overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-6">
+              <div>
+                <h3 class="text-xl font-bold text-[#5B5EA7] mb-1">{{ formatoTipoCita(registro.appointment_type) }}</h3>
+                <p class="text-sm text-[#5B5EA7]/70 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {{ formatoFecha(registro.appointment_date) }}
+                </p>
+              </div>
+              <span class="px-4 py-1.5 rounded-xl text-sm font-medium"
+                :class="{
+                  'bg-green-100 text-green-800': registro.status === 'completada',
+                  'bg-blue-100 text-blue-800': registro.status === 'en_proceso'
+                }">
+                {{ registro.status === 'completada' ? 'Completada' : 'En Proceso' }}
+              </span>
             </div>
-            <span class="px-3 py-1 rounded-full text-sm"
-              :class="{
-                'bg-green-100 text-green-800': registro.status === 'completada',
-                'bg-blue-100 text-blue-800': registro.status === 'en_proceso'
-              }">
-              {{ registro.status === 'completada' ? 'Completada' : 'En Proceso' }}
-            </span>
-          </div>
-          
-          <!-- Detalles -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <p class="text-sm text-[#5B5EA7]/80">Doctor</p>
-              <p class="font-medium text-[#5B5EA7]">{{ registro.doctor_nombre || 'No especificado' }}</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div class="bg-white/50 rounded-xl p-4">
+                <p class="text-sm text-[#5B5EA7]/70 mb-1">Doctor</p>
+                <p class="font-medium text-[#5B5EA7]">{{ registro.doctor_nombre || 'No especificado' }}</p>
+              </div>
+              <div class="bg-white/50 rounded-xl p-4">
+                <p class="text-sm text-[#5B5EA7]/70 mb-1">Modalidad</p>
+                <p class="font-medium text-[#5B5EA7]">{{ registro.appointment_type === 'online' ? 'Virtual' : 'Presencial' }}</p>
+              </div>
             </div>
-            <div>
-              <p class="text-sm text-[#5B5EA7]/80">Modalidad</p>
-              <p class="font-medium text-[#5B5EA7]">{{ registro.appointment_type === 'online' ? 'Virtual' : 'Presencial' }}</p>
+            
+            <div class="bg-white/50 rounded-xl p-4 mb-6">
+              <p class="text-sm text-[#5B5EA7]/70 mb-1">Diagnóstico</p>
+              <p class="font-medium text-[#5B5EA7] line-clamp-2">{{ registro.diagnostico || 'No se registró diagnóstico' }}</p>
             </div>
-          </div>
-          
-          <!-- Diagnóstico resumido -->
-          <div class="mb-4">
-            <p class="text-sm text-[#5B5EA7]/80">Diagnóstico</p>
-            <p class="font-medium text-[#5B5EA7] line-clamp-2">{{ registro.diagnostico || 'No se registró diagnóstico' }}</p>
-          </div>
-          
-          <!-- Botones de acción redondeados y con color #76C7D0 -->
-          <div class="flex flex-col sm:flex-row gap-3 mt-6">
-            <button 
-              @click="verDetalles(registro.id)"
-              class="flex-1 px-4 py-2 bg-[#76C7D0] text-white rounded-full hover:bg-[#5B5EA7] flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Ver detalles
-            </button>
-            <button 
-              v-if="registro.pdf_url"
-              @click="descargarPDF(registro)"
-              class="flex-1 px-4 py-2 bg-[#76C7D0] text-white rounded-full hover:bg-[#5B5EA7] flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Descargar PDF
-            </button>
+            
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button 
+                @click="verDetalles(registro.id)"
+                class="flex-1 px-6 py-3 bg-gradient-to-r from-[#76C7D0] to-[#5B5EA7] text-white rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2 font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Ver detalles
+              </button>
+              <button 
+                v-if="registro.pdf_url"
+                @click="descargarPDF(registro)"
+                class="flex-1 px-6 py-3 bg-[#F0F9FE] text-[#5B5EA7] border-2 border-[#76C7D0] rounded-xl hover:bg-[#E0F9FC] hover:shadow-lg hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2 font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Descargar PDF
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -338,12 +336,11 @@ onMounted(cargarHistorial);
   overflow: hidden;
 }
 
-/* Transición suave para los botones */
 button {
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-button:hover {
-  transform: translateY(-1px);
+button:active {
+  transform: scale(0.98);
 }
 </style>

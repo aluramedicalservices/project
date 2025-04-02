@@ -1,16 +1,16 @@
 <template>
-  <div id="vista_historial_citas" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
+  <div id="vista_historial_citas" class="flex flex-col justify-between min-h-screen font-nunito text-[#5B5EA7]">
     <NavTopD />
-    <div id="contenedor_historial" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto pt-20 pb-32">
+    <div id="contenedor_historial" class="bg-[#F0F9FE] w-4/5 max-w-[1200px] mx-auto pt-20 pb-32 px-4">
       <!-- Encabezado -->
-      <div class="text-center mb-8">
-        <TituloH2 texto="Historial de Consultas" />
-        <p class="text-gray-600">Consulta el historial de tus citas atendidas</p>
+      <div class="text-center mb-12">
+        <TituloH2 texto="Historial de Consultas" class="text-[#5B5EA7]" />
+        <p class="text-[#5B5EA7]/70">Consulta el historial de tus citas atendidas</p>
       </div>
 
       <!-- Filtros -->
-      <div class="flex flex-wrap gap-4 mb-6 justify-center">
-        <select v-model="filtroTipo" class="border border-gray-300 rounded-lg px-4 py-2">
+      <div class="flex flex-wrap gap-4 mb-8 justify-center bg-white p-6 rounded-xl shadow-sm">
+        <select v-model="filtroTipo" class="border border-[#76C7D0] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#76C7D0]/50">
           <option value="todos">Todos los tipos</option>
           <option value="online">Online</option>
           <option value="domicilio">A domicilio</option>
@@ -20,66 +20,66 @@
         <input 
           type="date" 
           v-model="filtroFecha" 
-          class="border border-gray-300 rounded-lg px-4 py-2"
+          class="border border-[#76C7D0] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#76C7D0]/50"
         >
         
         <button 
           @click="aplicarFiltros"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          class="px-6 py-2 bg-[#76C7D0] text-white rounded-lg hover:bg-[#5B5EA7] transition-colors duration-300"
         >
           Aplicar
         </button>
         
         <button 
           @click="resetearFiltros"
-          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+          class="px-6 py-2 bg-[#E0F9FC] text-[#5B5EA7] rounded-lg hover:bg-[#76C7D0] hover:text-white transition-colors duration-300"
         >
           Limpiar
         </button>
       </div>
 
       <!-- Listado de citas completadas -->
-      <div v-if="citasCompletadas.length > 0" class="space-y-4">
+      <div v-if="citasCompletadas.length > 0" class="space-y-6">
         <div 
           v-for="cita in citasCompletadas" 
           :key="cita.id"
-          class="border border-gray-200 rounded-xl shadow-2xs p-4 bg-white hover:shadow-xs transition-shadow"
+          class="border border-[#E0F9FC] rounded-xl shadow-md p-6 bg-white hover:shadow-lg transition-all duration-300"
         >
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="font-bold text-lg text-medblue">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="font-bold text-lg text-[#5B5EA7]">
               {{ obtenerTipoCita(cita.appointment_type) }}
             </h3>
-            <span class="text-sm text-gray-500">
+            <span class="text-sm text-[#76C7D0] bg-[#F0F9FE] px-3 py-1 rounded-full">
               {{ formatearFechaHora(cita.fin_consulta) }}
             </span>
           </div>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
             <div>
-              <p class="text-gray-600">Paciente:</p>
+              <p class="text-[#5B5EA7]/70">Paciente:</p>
               <p class="font-medium">{{ cita.paciente_nombre }}</p>
             </div>
             
             <div>
-              <p class="text-gray-600">Duración:</p>
+              <p class="text-[#5B5EA7]/70">Duración:</p>
               <p class="font-medium">{{ cita.duracion_consulta }} minutos</p>
             </div>
             
             <div v-if="cita.diagnostico">
-              <p class="text-gray-600">Diagnóstico:</p>
+              <p class="text-[#5B5EA7]/70">Diagnóstico:</p>
               <p class="font-medium">{{ cita.diagnostico }}</p>
             </div>
             
             <div v-if="cita.especialidad">
-              <p class="text-gray-600">Especialidad:</p>
+              <p class="text-[#5B5EA7]/70">Especialidad:</p>
               <p class="font-medium">{{ cita.especialidad }}</p>
             </div>
           </div>
           
-          <div class="flex justify-end space-x-2">
+          <div class="flex justify-end space-x-3">
             <button 
               @click="verDetallesCita(cita.id)"
-              class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+              class="px-4 py-2 bg-[#76C7D0] text-white rounded-lg text-sm hover:bg-[#5B5EA7] transition-colors duration-300"
             >
               Ver detalles
             </button>
@@ -87,7 +87,7 @@
             <button 
               v-if="cita.pdf_url"
               @click="descargarPDF(cita.pdf_url)"
-              class="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
+              class="px-4 py-2 bg-[#E0F9FC] text-[#5B5EA7] rounded-lg text-sm hover:bg-[#76C7D0] hover:text-white transition-colors duration-300"
             >
               Descargar PDF
             </button>
@@ -95,19 +95,19 @@
         </div>
         
         <!-- Paginación -->
-        <div class="flex justify-center mt-8">
+        <div class="flex justify-center mt-10">
           <button 
             @click="cargarMasCitas"
             :disabled="!hayMasCitas"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            class="px-6 py-2 bg-[#76C7D0] text-white rounded-lg hover:bg-[#5B5EA7] transition-colors duration-300 disabled:opacity-50 disabled:hover:bg-[#76C7D0]"
           >
             Cargar más
           </button>
         </div>
       </div>
       
-      <div v-else class="text-center py-12">
-        <p class="text-gray-500">No tienes citas completadas registradas</p>
+      <div v-else class="text-center py-16 bg-white rounded-xl shadow-sm">
+        <p class="text-[#5B5EA7]/70">No tienes citas completadas registradas</p>
       </div>
     </div>
     <NavBottomD />
@@ -268,8 +268,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Estilos específicos para esta vista */
 #contenedor_historial {
   min-height: calc(100vh - 120px);
+  box-shadow: 0 0 20px rgba(118, 199, 208, 0.1);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(60%) sepia(11%) saturate(1000%) hue-rotate(155deg) brightness(90%) contrast(90%);
 }
 </style>

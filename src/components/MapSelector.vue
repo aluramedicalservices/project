@@ -1,82 +1,58 @@
 <template>
-  <div class="relative">
-    <div ref="mapDiv" class="w-full h-[300px] rounded-lg"></div>
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Buscar dirección..."
-      class="absolute top-2 left-2 w-[calc(100%-1rem)] max-w-md p-2 bg-white rounded-lg shadow-md border"
-      @keydown.enter="searchLocation"
-    />
+  <div class="map-container" style="height: 400px; width: 100%">
+    <div id="map" style="height: 100%; width: 100%"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, defineEmits } from 'vue';
+import { onMounted } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 
 const emit = defineEmits(['location-selected']);
-const mapDiv = ref(null);
-const searchQuery = ref('');
-let map = null;
-let marker = null;
 
 onMounted(async () => {
   const loader = new Loader({
-    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    apiKey: 'TU_API_KEY_DE_GOOGLE_MAPS',
     version: 'weekly',
-    libraries: ['places']
   });
-
-  const google = await loader.load();
-  
-  // Centrar inicialmente en Tijuana
-  const center = { lat: 32.5149, lng: -117.0382 };
-  
-  map = new google.maps.Map(mapDiv.value, {
-    center,
-    zoom: 13,
-  });
-
-  marker = new google.maps.Marker({
-    map,
-    draggable: true,
-    position: center,
-  });
-
-  map.addListener('click', (e) => {
-    marker.setPosition(e.latLng);
-    emitLocation(e.latLng);
-  });
-
-  marker.addListener('dragend', () => {
-    emitLocation(marker.getPosition());
-  });
-});
-
-const searchLocation = async () => {
-  if (!searchQuery.value) return;
-
-  const google = window.google;
-  const geocoder = new google.maps.Geocoder();
 
   try {
-    const { results } = await geocoder.geocode({ address: searchQuery.value });
-    if (results[0]) {
-      const location = results[0].geometry.location;
-      map.setCenter(location);
-      marker.setPosition(location);
-      emitLocation(location);
-    }
-  } catch (error) {
-    console.error('Error al buscar ubicación:', error);
-  }
-};
+    const google = await loader.load();
+    const { Map, Marker } = google.maps;
 
-const emitLocation = (position) => {
-  emit('location-selected', {
-    lat: position.lat(),
-    lng: position.lng()
-  });
-};
+    // Coordenadas iniciales (Ciudad de México)
+    const center = { lat: 19.4326, lng: -99.1332 };
+    
+    const map = new Map(document.getElementById('map'), {
+      center,
+      zoom: 13,
+    });
+
+    let marker = new Marker({
+      position: center,
+      map,
+      draggable: true,
+    });
+
+    map.addListener('click', (e) => {
+      const location = {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng(),
+      };
+      marker.setPosition(location);
+      emit('location-selected', location);
+    });
+
+    marker.addListener('dragend', () => {
+      const position = marker.getPosition();
+      const location = {
+        lat: position.lat(),
+        lng: position.lng(),
+      };
+      emit('location-selected', location);
+    });
+  } catch (error) {
+    console.error('Error loading Google Maps:', error);
+  }
+});
 </script>

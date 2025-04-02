@@ -1,12 +1,12 @@
 <template>
-  <div id="vista_citas_agendadas" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
+  <div id="vista_citas_agendadas" class="flex flex-col justify-between min-h-screen font-nunito text-[#5B5EA7]">
     <NavTopD />
-    <div id="next_appointments" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto pt-20 pb-32">
+    <div id="next_appointments" class="bg-[#F0F9FE] w-4/5 max-w-[1200px] mx-auto pt-20 pb-32 rounded-lg shadow-md">
       <Titulo texto="Todas tus citas" />
       
       <!-- Filtros -->
       <div class="flex flex-wrap gap-4 mb-6 justify-center">
-        <select v-model="filtroEstado" class="border border-gray-300 rounded-lg px-4 py-2">
+        <select v-model="filtroEstado" class="border border-[#76C7D0] rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#76C7D0]">
           <option value="todas">Todos los estados</option>
           <option value="agendada">Agendadas</option>
           <option value="en_proceso">En curso</option>
@@ -14,7 +14,7 @@
           <option value="cancelada">Canceladas</option>
         </select>
         
-        <select v-model="filtroTipo" class="border border-gray-300 rounded-lg px-4 py-2">
+        <select v-model="filtroTipo" class="border border-[#76C7D0] rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#76C7D0]">
           <option value="todos">Todos los tipos</option>
           <option value="online">Online</option>
           <option value="domicilio">A domicilio</option>
@@ -24,19 +24,19 @@
         <input 
           type="date" 
           v-model="filtroFecha" 
-          class="border border-gray-300 rounded-lg px-4 py-2"
+          class="border border-[#76C7D0] rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#76C7D0]"
         >
         
         <button 
           @click="aplicarFiltros"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors"
         >
           Aplicar
         </button>
         
         <button 
           @click="resetearFiltros"
-          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+          class="px-4 py-2 bg-[#E0F9FC] text-[#5B5EA7] rounded-lg hover:bg-opacity-80 transition-colors"
         >
           Limpiar
         </button>
@@ -51,10 +51,10 @@
         <div 
           v-for="cita in todasLasCitas" 
           :key="cita.id"
-          class="border border-gray-200 rounded-xl shadow-2xs p-4 bg-white hover:shadow-xs transition-shadow"
+          class="border border-[#76C7D0] rounded-xl shadow-md p-6 bg-white hover:shadow-lg transition-shadow"
         >
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="font-bold text-lg text-medblue">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="font-bold text-lg text-[#5B5EA7]">
               {{ obtenerTipoCita(cita.appointment_type) }}
               <span v-if="esHoy(cita.appointment_date)" class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full ml-2">Hoy</span>
             </h3>
@@ -86,20 +86,22 @@
           </div>
           
           <!-- Mostrar link de Google Meet para citas online próximas -->
-          <div v-if="cita.mostrarMeetLink" class="mt-2 p-2 bg-blue-50 rounded-lg">
-            <p class="text-blue-800">La consulta comenzará pronto</p>
+          <div v-if="cita.mostrarMeetLink" class="mt-2 p-3 bg-[#E0F9FC] rounded-lg border border-[#76C7D0]">
+            <p class="text-[#5B5EA7] font-medium">La consulta comenzará pronto</p>
             <p class="text-sm">
-              <a :href="cita.google_meet_link" target="_blank" class="text-blue-600 underline">Unirse a Google Meet</a>
+              <a :href="cita.google_meet_link" target="_blank" class="text-[#5B5EA7] hover:text-[#76C7D0] underline">
+                Unirse a Google Meet
+              </a>
             </p>
           </div>
 
-          <div class="flex justify-end space-x-2 mt-3">
+          <div class="flex justify-end space-x-3 mt-4">
             <!-- Botón Iniciar Consulta (sólo si la cita está agendada y no hay otra consulta en curso) -->
             <button 
               v-if="cita.status === 'agendada' && cita.appointment_type === 'online'"
               @click="iniciarConsulta(cita.id)" 
               :disabled="hayConsultaEnProceso"
-              class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:opacity-50"
+              class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
             >
               Iniciar consulta
             </button>
@@ -109,7 +111,7 @@
               v-if="cita.status === 'agendada' && cita.appointment_type !== 'online'"
               @click="iniciarViaje(cita.id)" 
               :disabled="hayConsultaEnProceso"
-              class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:opacity-50"
+              class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
             >
               Iniciar viaje
             </button>
@@ -118,14 +120,14 @@
             <button 
               v-if="cita.status === 'en_proceso'"
               @click="continuarConsulta(cita.id)"
-              class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+              class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors"
             >
               Continuar consulta
             </button>
             
             <button 
               @click="verDetallesCita(cita.id)"
-              class="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
+              class="px-4 py-2 bg-[#E0F9FC] text-[#5B5EA7] rounded-lg hover:bg-opacity-80 transition-colors"
             >
               Ver detalles
             </button>
@@ -137,7 +139,7 @@
           <button 
             @click="cargarMasCitas"
             :disabled="!hayMasCitas"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            class="px-6 py-2 bg-[#76C7D0] text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
           >
             Cargar más
           </button>
@@ -439,8 +441,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Estilos específicos para esta vista */
 #next_appointments {
   min-height: calc(100vh - 120px);
+  background: linear-gradient(to bottom right, #F0F9FE, #E0F9FC);
+}
+
+.grid-cols-1 > div {
+  padding: 1rem;
+  background-color: rgba(240, 249, 254, 0.5);
+  border-radius: 0.5rem;
 }
 </style>
