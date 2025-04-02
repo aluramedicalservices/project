@@ -33,6 +33,15 @@
       </p>
     </div>
 
+    <!-- Selector de ubicación -->
+    <div class="mb-8">
+      <label class="block text-lg font-medium mb-2">Ubicación de la consulta</label>
+      <MapSelector @location-selected="handleLocationSelect" />
+      <p v-if="selectedLocation" class="mt-2 text-gray-600">
+        Ubicación seleccionada: {{ selectedLocation.lat.toFixed(6) }}, {{ selectedLocation.lng.toFixed(6) }}
+      </p>
+    </div>
+
     <!-- Método de pago -->
     <div class="mb-8">
       <label class="block text-lg font-medium mb-2">Método de pago</label>
@@ -69,12 +78,14 @@ import NavTop from '../../components/comp_paciente/NavTop.vue';
 import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
 import { supabase } from '@/config/supabase';
+import MapSelector from '@/components/MapSelector.vue';
 
 const router = useRouter();
 const selectedDate = ref(new Date());
 const selectedTime = ref('');
 const metodoPago = ref('');
 const doctorId = ref(null); // ID del enfermero asignado
+const selectedLocation = ref(null);
 
 // Formatear la fecha seleccionada
 const formattedSelectedDate = computed(() => {
@@ -93,6 +104,11 @@ const handleDateSelect = (date) => {
 // Manejar selección de hora
 const handleTimeSelect = (time) => {
   selectedTime.value = time;
+};
+
+// Manejar selección de ubicación
+const handleLocationSelect = (location) => {
+  selectedLocation.value = location;
 };
 
 // Obtener el ID del enfermero "Juan José Moreno Argueta"
@@ -115,10 +131,10 @@ const obtenerEnfermero = async () => {
   }
 };
 
-// Redirigir a confirmar cita, incluyendo la ubicación en tiempo real del paciente
+// Redirigir a confirmar cita, incluyendo la ubicación seleccionada
 const irAConfirmarCita = async () => {
-  if (!selectedDate.value || !selectedTime.value || !metodoPago.value) {
-    alert('Por favor, completa todos los campos.');
+  if (!selectedDate.value || !selectedTime.value || !metodoPago.value || !selectedLocation.value) {
+    alert('Por favor, completa todos los campos, incluyendo la ubicación.');
     return;
   }
 
@@ -126,35 +142,20 @@ const irAConfirmarCita = async () => {
     await obtenerEnfermero();
   }
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        // Guardamos la ubicación en formato JSON
-        const ubicacion = JSON.stringify({ 
-          lat: position.coords.latitude, 
-          lng: position.coords.longitude 
-        });
-        router.push({
-          path: '/confirmar-cita',
-          query: {
-            modalidad: 'domicilio',
-            fecha: format(selectedDate.value, 'yyyy-MM-dd'),
-            hora: selectedTime.value,
-            metodoPago: metodoPago.value,
-            doctorId: doctorId.value,
-            ubicacion
-          },
-        });
-      },
-      (error) => {
-        console.error('Error al obtener la ubicación:', error);
-        alert('No se pudo obtener tu ubicación, intenta de nuevo.');
-      },
-      { enableHighAccuracy: true }
-    );
-  } else {
-    alert('Tu navegador no soporta geolocalización.');
-  }
+  // Convertir la ubicación a string para pasarla como query parameter
+  const ubicacion = JSON.stringify(selectedLocation.value);
+  
+  router.push({
+    path: '/confirmar-cita',
+    query: {
+      modalidad: 'domicilio',
+      fecha: format(selectedDate.value, 'yyyy-MM-dd'),
+      hora: selectedTime.value,
+      metodoPago: metodoPago.value,
+      doctorId: doctorId.value,
+      ubicacion // Se incluye la ubicación en los parámetros
+    },
+  });
 };
 </script>
 
