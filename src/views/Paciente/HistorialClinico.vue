@@ -2,9 +2,9 @@
   <div class="bg-gradient-to-b from-[#F0F9FE] to-white min-h-screen pb-20 pt-16">
     <NavTop />
     <div class="max-w-4xl mx-auto px-4 py-6">
-      <div class="text-center mb-10 mt-1">
-        <h1 class="text-4xl font-bold text-[#5B5EA7] drop-shadow-sm">Historial Clínico</h1>
-        <p class="text-[#5B5EA7]/70 mt-2">Consulta tus registros médicos anteriores</p>
+      <div class="flex flex-col items-center gap-3 mb-12">
+        <ClipboardDocumentIcon class="w-12 h-12 text-[#5B5EA7]"/>
+        <h1 class="text-4xl font-semibold text-[#5B5EA7] text-center">Historial Clínico</h1>
       </div>
       
       <div class="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-2xl shadow-sm">
@@ -47,13 +47,13 @@
         <p class="text-[#5B5EA7]/70 mt-2">Tus futuras consultas aparecerán aquí</p>
       </div>
       
-      <div v-else class="space-y-6">
+      <div v-else class="space-y-4">
         <div 
           v-for="registro in historialFiltrado" 
           :key="registro.id"
           class="bg-gradient-to-br from-white to-[#F0F9FE] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-[#E0F9FC] overflow-hidden">
-          <div class="p-6">
-            <div class="flex justify-between items-start mb-6">
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
               <div>
                 <h3 class="text-xl font-bold text-[#5B5EA7] mb-1">{{ formatoTipoCita(registro.appointment_type) }}</h3>
                 <p class="text-sm text-[#5B5EA7]/70 flex items-center gap-2">
@@ -72,7 +72,7 @@
               </span>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
               <div class="bg-white/50 rounded-xl p-4">
                 <p class="text-sm text-[#5B5EA7]/70 mb-1">Doctor</p>
                 <p class="font-medium text-[#5B5EA7]">{{ registro.doctor_nombre || 'No especificado' }}</p>
@@ -83,12 +83,12 @@
               </div>
             </div>
             
-            <div class="bg-white/50 rounded-xl p-4 mb-6">
+            <div class="bg-white/50 rounded-xl p-4 mb-3">
               <p class="text-sm text-[#5B5EA7]/70 mb-1">Diagnóstico</p>
               <p class="font-medium text-[#5B5EA7] line-clamp-2">{{ registro.diagnostico || 'No se registró diagnóstico' }}</p>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex flex-col sm:flex-row gap-2">
               <button 
                 @click="verDetalles(registro.id)"
                 class="flex-1 px-6 py-3 bg-gradient-to-r from-[#76C7D0] to-[#5B5EA7] text-white rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2 font-medium">
@@ -123,6 +123,7 @@ import { supabase } from '@/config/supabase';
 import NavTop from '@/components/comp_paciente/NavTop.vue';
 import NavBottom from '@/components/comp_paciente/NavBottom.vue';
 import { ElLoading, ElNotification } from 'element-plus';
+import { ClipboardDocumentIcon } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
 const historial = ref([]);

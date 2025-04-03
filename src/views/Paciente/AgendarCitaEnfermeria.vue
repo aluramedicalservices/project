@@ -50,20 +50,44 @@
           v-model="metodoPago"
           class="w-full p-2 border border-gray-300 rounded-lg"
           required
+          @change="handlePaymentMethodChange"
         >
           <option value="" disabled selected>Selecciona un método de pago</option>
           <option value="online">Pagar en línea</option>
           <option value="efectivo">Pagar en efectivo</option>
         </select>
       </div>
-
-      <!-- Botón de confirmación -->
-      <button 
-        @click="irAConfirmarCita"
-        class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        Continuar
-      </button>
+    </div>
+    
+    <!-- Modal de PayPal -->
+    <div v-if="showPaypalModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="text-center">
+          <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" 
+               alt="PayPal" 
+               class="mx-auto mb-4 h-16">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">Pago con PayPal</h2>
+          <div class="bg-gray-100 p-4 rounded-lg mb-4">
+            <p class="text-lg font-semibold text-gray-800">Total a pagar:</p>
+            <p class="text-2xl font-bold text-blue-600">$500 MXN</p>
+          </div>
+          <p class="text-sm text-gray-600 mb-4">Consulta a domicilio con enfermero profesional</p>
+          <div class="flex space-x-3">
+            <button 
+              @click="procesarPago"
+              class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Confirmar pago
+            </button>
+            <button 
+              @click="cancelarPago"
+              class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <NavBottom />
@@ -88,6 +112,8 @@ const selectedTime = ref('');
 const metodoPago = ref('');
 const doctorId = ref(null); // ID del enfermero asignado
 const selectedLocation = ref(null);
+const showPaypalModal = ref(false);
+const pagoCompletado = ref(false);
 
 // Formatear la fecha seleccionada
 const formattedSelectedDate = computed(() => {
@@ -122,6 +148,29 @@ const handleLocationSelect = (location) => {
   selectedLocation.value = location;
 };
 
+// Manejar cambio de método de pago
+const handlePaymentMethodChange = (event) => {
+  if (event.target.value === 'online') {
+    showPaypalModal.value = true;
+  }
+};
+
+// Simular procesamiento de pago
+const procesarPago = () => {
+  setTimeout(() => {
+    pagoCompletado.value = true;
+    showPaypalModal.value = false;
+    alert('¡Pago procesado con éxito!');
+    irAConfirmarCita();
+  }, 1500);
+};
+
+// Cancelar pago
+const cancelarPago = () => {
+  showPaypalModal.value = false;
+  metodoPago.value = '';
+};
+
 // Obtener el ID del enfermero "Juan José Moreno Argueta"
 const obtenerEnfermero = async () => {
   try {
@@ -149,6 +198,12 @@ const irAConfirmarCita = async () => {
     return;
   }
 
+  if (metodoPago.value === 'online' && !pagoCompletado.value) {
+    alert('Por favor, completa el pago antes de continuar.');
+    showPaypalModal.value = true;
+    return;
+  }
+
   if (!doctorId.value) {
     await obtenerEnfermero();
   }
@@ -164,7 +219,8 @@ const irAConfirmarCita = async () => {
       hora: selectedTime.value,
       metodoPago: metodoPago.value,
       doctorId: doctorId.value,
-      ubicacion // Se incluye la ubicación en los parámetros
+      ubicacion,
+      pagado: metodoPago.value === 'online'
     },
   });
 };
@@ -264,5 +320,18 @@ select {
 
 .mt-12 {
   margin-top: 3rem;
+}
+
+.fixed {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>
