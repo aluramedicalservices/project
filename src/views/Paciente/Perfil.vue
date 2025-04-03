@@ -118,56 +118,97 @@ export default {
     const previewImage = ref(null);
 
     const obtenerUsuario = async () => {
-      const { data } = await supabase.auth.getUser();
-      const { data: userData } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-      user.value = userData;
+      try {
+        const { data: authData, error: authError } = await supabase.auth.getUser();
+        if (authError) throw authError;
+
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single();
+        
+        if (userError) throw userError;
+
+        if (userData && userData.foto_url) {
+          // Verificar si la URL de la imagen es válida
+          const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(userData.foto_url.split('/').pop());
+          
+          userData.foto_url = publicUrl;
+        }
+
+        user.value = userData;
+        console.log('Perfil cargado:', userData);
+      } catch (error) {
+        console.error('Error al cargar el perfil:', error);
+      }
     };
 
     const subirFotoPerfil = async (event) => {
       const file = event.target.files[0];
-      if (file) {
-        previewImage.value = URL.createObjectURL(file);
-        
-        loading.value = true;
+      if (!file) return;
+
+      // Validar tipo de archivo
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Solo se permiten archivos de imagen (JPG, PNG)');
+        return;
+      }
+
+      loading.value = true;
+      previewImage.value = URL.createObjectURL(file);
+
+      try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         
         if (!currentUser) {
-          loading.value = false;
-          return;
+          throw new Error('No se pudo identificar al usuario');
         }
 
         const fileExt = file.name.split('.').pop();
         const fileName = `${currentUser.id}_${Date.now()}.${fileExt}`;
 
-        try {
-          const { data, error } = await supabase.storage
-            .from('avatars')
-            .upload(fileName, file, { upsert: true });
+        const { data, error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, file, {
+            upsert: true
+          });
 
-          if (error) throw error;
+        if (uploadError) throw uploadError;
 
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(fileName);
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
 
-          user.value.foto_url = publicUrl;
-          await actualizarPerfil();
-        } catch (error) {
-          console.error("Error en la subida:", error);
-        } finally {
-          loading.value = false;
-        }
+        user.value.foto_url = publicUrl;
+        await actualizarPerfil();
+        alert('Foto de perfil actualizada con éxito');
+      } catch (error) {
+        console.error("Error detallado:", error);
+        alert(`Error al subir la imagen: ${error.message || 'Error desconocido'}`);
+      } finally {
+        loading.value = false;
       }
     };
 
     const actualizarPerfil = async () => {
       loading.value = true;
       try {
-        await supabase.from('users').update(user.value).eq('id', user.value.id);
+        const { error } = await supabase
+          .from('users')
+          .update(user.value)
+          .eq('id', user.value.id);
+        
+        if (error) throw error;
+        
+        // Actualizar la foto en cualquier otra vista que pueda estar abierta
+        const evento = new CustomEvent('perfil-actualizado', {
+          detail: { foto_url: user.value.foto_url }
+        });
+        window.dispatchEvent(evento);
+        
         alert('¡Perfil actualizado con éxito!');
       } catch (error) {
         console.error("Error actualizando:", error);

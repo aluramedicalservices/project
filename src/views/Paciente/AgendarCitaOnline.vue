@@ -1,45 +1,47 @@
 <template>
   <NavTop />
-  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32"> <!-- Añade pb-32 -->
+  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32">
     <button 
       @click="router.push('/dashboard-paciente')"
-      class="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+      class="volver-btn"
     >
       ← Volver
     </button>
-    <Titulo texto="Agendar cita online" />
+    <div class="mt-12">
+      <Titulo texto="Agendar cita online" />
 
-    <!-- Selector de fecha -->
-    <div class="mb-8">
-      <label class="block text-lg font-medium mb-2">Fecha de la cita</label>
-      <Calendar 
-        :selected-date="selectedDate"
-        @date-selected="handleDateSelect"
-      />
-      <p class="mt-2 text-gray-600">
-        Fecha seleccionada: {{ formattedSelectedDate || 'Selecciona una fecha' }}
-      </p>
+      <!-- Selector de fecha -->
+      <div class="mb-8">
+        <label class="block text-lg font-medium mb-2">Fecha de la cita</label>
+        <Calendar 
+          :selected-date="selectedDate"
+          @date-selected="handleDateSelect"
+        />
+        <p class="mt-2 text-gray-600">
+          Fecha seleccionada: {{ formattedSelectedDate || 'Selecciona una fecha' }}
+        </p>
+      </div>
+
+      <!-- Selector de hora -->
+      <div class="mb-8">
+        <label class="block text-lg font-medium mb-2">Hora de la cita</label>
+        <TimeSelector 
+          :selected-time="selectedTime"
+          @time-selected="handleTimeSelect"
+        />
+        <p class="mt-2 text-gray-600">
+          Hora seleccionada: {{ selectedTime || 'Selecciona una hora' }}
+        </p>
+      </div>
+
+      <!-- Botón de confirmación -->
+      <button 
+        @click="irAConfirmarCita"
+        class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Continuar
+      </button>
     </div>
-
-    <!-- Selector de hora -->
-    <div class="mb-8">
-      <label class="block text-lg font-medium mb-2">Hora de la cita</label>
-      <TimeSelector 
-        :selected-time="selectedTime"
-        @time-selected="handleTimeSelect"
-      />
-      <p class="mt-2 text-gray-600">
-        Hora seleccionada: {{ selectedTime || 'Selecciona una hora' }}
-      </p>
-    </div>
-
-    <!-- Botón de confirmación -->
-    <button 
-      @click="irAConfirmarCita"
-      class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-    >
-      Continuar
-    </button>
   </div>
   <NavBottom />
 </template>
@@ -64,6 +66,14 @@ const formattedSelectedDate = computed(() => {
 });
 
 const handleDateSelect = (date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  if (date < today) {
+    alert('No se pueden agendar citas en fechas pasadas');
+    return;
+  }
+  
   selectedDate.value = date;
 };
 
@@ -97,5 +107,75 @@ const irAConfirmarCita = () => {
 <style scoped>
 #Schedule_appointment {
   min-height: calc(100vh - 128px);
+  background-color: #F0F9FE;
+}
+
+button {
+  transition: all 0.3s ease;
+}
+
+button:not(.mb-4) {
+  background-color: #5B5EA7 !important;
+}
+
+button:hover:not(.mb-4) {
+  background-color: #4a4d8c !important;
+}
+
+.mb-8 {
+  background-color: #E0F9FC;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+label {
+  color: #5B5EA7;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.text-gray-600 {
+  color: #5B5EA7;
+  font-weight: 500;
+}
+
+.mb-4 {
+  margin-bottom: 2rem !important;
+  background-color: #E0F9FC !important;
+  color: #5B5EA7;
+  font-weight: 500;
+}
+
+.mb-4:hover {
+  background-color: #76C7D0 !important;
+}
+
+.relative {
+  position: relative;
+}
+
+.volver-btn {
+  display: block;
+  padding: 0.5rem 1rem;
+  background-color: #E0F9FC;
+  color: #5B5EA7;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.volver-btn:hover {
+  background-color: #76C7D0;
+}
+
+.mt-12 {
+  margin-top: 3rem;
+}
+
+.content-container {
+  padding-top: 3.5rem;
 }
 </style>
