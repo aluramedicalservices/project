@@ -12,7 +12,7 @@
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-[#5B5EA7]">Datos del Paciente</h2>
           <router-link 
-            :to="'/perfil/' + paciente.id" 
+            :to="'/doctor/perfil/' + paciente.id" 
             class="px-4 py-2 bg-[#76C7D0] text-white rounded-full hover:bg-[#5aa7bd]">
             Ver perfil
           </router-link>
@@ -34,7 +34,7 @@
       <!-- Botón para ver historial clínico -->
       <div class="mb-6 flex justify-center">
         <router-link 
-          :to="'/historial-clinico/' + paciente.id" 
+          :to="'/doctor/historial-clinico/' + paciente.id" 
           class="px-4 py-2 bg-[#5B5EA7] text-white rounded-full hover:bg-[#4e4b8b]">
           Ver historial clínico
         </router-link>
@@ -90,6 +90,46 @@
       </div>
     </div>
     <NavBottomD />
+
+    <!-- Diálogo de confirmación -->
+    <div v-if="showConfirmDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Confirmar finalización</h3>
+        <p class="text-gray-600 mb-6">¿Está seguro que desea finalizar esta consulta? Una vez finalizada no podrá realizar más cambios.</p>
+        <div class="flex justify-end gap-4">
+          <button 
+            @click="showConfirmDialog = false"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+            Cancelar
+          </button>
+          <button 
+            @click="confirmarFinalizacion"
+            class="px-4 py-2 bg-[#5B5EA7] text-white rounded hover:bg-[#4e4b8b]">
+            Finalizar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diálogo de éxito -->
+    <div v-if="showSuccessDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="text-center">
+          <div class="mb-4">
+            <svg class="mx-auto h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">¡Consulta Finalizada!</h3>
+          <p class="text-gray-600 mb-6">La consulta se ha finalizado correctamente y el PDF ha sido generado.</p>
+          <button 
+            @click="cerrarDialogoExito"
+            class="w-full px-4 py-2 bg-[#5B5EA7] text-white rounded hover:bg-[#4e4b8b]">
+            Aceptar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -112,6 +152,8 @@ const notasMedicas = ref('');
 const receta = ref('');
 const isLoading = ref(false);
 const inicioConsulta = ref(null);
+const showConfirmDialog = ref(false);
+const showSuccessDialog = ref(false);
 
 const calcularEdad = (fechaNacimiento) => {
   const hoy = new Date();
@@ -124,12 +166,21 @@ const calcularEdad = (fechaNacimiento) => {
   return edad;
 };
 
+const formatearFechaHora = (fecha) => {
+  return new Date(fecha).toLocaleDateString('es-MX', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
 const cargarDatos = async () => {
   try {
     isLoading.value = true;
-    inicioConsulta.value = new Date();
     
-    // Obtener datos de la cita y paciente
     const { data: cita, error: citaError } = await supabase
       .from('appointments')
       .select(`
@@ -147,8 +198,19 @@ const cargarDatos = async () => {
     notasMedicas.value = cita.notas_medicas || '';
     receta.value = cita.receta || '';
 
-    // Si ya hay una fecha de inicio, usarla
-    if (cita.inicio_consulta) {
+    // Establecer la hora de inicio solo si es una nueva consulta
+    if (!cita.inicio_consulta && cita.status === 'confirmada') {
+      const ahora = new Date();
+      inicioConsulta.value = ahora;
+      
+      await supabase
+        .from('appointments')
+        .update({
+          inicio_consulta: ahora.toISOString(),
+          status: 'en_progreso'
+        })
+        .eq('id', citaId);
+    } else {
       inicioConsulta.value = new Date(cita.inicio_consulta);
     }
 
@@ -209,10 +271,9 @@ const generarPDF = async () => {
       
       <div style="margin-bottom: 20px;">
         <h2 style="color: #2c3e50; margin-bottom: 10px;">Detalles de la Consulta</h2>
-        <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <p><strong>Fecha programada:</strong> ${formatearFechaHora(paciente.value.fecha_cita || new Date())}</p>
         <p><strong>Hora inicio:</strong> ${inicioConsulta.value.toLocaleTimeString('es-MX')}</p>
         <p><strong>Hora fin:</strong> ${new Date().toLocaleTimeString('es-MX')}</p>
-        <p><strong>Duración:</strong> ${Math.round((new Date() - inicioConsulta.value) / 60000)} minutos</p>
       </div>
       
       <div style="margin-bottom: 20px;">
@@ -291,17 +352,22 @@ const generarPDF = async () => {
   }
 };
 
-const finalizarConsulta = async () => {
-  if (!confirm('¿Está seguro de finalizar esta consulta? No podrá realizar más cambios después.')) {
-    return;
-  }
+const finalizarConsulta = () => {
+  showConfirmDialog.value = true;
+};
 
+const cerrarDialogoExito = () => {
+  showSuccessDialog.value = false;
+  router.push('/dashboard-doctor');
+};
+
+const confirmarFinalizacion = async () => {
+  showConfirmDialog.value = false;
+  
   try {
     isLoading.value = true;
     
-    // Calcular duración de la consulta
     const finConsulta = new Date();
-    const duracion = Math.round((finConsulta - inicioConsulta.value) / 60000); // en minutos
     
     // Generar PDF antes de actualizar la base de datos
     const pdfResult = await generarPDF();
@@ -319,7 +385,6 @@ const finalizarConsulta = async () => {
         diagnostico: diagnostico.value,
         notas_medicas: notasMedicas.value,
         receta: receta.value,
-        duracion_consulta: duracion,
         pdf_url: pdfResult.pdfUrl
       })
       .eq('id', citaId);
@@ -337,7 +402,6 @@ const finalizarConsulta = async () => {
         tratamiento: receta.value,
         notas: notasMedicas.value,
         fecha: new Date().toISOString(),
-        duracion: duracion,
         pdf_url: pdfResult.pdfUrl
       });
 
@@ -351,8 +415,7 @@ const finalizarConsulta = async () => {
     link.click();
     document.body.removeChild(link);
     
-    alert('Consulta finalizada correctamente. Se ha generado el PDF.');
-    router.push('/dashboard-doctor');
+    showSuccessDialog.value = true;
     
   } catch (error) {
     console.error('Error finalizando consulta:', error);

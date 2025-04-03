@@ -10,9 +10,9 @@
           <option value="todas">Todos los estados</option>
           <option value="agendada">Agendadas</option>
           <option value="en_proceso">En curso</option>
-          <option value="completada">Completadas</option>
           <option value="cancelada">Canceladas</option>
         </select>
+        
         
         <select v-model="filtroTipo" class="border border-[#76C7D0] rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#76C7D0]">
           <option value="todos">Todos los tipos</option>
@@ -48,6 +48,12 @@
       </div>
       
       <div v-else-if="todasLasCitas.length > 0" id="citas_agendadas" class="space-y-4">
+        <!-- Añadir este mensaje de advertencia -->
+        <div v-if="hayConsultaEnProceso" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+          <p class="font-bold">Atención:</p>
+          <p>Ya tienes una consulta en proceso. Debes finalizarla antes de poder iniciar otra.</p>
+        </div>
+        
         <div 
           v-for="cita in todasLasCitas" 
           :key="cita.id"
@@ -96,27 +102,27 @@
           </div>
 
           <div class="flex justify-end space-x-3 mt-4">
-            <!-- Botón Iniciar Consulta (sólo si la cita está agendada y no hay otra consulta en curso) -->
+            <!-- Botón Iniciar Consulta -->
             <button 
               v-if="cita.status === 'agendada' && cita.appointment_type === 'online'"
               @click="iniciarConsulta(cita.id)" 
-              :disabled="hayConsultaEnProceso"
-              class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
+              :disabled="hayConsultaEnProceso && cita.status !== 'en_proceso'"
+              class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Iniciar consulta
+              {{ hayConsultaEnProceso ? 'Tienes una consulta en proceso' : 'Iniciar consulta' }}
             </button>
             
-            <!-- Botón Iniciar Viaje (sólo si la cita está agendada y no hay otra consulta en curso) -->
+            <!-- Botón Iniciar Viaje -->
             <button 
               v-if="cita.status === 'agendada' && cita.appointment_type !== 'online'"
               @click="iniciarViaje(cita.id)" 
-              :disabled="hayConsultaEnProceso"
-              class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
+              :disabled="hayConsultaEnProceso && cita.status !== 'en_proceso'"
+              class="px-4 py-2 bg-[#5B5EA7] text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Iniciar viaje
+              {{ hayConsultaEnProceso ? 'Tienes una consulta en proceso' : 'Iniciar viaje' }}
             </button>
             
-            <!-- Botón Continuar Consulta si está en proceso -->
+            <!-- Botón Continuar Consulta -->
             <button 
               v-if="cita.status === 'en_proceso'"
               @click="continuarConsulta(cita.id)"
@@ -178,7 +184,8 @@ const LIMITE_POR_PAGINA = 10;
 
 // Computed
 const hayConsultaEnProceso = computed(() => {
-  return todasLasCitas.value.some(cita => cita.status === 'en_proceso');
+  const citaEnProceso = todasLasCitas.value.find(cita => cita.status === 'en_proceso');
+  return Boolean(citaEnProceso);
 });
 
 const hayMasCitas = computed(() => {
@@ -272,6 +279,7 @@ const cargarTodasLasCitas = async () => {
         fin_consulta
       `, { count: 'exact' })
       .eq('doctor_id', doctorId)
+      .neq('status', 'completada') // Add this line to exclude completed appointments
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true })
       .range((paginaActual.value - 1) * LIMITE_POR_PAGINA, paginaActual.value * LIMITE_POR_PAGINA - 1);

@@ -8,11 +8,11 @@
           <img :src="avatar" alt="perfil_usuario" class="w-16 h-16 rounded-full" />
         </div>
         <div>
-          <p id="plan-label" class="text-healingblue bg-healingbluelight rounded-b-full inline-block px-3 py-1 text-center">
+          <p id="plan-label" class="text-gray-700 bg-white rounded-b-full inline-block px-3 py-1 text-center" style="color: #76C7D0;">
             {{ especialidadDoctor }}
           </p>
-          <p class="text-noxgrey mb-1">Bienvenido/a de nuevo,</p>
-          <p class="text-medblue mb-1 text-xl font-semibold">{{ nombreDoctor }}</p>
+          <p class="text-gray-600 mb-1">Bienvenido/a de nuevo,</p>
+          <p class="text-[#5B5EA7] mb-1 text-xl font-semibold">{{ nombreDoctor }}</p>
         </div>
       </div>
 
@@ -29,7 +29,7 @@
                class="rounded-xl shadow-lg p-5 transition-all hover:shadow-xl transform hover:-translate-y-1"
                style="background-color: #E0F9FC;">
             
-            <!-- Badges en la parte superior -->
+            <!-- Badges -->
             <div class="flex gap-2 mb-3">
               <span v-if="esHoy(cita.appointment_date)" 
                     class="px-3 py-1 rounded-full text-sm font-medium"
@@ -43,7 +43,7 @@
               </span>
             </div>
 
-            <!-- Nombre del paciente y tipo de consulta -->
+            <!-- Contenido de la cita -->
             <div class="space-y-3">
               <div class="flex items-center gap-2">
                 <User class="w-6 h-6" style="color: #76C7D0;"/>
@@ -60,17 +60,17 @@
               </div>
             </div>
 
-            <hr class="my-3 border-t border-blue-100">
+            <hr class="my-3 border-t" style="border-color: rgba(118, 199, 208, 0.2);">
 
             <!-- Fecha y hora -->
             <div class="grid grid-cols-2 gap-3 mb-3">
               <div class="flex items-center gap-2">
                 <Calendar class="w-4 h-4" style="color: #76C7D0;"/>
-                <p class="text-sm text-gray-700">{{ formatearFecha(cita.appointment_date) }}</p>
+                <p class="text-sm" style="color: #76C7D0;">{{ formatearFecha(cita.appointment_date) }}</p>
               </div>
               <div class="flex items-center gap-2">
                 <Clock class="w-4 h-4" style="color: #76C7D0;"/>
-                <p class="text-sm text-gray-700">{{ formatearHora(cita.appointment_time) }}</p>
+                <p class="text-sm" style="color: #76C7D0;">{{ formatearHora(cita.appointment_time) }}</p>
               </div>
             </div>
 
@@ -87,7 +87,7 @@
                       @click="iniciarConsulta(cita.id, cita.appointment_type)"
                       :disabled="hayConsultaEnProceso"
                       class="px-4 py-1.5 text-white rounded-lg text-sm transition-all hover:opacity-90 disabled:opacity-50 flex items-center gap-2 ml-auto"
-                      style="background-color: #76C7D0;">
+                      style="background-color: #5B5EA7;">
                 <Play class="w-3 h-3"/>
                 {{ cita.appointment_type === 'online' ? 'Iniciar' : 'Iniciar viaje' }}
               </button>
@@ -95,7 +95,7 @@
               <button v-if="cita.status === 'en_proceso'"
                       @click="continuarConsulta(cita.id)"
                       class="px-4 py-1.5 text-white rounded-lg text-sm transition-all hover:opacity-90 ml-auto"
-                      style="background-color: #76C7D0;">
+                      style="background-color: #5B5EA7;">
                 Continuar
               </button>
             </div>
@@ -106,7 +106,7 @@
         <div class="flex justify-center mt-8">
           <button @click="verTodasLasCitas"
                   class="px-8 py-3 text-white rounded-lg transition-all hover:opacity-90 hover:scale-105"
-                  style="background-color: #76C7D0;">
+                  style="background-color: #5B5EA7;">
             Ver todas las citas
           </button>
         </div>
@@ -384,8 +384,8 @@ button:hover {
 
 /* Estado colors */
 .text-yellow-600 { color: #76C7D0; }
-.text-green-600 { color: #4A90E2; }
-.text-red-600 { color: #E74C3C; }
+.text-green-600 { color: #5B5EA7; }
+.text-red-600 { color: #EF4444; }
 .text-blue-600 { color: #76C7D0; }
 
 hr {

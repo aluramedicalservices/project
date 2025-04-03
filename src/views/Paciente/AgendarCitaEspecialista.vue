@@ -72,6 +72,39 @@
       </button>
     </div>
   </div>
+
+  <!-- Modal de confirmación -->
+  <Transition name="fade">
+    <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="absolute inset-0 bg-black bg-opacity-40" @click="showModal = false"></div>
+      <div class="relative bg-white rounded-xl shadow-2xl max-w-md w-11/12 p-6 m-4 transform transition-all">
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+            <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">¡Gracias por preferir Alura Medical Services!</h3>
+          <p class="text-gray-600 mb-8">Como miembro premium, nos complace atender tus necesidades de salud.</p>
+          <div class="flex space-x-4 justify-center">
+            <button 
+              @click="confirmarCita" 
+              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              Continuar
+            </button>
+            <button 
+              @click="showModal = false"
+              class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
   <NavBottom />
 </template>
 
@@ -94,6 +127,7 @@ const selectedSpecialist = ref('');
 const doctorInfo = ref(null);
 const listaEspecialistas = ref([]);
 const loading = ref(false);
+const showModal = ref(false);
 
 // Horas deshabilitadas (comida)
 const disabledHours = ref([12, 13]);
@@ -189,12 +223,17 @@ const cargarEspecialista = async () => {
 };
 
 // Redirigir a confirmar cita
-const irAConfirmarCita = async () => {
+const irAConfirmarCita = () => {
   if (!formularioValido.value) {
     alert('Por favor, completa todos los campos.');
     return;
   }
+  showModal.value = true;
+};
 
+// Confirmar cita
+const confirmarCita = () => {
+  showModal.value = false;
   router.push({
     path: '/confirmar-cita',
     query: {
@@ -238,7 +277,7 @@ button:disabled {
 }
 
 .mb-8 {
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   padding: 1.5rem;
   border-radius: 1rem;
   margin-top: 1.5rem;
@@ -264,7 +303,7 @@ select {
 }
 
 .bg-blue-50 {
-  background-color: #E0F9FC !important;
+  background-color: #F0F9FE !important;
   border: 2px solid #76C7D0;
 }
 
@@ -278,7 +317,7 @@ select {
 
 .mb-4 {
   margin-bottom: 2rem !important;
-  background-color: #E0F9FC !important;
+  background-color: #F0F9FE !important;
   color: #5B5EA7;
   font-weight: 500;
 }
@@ -295,7 +334,7 @@ select {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   color: #5B5EA7;
   font-weight: 500;
   z-index: 10;
@@ -312,7 +351,7 @@ select {
 .volver-btn {
   display: block;
   padding: 0.5rem 1rem;
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   color: #5B5EA7;
   font-weight: 500;
   border-radius: 0.5rem;
@@ -326,5 +365,24 @@ select {
 
 .mt-12 {
   margin-top: 3rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.transform {
+  transition: transform 0.3s ease;
+}
+
+.fade-enter-from .transform,
+.fade-leave-to .transform {
+  transform: scale(0.95);
 }
 </style>

@@ -48,22 +48,10 @@
             <Users class="w-4 h-4" />
             <p>Pacientes</p>
           </li>
-          <li @click="$router.push('/#')" class="flex items-center space-x-4 cursor-pointer">
-            <Map class="w-4 h-4" />
-            <p>Mapa</p>
-          </li>
         </ul>
         <hr class="w-full h-[1px] my-6 bg-gray-300 border-0">
 
         <ul class="space-y-8">
-          <li @click="$router.push('/#')" class="flex items-center space-x-4 cursor-pointer">
-            <User class="w-4 h-4" />
-            <p>Mi perfil</p>
-          </li>
-          <li @click="$router.push('/#')" class="flex items-center space-x-4 cursor-pointer">
-            <Settings class="w-4 h-4" />
-            <p>Configuración</p>
-          </li>
           <li @click="cerrarSesion" class="flex items-center space-x-4 cursor-pointer text-red-500">
             <LogOut class="w-4 h-4" />
             <p>Cerrar sesión</p>
@@ -78,7 +66,7 @@
 </template>
 
 <script>
-import { Bell, Menu, House, Calendar, Cross, History, CreditCard, User, Users, Map, Settings, X, LogOut } from 'lucide-vue-next';
+import { Bell, Menu, House, Calendar, Cross, History, User, Users, X, LogOut } from 'lucide-vue-next';
 import AluraLogo from '../AluraLogo.vue';
 
 export default {
@@ -89,11 +77,8 @@ export default {
     Calendar,
     Cross,
     History,
-    CreditCard,
     User,
     Users,
-    Map,
-    Settings,
     X, // Icono de "X" para cerrar
     AluraLogo,
     LogOut

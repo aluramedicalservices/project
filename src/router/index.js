@@ -34,7 +34,8 @@ import CitasAgendadas from '../views/doctor/CitasAgendadas.vue';
 import NotificacionesD from '../views/doctor/NotificacionesD.vue';
 import HistorialCitas from '../views/doctor/HistorialCitas.vue';
 import Pacientes from '../views/doctor/Pacientes.vue';
-
+import HistorialClinicoDoctor from '../views/doctor/HistorialClinicoDoctor.vue';
+import PerfilDoctor from '../views/doctor/PerfilDoctor.vue';
 
 const routes = [
   {
@@ -183,6 +184,18 @@ const routes = [
     name: 'Pacientes',
     component: Pacientes,
   },
+  {
+    path: '/doctor/historial-clinico/:id',
+    name: 'HistorialClinicoDoctor',
+    component: HistorialClinicoDoctor,
+    props: true
+  },
+  {
+    path: '/doctor/perfil/:id',
+    name: 'PerfilDoctor',
+    component: PerfilDoctor,
+    props: true
+  }
 ];
 
 const router = createRouter({

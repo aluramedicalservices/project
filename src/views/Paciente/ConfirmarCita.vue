@@ -66,6 +66,10 @@
     </div>
   </div>
   <NavBottom />
+  <SuccessModal 
+    :isVisible="showSuccessModal" 
+    @close="handleModalClose" 
+  />
 </template>
 
 <script setup>
@@ -76,6 +80,7 @@ import { es } from 'date-fns/locale';
 import { supabase } from '@/config/supabase';
 import NavTop from '../../components/comp_paciente/NavTop.vue';
 import NavBottom from '../../components/comp_paciente/NavBottom.vue';
+import SuccessModal from '../../components/modals/SuccessModal.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -160,6 +165,13 @@ const obtenerProfesional = async () => {
 };
 
 // Confirmar cita en Supabase
+const showSuccessModal = ref(false);
+
+const handleModalClose = () => {
+  showSuccessModal.value = false;
+  router.push('/dashboard-paciente');
+};
+
 const confirmarCita = async () => {
   try {
     if (!doctorId.value || !route.query.fecha || !route.query.hora) {
@@ -209,8 +221,7 @@ const confirmarCita = async () => {
 
     if (error) throw error;
 
-    alert('Cita agendada correctamente');
-    router.push('/dashboard-paciente');
+    showSuccessModal.value = true;
   } catch (error) {
     console.error('Error al guardar cita:', error);
     alert(error.message || 'Error al guardar la cita');

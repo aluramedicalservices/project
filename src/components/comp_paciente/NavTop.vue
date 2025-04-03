@@ -63,11 +63,6 @@
             <BookHeart class="w-4 h-4" />
             <p>Planes disponibles</p>
           </li>
-          <li @click="$router.push('/#')"
-          class="flex items-center space-x-4 cursor-pointer">
-            <Settings class="w-4 h-4" />
-            <p>Configuración</p>
-          </li>
           <li @click="cerrarSesion"
           class="flex items-center space-x-4 cursor-pointer text-red-500">
             <LogOut class="w-4 h-4" />
@@ -83,7 +78,7 @@
 </template>
 
 <script>
-import { Bell, Menu, House, CalendarPlus, CalendarHeart, Clipboard, CreditCard, User, BookHeart, Settings, X, LogOut } from 'lucide-vue-next';
+import { Bell, Menu, House, CalendarPlus, CalendarHeart, Clipboard, CreditCard, User, BookHeart, X, LogOut } from 'lucide-vue-next';
 import AluraLogo from '../AluraLogo.vue';
 
 export default {
@@ -97,7 +92,6 @@ export default {
     CreditCard,
     User,
     BookHeart,
-    Settings,
     X, // Icono de "X" para cerrar
     AluraLogo,
     LogOut

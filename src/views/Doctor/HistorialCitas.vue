@@ -61,8 +61,8 @@
             </div>
             
             <div>
-              <p class="text-[#5B5EA7]/70">Duración:</p>
-              <p class="font-medium">{{ cita.duracion_consulta }} minutos</p>
+              <p class="text-[#5B5EA7]/70">Hora de la cita:</p>
+              <p class="font-medium">{{ cita.appointment_time }}</p>
             </div>
             
             <div v-if="cita.diagnostico">

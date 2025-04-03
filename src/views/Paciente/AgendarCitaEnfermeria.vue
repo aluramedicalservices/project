@@ -69,7 +69,7 @@
           <h2 class="text-xl font-bold mb-4 text-gray-800">Pago con PayPal</h2>
           <div class="bg-gray-100 p-4 rounded-lg mb-4">
             <p class="text-lg font-semibold text-gray-800">Total a pagar:</p>
-            <p class="text-2xl font-bold text-blue-600">$500 MXN</p>
+            <p class="text-2xl font-bold text-blue-600">$600 MXN</p>
           </div>
           <p class="text-sm text-gray-600 mb-4">Consulta a domicilio con enfermero profesional</p>
           <div class="flex space-x-3">
@@ -245,7 +245,7 @@ button:hover:not(.mb-4) {
 }
 
 .mb-8 {
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   padding: 1.5rem;
   border-radius: 1rem;
   margin-top: 1.5rem;
@@ -272,7 +272,7 @@ select {
 
 .mb-4 {
   margin-bottom: 2rem !important;
-  background-color: #E0F9FC !important;
+  background-color: #F0F9FE !important;
   color: #5B5EA7;
   font-weight: 500;
 }
@@ -289,7 +289,7 @@ select {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   color: #5B5EA7;
   font-weight: 500;
   z-index: 10;
@@ -306,7 +306,7 @@ select {
 .volver-btn {
   display: block;
   padding: 0.5rem 1rem;
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   color: #5B5EA7;
   font-weight: 500;
   border-radius: 0.5rem;

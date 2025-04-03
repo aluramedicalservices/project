@@ -152,10 +152,7 @@ const buscarPacientes = () => {
 };
 
 const verHistorialPaciente = (pacienteId) => {
-  router.push({
-    name: 'HistorialCitas',
-    query: { pacienteId }
-  });
+  router.push(`/doctor/historial-clinico/${pacienteId}`);
 };
 
 onMounted(() => {

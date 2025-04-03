@@ -42,6 +42,59 @@
         Continuar
       </button>
     </div>
+
+    <!-- Modal de PayPal -->
+    <div v-if="showPaypalModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="text-center">
+          <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" 
+               alt="PayPal" 
+               class="mx-auto mb-4 h-16">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">Pago con PayPal</h2>
+          <div class="bg-gray-100 p-4 rounded-lg mb-4">
+            <p class="text-lg font-semibold text-gray-800">Total a pagar:</p>
+            <p class="text-2xl font-bold text-blue-600">$350 MXN</p>
+          </div>
+          <p class="text-sm text-gray-600 mb-4">Consulta en línea con enfermero profesional</p>
+          <div class="flex space-x-3">
+            <button 
+              @click="procesarPago"
+              class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Confirmar pago
+            </button>
+            <button 
+              @click="cancelarPago"
+              class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de éxito de pago -->
+    <div v-if="showSuccessModal" 
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 transform scale-100 animate-success-modal">
+        <div class="text-center">
+          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+            <svg class="h-10 w-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">¡Pago Exitoso!</h2>
+          <p class="text-lg text-gray-600 mb-6">Tu pago de $350 MXN ha sido procesado correctamente</p>
+          <button 
+            @click="continuarDespuesDelPago"
+            class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors"
+          >
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
   <NavBottom />
 </template>
@@ -60,6 +113,9 @@ import Titulo from '../../components/Titulo.vue';
 const router = useRouter();
 const selectedDate = ref(new Date());
 const selectedTime = ref('');
+const showPaypalModal = ref(false);
+const pagoCompletado = ref(false);
+const showSuccessModal = ref(false);
 
 const formattedSelectedDate = computed(() => {
   return format(selectedDate.value, "d 'de' MMMM 'de' yyyy", { locale: es });
@@ -93,14 +149,36 @@ const irAConfirmarCita = () => {
     return;
   }
 
+  showPaypalModal.value = true;
+};
+
+const procesarPago = () => {
+  setTimeout(() => {
+    pagoCompletado.value = true;
+    showPaypalModal.value = false;
+    showSuccessModal.value = true;
+  }, 1500);
+};
+
+const cancelarPago = () => {
+  showPaypalModal.value = false;
+};
+
+const confirmarCita = () => {
   router.push({
     path: '/confirmar-cita',
     query: {
       modalidad: 'online',
       fecha: format(selectedDate.value, 'yyyy-MM-dd'),
       hora: selectedTime.value,
+      pagado: true
     },
   });
+};
+
+const continuarDespuesDelPago = () => {
+  showSuccessModal.value = false;
+  confirmarCita();
 };
 </script>
 
@@ -123,7 +201,7 @@ button:hover:not(.mb-4) {
 }
 
 .mb-8 {
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   padding: 1.5rem;
   border-radius: 1rem;
   margin-top: 1.5rem;
@@ -143,7 +221,7 @@ label {
 
 .mb-4 {
   margin-bottom: 2rem !important;
-  background-color: #E0F9FC !important;
+  background-color: #F0F9FE !important;
   color: #5B5EA7;
   font-weight: 500;
 }
@@ -159,7 +237,7 @@ label {
 .volver-btn {
   display: block;
   padding: 0.5rem 1rem;
-  background-color: #E0F9FC;
+  background-color: #F0F9FE;
   color: #5B5EA7;
   font-weight: 500;
   border-radius: 0.5rem;
@@ -177,5 +255,33 @@ label {
 
 .content-container {
   padding-top: 3.5rem;
+}
+
+.animate-success-modal {
+  animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fixed {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>
