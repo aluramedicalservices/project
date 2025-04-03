@@ -4,7 +4,7 @@
 
 <script setup>
 import { ref, onMounted, watch, onUnmounted } from 'vue';
-import { initGoogleMaps } from '@/utils/maps';
+import { initGoogleMaps, getGoogleMapsInstance } from '@/utils/maps';
 
 const props = defineProps({
   doctorLocation: Object,
@@ -21,7 +21,8 @@ const markers = ref([]);
 
 const initializeMap = async () => {
   try {
-    const google = await initGoogleMaps();
+    await initGoogleMaps();
+    const google = getGoogleMapsInstance();
     
     // Initialize map with default center if patient location is not available
     const defaultCenter = props.patientLocation || { lat: 32.5149, lng: -117.0382 }; // Tijuana coordinates
@@ -56,7 +57,7 @@ const updateMarkers = () => {
   markers.value.forEach(marker => marker.setMap(null));
   markers.value = [];
 
-  const google = window.google;
+  const google = getGoogleMapsInstance();
   if (!google) return;
 
   // Add doctor marker
@@ -90,7 +91,7 @@ watch([() => props.doctorLocation, () => props.showRoute], async ([newDocLoc, sh
   updateMarkers();
 
   if (showRoute) {
-    const google = window.google;
+    const google = getGoogleMapsInstance();
     const directionsService = new google.maps.DirectionsService();
     
     try {

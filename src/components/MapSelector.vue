@@ -13,7 +13,7 @@
 
 <script setup>
 import { ref, onMounted, defineEmits } from 'vue';
-import { Loader } from '@googlemaps/js-api-loader';
+import { initGoogleMaps, getGoogleMapsInstance } from '@/utils/maps';
 
 const emit = defineEmits(['location-selected']);
 const mapDiv = ref(null);
@@ -22,45 +22,45 @@ let map = null;
 let marker = null;
 
 onMounted(async () => {
-  const loader = new Loader({
-    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    version: 'weekly',
-    libraries: ['places']
-  });
+  try {
+    // Inicializa Google Maps si no está inicializado
+    await initGoogleMaps();
+    const google = getGoogleMapsInstance();
+    
+    // Centrar inicialmente en Tijuana
+    const center = { lat: 32.5149, lng: -117.0382 };
+    
+    map = new google.maps.Map(mapDiv.value, {
+      center,
+      zoom: 13,
+    });
 
-  const google = await loader.load();
-  
-  // Centrar inicialmente en Tijuana
-  const center = { lat: 32.5149, lng: -117.0382 };
-  
-  map = new google.maps.Map(mapDiv.value, {
-    center,
-    zoom: 13,
-  });
+    marker = new google.maps.Marker({
+      map,
+      draggable: true,
+      position: center,
+    });
 
-  marker = new google.maps.Marker({
-    map,
-    draggable: true,
-    position: center,
-  });
+    map.addListener('click', (e) => {
+      marker.setPosition(e.latLng);
+      emitLocation(e.latLng);
+    });
 
-  map.addListener('click', (e) => {
-    marker.setPosition(e.latLng);
-    emitLocation(e.latLng);
-  });
-
-  marker.addListener('dragend', () => {
-    emitLocation(marker.getPosition());
-  });
+    marker.addListener('dragend', () => {
+      emitLocation(marker.getPosition());
+    });
+  } catch (error) {
+    console.error('Error initializing MapSelector:', error);
+  }
 });
 
 const searchLocation = async () => {
   if (!searchQuery.value) return;
 
-  const google = window.google;
-  const geocoder = new google.maps.Geocoder();
-
   try {
+    const google = getGoogleMapsInstance();
+    const geocoder = new google.maps.Geocoder();
+
     const { results } = await geocoder.geocode({ address: searchQuery.value });
     if (results[0]) {
       const location = results[0].geometry.location;
