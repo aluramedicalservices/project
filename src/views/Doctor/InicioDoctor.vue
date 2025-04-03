@@ -84,7 +84,7 @@
               </div>
               
               <button v-if="cita.status === 'agendada'"
-                      @click="iniciarConsulta(cita.id)"
+                      @click="iniciarConsulta(cita.id, cita.appointment_type)"
                       :disabled="hayConsultaEnProceso"
                       class="px-4 py-1.5 text-white rounded-lg text-sm transition-all hover:opacity-90 disabled:opacity-50 flex items-center gap-2 ml-auto"
                       style="background-color: #76C7D0;">
@@ -263,9 +263,8 @@ const cargarCitasDoctor = async () => {
   }
 };
 
-const iniciarConsulta = async (citaId) => {
+const iniciarConsulta = async (citaId, tipoCita) => {
   try {
-    // Solo se permite iniciar la consulta si no hay otra en proceso
     if (hayConsultaEnProceso.value) return;
 
     const { error } = await supabase
@@ -278,10 +277,12 @@ const iniciarConsulta = async (citaId) => {
 
     if (error) throw error;
 
-    router.push({
-      name: 'RegistroCita',
-      params: { id: citaId }
-    });
+    // Redirigir según el tipo de cita
+    if (tipoCita === 'domicilio') {
+      router.push({ name: 'Viaje', params: { id: citaId } });
+    } else {
+      router.push({ name: 'RegistroCita', params: { id: citaId } });
+    }
 
   } catch (error) {
     console.error('Error al iniciar consulta:', error);

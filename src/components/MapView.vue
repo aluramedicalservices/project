@@ -9,8 +9,7 @@ import { initGoogleMaps, getGoogleMapsInstance } from '@/utils/maps';
 const props = defineProps({
   doctorLocation: Object,
   patientLocation: Object,
-  showRoute: Boolean,
-  currentRoute: Object
+  showRoute: Boolean
 });
 
 const emit = defineEmits(['route-calculated']);
@@ -21,15 +20,14 @@ const markers = ref([]);
 
 const initializeMap = async () => {
   try {
-    await initGoogleMaps();
-    const google = getGoogleMapsInstance();
+    const google = await initGoogleMaps();
     
-    // Initialize map with default center if patient location is not available
-    const defaultCenter = props.patientLocation || { lat: 32.5149, lng: -117.0382 }; // Tijuana coordinates
+    // Centrar en la ubicación del doctor si está disponible
+    const initialCenter = props.doctorLocation || props.patientLocation || { lat: 32.5149, lng: -117.0382 };
     
     map.value = new google.maps.Map(mapContainer.value, {
       zoom: 13,
-      center: defaultCenter,
+      center: initialCenter,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       zoomControl: true,
       mapTypeControl: false,
@@ -39,13 +37,11 @@ const initializeMap = async () => {
       fullscreenControl: true
     });
 
-    // Initialize directions renderer
     directionsRenderer.value = new google.maps.DirectionsRenderer({
       map: map.value,
-      suppressMarkers: true // We'll use custom markers
+      suppressMarkers: true
     });
 
-    // Add markers if locations are available
     updateMarkers();
   } catch (error) {
     console.error('Error initializing map:', error);
@@ -57,7 +53,7 @@ const updateMarkers = () => {
   markers.value.forEach(marker => marker.setMap(null));
   markers.value = [];
 
-  const google = getGoogleMapsInstance();
+  const google = window.google;
   if (!google) return;
 
   // Add doctor marker
@@ -68,7 +64,7 @@ const updateMarkers = () => {
       icon: {
         url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
       },
-      title: 'Doctor'
+      title: 'Tu ubicación'
     }));
   }
 
@@ -85,36 +81,43 @@ const updateMarkers = () => {
   }
 };
 
-watch([() => props.doctorLocation, () => props.showRoute], async ([newDocLoc, showRoute]) => {
-  if (!map.value || !newDocLoc || !props.patientLocation) return;
+const calculateRoute = async (origin, destination) => {
+  const google = getGoogleMapsInstance();
+  const directionsService = new google.maps.DirectionsService();
+  
+  try {
+    const result = await directionsService.route({
+      origin,
+      destination,
+      travelMode: google.maps.TravelMode.DRIVING
+    });
 
-  updateMarkers();
+    directionsRenderer.value.setDirections(result);
+    const duration = result.routes[0].legs[0].duration.text;
+    emit('route-calculated', duration);
+  } catch (error) {
+    console.error('Error calculating route:', error);
+    emit('route-calculated', 'No disponible');
+  }
+};
 
-  if (showRoute) {
-    const google = getGoogleMapsInstance();
-    const directionsService = new google.maps.DirectionsService();
-    
-    try {
-      const result = await directionsService.route({
-        origin: newDocLoc,
-        destination: props.patientLocation,
-        travelMode: google.maps.TravelMode.DRIVING
-      });
+watch([() => props.doctorLocation, () => props.patientLocation, () => props.showRoute], 
+  ([newDocLoc, newPatientLoc, showRoute]) => {
+    if (!map.value || !newDocLoc || !newPatientLoc) return;
 
-      directionsRenderer.value.setDirections(result);
-      emit('route-calculated', result.routes[0].legs[0].duration.text);
-    } catch (error) {
-      console.error('Error calculating route:', error);
+    updateMarkers();
+
+    if (showRoute) {
+      calculateRoute(newDocLoc, newPatientLoc);
     }
   }
-});
+);
 
 onMounted(() => {
   initializeMap();
 });
 
 onUnmounted(() => {
-  // Cleanup markers
   markers.value.forEach(marker => marker.setMap(null));
 });
 </script>
