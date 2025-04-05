@@ -8,7 +8,7 @@
       ← Volver
     </button>
     <div class="mt-12">
-      <Titulo texto="Agendar cita con Especialista" />
+      <Titulo texto="Cita con Especialista" />
 
       <!-- Selector de especialista -->
       <div class="mb-8">
