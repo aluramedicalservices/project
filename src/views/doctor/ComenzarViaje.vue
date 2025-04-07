@@ -17,7 +17,7 @@
 
       <!-- Mapa en tiempo real -->
       <div class="rounded-xl overflow-hidden mb-6" style="height: 400px;">
-        <Mapview 
+        <MapView 
           :doctorLocation="currentLocation" 
           :patientLocation="patientLocation"
           :showRoute="true"

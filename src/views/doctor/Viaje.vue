@@ -39,7 +39,7 @@
         class="relative rounded-xl overflow-hidden mb-6"
         style="height: 400px;"
       >
-        <Mapview 
+        <MapView 
           :doctorLocation="doctorLocation" 
           :patientLocation="patientLocation"
           :showRoute="viajeIniciado"
@@ -99,7 +99,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { supabase } from '@/config/supabase';
-import Mapview from '@/components/Mapview.vue';
+import MapView from '@/components/MapView.vue';
 import NavTopD from '@/components/comp_doctor/NavTopD.vue';
 import NavBottomD from '@/components/comp_doctor/NavBottomD.vue';
 import { UserIcon, MapPinIcon, ClockIcon } from 'lucide-vue-next';
