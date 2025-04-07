@@ -58,7 +58,7 @@ import { useRoute, useRouter } from 'vue-router';
 import NavTopD from '../../components/comp_doctor/NavTopD.vue';
 import NavBottomD from '../../components/comp_doctor/NavBottomD.vue';
 import Titulo from '../../components/Titulo.vue';
-import Mapview from '../../components/Mapview.vue';
+import MapView from '../../components/MapView.vue';
 import { MapPinIcon, ClockIcon } from 'lucide-vue-next';
 import { supabase } from '@/config/supabase';
 import { initGoogleMaps } from '@/utils/maps';
