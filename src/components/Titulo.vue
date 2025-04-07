@@ -5,7 +5,7 @@
       <ChevronLeft class="w-5 h-5 text-white"/>
     </button>
 
-    <h1 class="titulo font-montserrat font-bold text-medblue text-[3.5vh]">{{ texto }}</h1>
+    <h1 class="titulo font-montserrat font-bold text-medblue text-[3.5vh] lg:text-[32px]">{{ texto }}</h1>
   </div>
 
   <hr class="w-full h-[1px] my-3 bg-gray-300 border-0">

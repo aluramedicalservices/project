@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-fondo p-6 flex flex-col items-center">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTopD />
-    <div class="max-w-4xl w-full bg-white p-6 rounded-xl shadow-xl mt-16 mb-16">
+    <div class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <!-- Estado del viaje -->
       <div class="mb-4 text-center">
         <h2 class="text-4xl font-bold mb-2" style="color: #3D4448">
@@ -86,7 +86,7 @@
         </button>
       </div>
     </div>
-    <NavBottomD />
+    <NavBottomD class="lg:hidden"/>
     <AlertMessage 
       :show="showAlert" 
       :message="`Aún no has llegado. Estás a ${distancia.toFixed(2)} km del destino`"

@@ -1,8 +1,8 @@
 <template>
-  <div id="vista_citas_agendadas" class="flex flex-col justify-between min-h-screen font-nunito text-[#5B5EA7]">
+  <div id="vista_citas_agendadas" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTopD />
-    <div id="next_appointments" class="bg-[#F0F9FE] w-4/5 max-w-[1200px] mx-auto pt-20 pb-32 rounded-lg shadow-md">
-      <Titulo texto="Todas tus citas" />
+    <div id="next_appointments" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
+      <Titulo texto="Todas las citas" />
       
       <!-- Filtros -->
       <div class="flex flex-wrap gap-4 mb-6 justify-center">
@@ -156,7 +156,7 @@
         <p class="text-gray-500">No tienes citas agendadas</p>
       </div>
     </div>
-    <NavBottomD />
+    <NavBottomD class="lg:hidden"/>
   </div>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-fondo p-6 flex flex-col">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTopD />
-    <div class="max-w-4xl mx-auto w-full bg-white p-6 rounded-xl shadow-xl mt-4">
+    <div class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <Titulo texto="Viaje en curso" />
       
       <div class="bg-blue-50 p-4 rounded-lg mb-4">
@@ -48,6 +48,7 @@
         </button>
       </div>
     </div>
+    <NavBottomD class="lg:hidden"/>
   </div>
 </template>
 
@@ -55,6 +56,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import NavTopD from '../../components/comp_doctor/NavTopD.vue';
+import NavBottomD from '../../components/comp_doctor/NavBottomD.vue';
 import Titulo from '../../components/Titulo.vue';
 import Mapview from '../../components/Mapview.vue';
 import { MapPinIcon, ClockIcon } from 'lucide-vue-next';

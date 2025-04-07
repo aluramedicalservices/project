@@ -1,12 +1,10 @@
 <template>
-  <div class="min-h-screen bg-fondo p-4 pt-20 pb-32">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTopD />
-    <div class="max-w-4xl mx-auto">
+    <div class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <!-- Título centrado -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-medblue text-center">Consulta en Progreso</h1>
-      </div>
-
+      <Titulo texto="Consulta en progreso"/>
+      
       <!-- Datos del Paciente con botón Ver perfil -->
       <div class="bg-[#F0F9FE] rounded-xl shadow-lg p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
@@ -89,7 +87,7 @@
         </button>
       </div>
     </div>
-    <NavBottomD />
+    <NavBottomD class="lg:hidden" />
 
     <!-- Diálogo de confirmación -->
     <div v-if="showConfirmDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -141,6 +139,7 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import NavTopD from '@/components/comp_doctor/NavTopD.vue';
 import NavBottomD from '@/components/comp_doctor/NavBottomD.vue';
+import Titulo from '../../components/Titulo.vue';
 
 const route = useRoute();
 const router = useRouter();

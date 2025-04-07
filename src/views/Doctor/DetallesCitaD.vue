@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-fondo min-h-screen pb-20 pt-16">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
     
-    <div class="max-w-4xl mx-auto px-4 py-6">
+    <div class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <!-- Botón de regreso -->
       <button 
         @click="router.go(-1)"
@@ -130,7 +130,7 @@
       </div>
     </div>
     
-    <NavBottom />
+    <NavBottom class="lg:hidden" />
   </div>
 </template>
 

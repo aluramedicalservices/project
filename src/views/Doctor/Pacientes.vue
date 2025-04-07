@@ -1,12 +1,9 @@
 <template>
-  <div class="flex flex-col justify-between min-h-screen font-nunito" style="background-color: #F0F9FE;">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTopD />
-    <div class="w-4/5 max-w-[1200px] mx-auto pt-20 pb-32">
+    <div class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <!-- Encabezado -->
-      <div class="text-center mb-8">
-        <TituloH2 texto="Mis Pacientes" class="text-[#5B5EA7]" />
-        <p style="color: #5B5EA7">Lista de pacientes atendidos</p>
-      </div>
+      <TituloPrincipal texto="Mis pacientes"/>
 
       <!-- Barra de búsqueda -->
       <div class="mb-6">
@@ -47,9 +44,7 @@
           <div class="mt-4 flex flex-wrap gap-2">
             <button 
               @click="verHistorialPaciente(paciente.id)"
-              class="px-3 py-1 text-white rounded-lg text-sm transition-colors duration-200"
-              style="background-color: #76C7D0; hover:background-color: #5B5EA7"
-            >
+              class="px-3 py-1 text-white rounded-lg text-sm transition-colors duration-200">
               Ver historial
             </button>
           </div>
@@ -61,7 +56,7 @@
         <p style="color: #5B5EA7">No se encontraron pacientes registrados</p>
       </div>
     </div>
-    <NavBottomD />
+    <NavBottomD class="lg:hidden"/>
   </div>
 </template>
 
@@ -74,6 +69,7 @@ import { es } from 'date-fns/locale';
 import NavTopD from '@/components/comp_doctor/NavTopD.vue';
 import NavBottomD from '@/components/comp_doctor/NavBottomD.vue';
 import TituloH2 from '@/components/TituloH2.vue';
+import TituloPrincipal from '@/components/TituloPrincipal.vue';
 
 const router = useRouter();
 const pacientes = ref([]);

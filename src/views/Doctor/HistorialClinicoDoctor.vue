@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-fondo p-4 pt-20 pb-32">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTopD />
-    <div class="max-w-4xl mx-auto">
+    <div class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <!-- Botón Volver -->
       <div class="mb-6">
         <button 
@@ -78,7 +78,7 @@
         No hay registros de consultas anteriores
       </div>
     </div>
-    <NavBottomD />
+    <NavBottomD class="lg:hidden"/>
   </div>
 </template>
 

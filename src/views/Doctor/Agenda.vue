@@ -1,7 +1,7 @@
 <template>
-  <div id="vista_agenda" class="flex flex-col justify-between min-h-screen font-nunito text-[#5B5EA7]">
+  <div id="vista_agenda" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTopD />
-    <div id="contenedor_agenda" class="bg-[#F0F9FE] text-[#5B5EA7] py-20">
+    <div id="contenedor_agenda" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <TituloPrincipal texto="Agenda"/>
       
       <!-- Leyenda de estados -->
@@ -37,7 +37,7 @@
         />
       </div>
     </div>
-    <NavBottomD />
+    <NavBottomD class="lg:hidden"/>
   </div>
 </template>
 
