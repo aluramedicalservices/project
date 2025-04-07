@@ -25,7 +25,7 @@
                     </button>
                 </div>
             </div>
-            <p class="text-gray-600">© Alura 2025.</p>
+            <p class="text-gray-600">© Alura 2025 .</p>
         </div>
     </div>
 </template>
