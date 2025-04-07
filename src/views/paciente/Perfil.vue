@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-[#E0F9FC] p-4 pt-20 pb-32">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
 
-    <div class="max-w-md mx-auto">
+    <div  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <div class="bg-[#F0F9FE] shadow-lg rounded-xl p-8 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-32 h-32 bg-[#76C7D0] opacity-10 rounded-bl-full"></div>
         <h1 class="text-3xl font-bold text-[#5B5EA7] text-center mb-8">Mi Perfil</h1>
@@ -97,7 +97,7 @@
       </div>
     </div>
 
-    <NavBottom />
+    <NavBottom class="lg:hidden"/>
   </div>
 </template>
 

@@ -1,6 +1,7 @@
 <template>
+  <div id="vista_agendar_cita_online" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
   <NavTop />
-  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32">
+  <div id="Schedule_appointment"  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
     <button 
       @click="router.push('/dashboard-paciente')"
       class="volver-btn"
@@ -96,7 +97,8 @@
       </div>
     </div>
   </div>
-  <NavBottom />
+  <NavBottom class="lg:hidden"/>
+  </div>
 </template>
 
 <script setup>

@@ -1,7 +1,7 @@
 <template>
-  <div id="vista_citas_agendadas" class="flex flex-col justify-between min-h-screen font-nunito bg-[#F0F9FE]">
+  <div id="vista_citas_agendadas" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
-    <div id="next_appointments" class="w-11/12 max-w-[1200px] mx-auto py-16 mt-10 mb-16">
+    <div id="next_appointments"  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <div class="flex flex-col items-center gap-3 mb-12">
         <CalendarIcon class="w-12 h-12 text-[#5B5EA7]"/>
         <h1 class="text-4xl font-bold text-[#5B5EA7] text-center">Próximas citas</h1>
@@ -62,7 +62,7 @@
         </div>
       </div>
     </div>
-    <NavBottom />
+    <NavBottom class="lg:hidden"/>
   </div>
 </template>
 

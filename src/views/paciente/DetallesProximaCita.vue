@@ -1,7 +1,7 @@
 <template>
-  <div id="next_appointments" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
+  <div id="next_appointments" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
-    <div id="detalles_citas_agendadas" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-20 pb-32">
+    <div id="detalles_citas_agendadas"  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <Titulo texto="Detalles de cita" />
       <!-- Detalles de la cita -->
       <div id="appointment-container-info" class="space-y-3">
@@ -48,7 +48,7 @@
         </div>
       </div>
     </div>
-    <NavBottom />
+    <NavBottom class="lg:hidden"/>
   </div>
 </template>
 

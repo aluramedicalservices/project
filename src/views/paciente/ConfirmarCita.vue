@@ -1,75 +1,76 @@
 <template>
-  <NavTop />
-  <div class="main-spacing">
-    <div class="page-container">
-      <div id="Confirm_appointment" class="p-4 max-w-2xl mx-auto">
-        <Titulo :texto="tituloConfirmacion" class="titulo-confirmacion" />
+  <div id="vista_confirmar_cita"
+    class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
+    <NavTop />
+    <div class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
+      <div class="page-container">
+        <div id="Confirm_appointment" class="p-4 max-w-2xl mx-auto">
+          <Titulo :texto="tituloConfirmacion" class="titulo-confirmacion" />
 
-        <div class="confirmation-card">
-          <div class="space-y-3 text-lg">
-            <!-- Fecha -->
-            <div class="info-item">
-              <span class="material-icons-round icon">event</span>
-              <span>Fecha: <strong>{{ formattedDate }}</strong></span>
-            </div>
-            
-            <!-- Hora -->
-            <div class="info-item">
-              <span class="material-icons-round icon">schedule</span>
-              <span>Hora: <strong>{{ route.query.hora }} hrs</strong></span>
-            </div>
-            
-            <!-- Profesional asignado -->
-            <div class="info-item">
-              <span class="material-icons-round icon">person</span>
-              <span>Profesional: <strong>{{ nombreProfesional }}</strong></span>
-            </div>
-            
-            <!-- Tipo de cita -->
-            <div class="info-item">
-              <span class="material-icons-round icon">computer</span>
-              <span>Modalidad: <strong>{{ tipoCitaFormateado }}</strong></span>
-            </div>
+          <div class="confirmation-card">
+            <div class="space-y-3 text-lg">
+              <!-- Fecha -->
+              <div class="info-item">
+                <span class="material-icons-round icon">event</span>
+                <span>Fecha: <strong>{{ formattedDate }}</strong></span>
+              </div>
 
-            <!-- Enlace de Google Meet (solo para online) -->
-            <div v-if="tipoCita === 'online'" class="info-item">
-              <span class="material-icons-round icon">video_camera_front</span>
-              <span>Enlace de Google Meet: <strong><a :href="googleMeetLink" target="_blank">{{ googleMeetLink }}</a></strong></span>
-            </div>
+              <!-- Hora -->
+              <div class="info-item">
+                <span class="material-icons-round icon">schedule</span>
+                <span>Hora: <strong>{{ route.query.hora }} hrs</strong></span>
+              </div>
 
-            <!-- Especialidad (solo para especialista) -->
-            <div v-if="tipoCita === 'especialista'" class="info-item">
-              <span class="material-icons-round icon">medical_services</span>
-              <span>Especialidad: <strong>{{ route.query.especialidad || 'No especificada' }}</strong></span>
-            </div>
+              <!-- Profesional asignado -->
+              <div class="info-item">
+                <span class="material-icons-round icon">person</span>
+                <span>Profesional: <strong>{{ nombreProfesional }}</strong></span>
+              </div>
 
-            <!-- Método de pago (solo para domicilio) -->
-            <div v-if="tipoCita === 'domicilio' && route.query.metodoPago" class="info-item">
-              <span class="material-icons-round icon">payment</span>
-              <span>Método de pago: <strong>{{ metodoPagoFormateado }}</strong></span>
-            </div>
+              <!-- Tipo de cita -->
+              <div class="info-item">
+                <span class="material-icons-round icon">computer</span>
+                <span>Modalidad: <strong>{{ tipoCitaFormateado }}</strong></span>
+              </div>
 
-            <!-- Ubicación (solo para domicilio) -->
-            <div v-if="tipoCita === 'domicilio'" class="info-item">
-              <span class="material-icons-round icon">location_on</span>
-              <span>Ubicación: <strong>{{ route.query.ubicacion || 'No especificada' }}</strong></span>
+              <!-- Enlace de Google Meet (solo para online) -->
+              <div v-if="tipoCita === 'online'" class="info-item">
+                <span class="material-icons-round icon">video_camera_front</span>
+                <span>Enlace de Google Meet: <strong><a :href="googleMeetLink" target="_blank">{{ googleMeetLink
+                      }}</a></strong></span>
+              </div>
+
+              <!-- Especialidad (solo para especialista) -->
+              <div v-if="tipoCita === 'especialista'" class="info-item">
+                <span class="material-icons-round icon">medical_services</span>
+                <span>Especialidad: <strong>{{ route.query.especialidad || 'No especificada' }}</strong></span>
+              </div>
+
+              <!-- Método de pago (solo para domicilio) -->
+              <div v-if="tipoCita === 'domicilio' && route.query.metodoPago" class="info-item">
+                <span class="material-icons-round icon">payment</span>
+                <span>Método de pago: <strong>{{ metodoPagoFormateado }}</strong></span>
+              </div>
+
+              <!-- Ubicación (solo para domicilio) -->
+              <div v-if="tipoCita === 'domicilio'" class="info-item">
+                <span class="material-icons-round icon">location_on</span>
+                <span>Ubicación: <strong>{{ route.query.ubicacion || 'No especificada' }}</strong></span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Botones -->
-        <div class="button-container">
-          <button @click="cancelarCita" class="btn-cancelar">Cancelar</button>
-          <button @click="confirmarCita" class="btn-confirmar">Confirmar</button>
+          <!-- Botones -->
+          <div class="button-container">
+            <button @click="cancelarCita" class="btn-cancelar">Cancelar</button>
+            <button @click="confirmarCita" class="btn-confirmar">Confirmar</button>
+          </div>
         </div>
       </div>
     </div>
+    <NavBottom class="lg:hidden" />
+    <SuccessModal :isVisible="showSuccessModal" @close="handleModalClose" />
   </div>
-  <NavBottom />
-  <SuccessModal 
-    :isVisible="showSuccessModal" 
-    @close="handleModalClose" 
-  />
 </template>
 
 <script setup>
@@ -93,8 +94,8 @@ const googleMeetLink = ref('');
 
 // Título dinámico
 const tituloConfirmacion = computed(() => {
-  return tipoCita.value === 'especialista' 
-    ? 'Confirmar cita con especialista' 
+  return tipoCita.value === 'especialista'
+    ? 'Confirmar cita con especialista'
     : 'Confirmar cita';
 });
 
@@ -154,7 +155,7 @@ const obtenerProfesional = async () => {
       .single();
 
     if (error) throw error;
-    
+
     nombreProfesional.value = data.nombre_completo;
     doctorId.value = data.id;
   } catch (error) {
@@ -301,7 +302,8 @@ onMounted(() => {
   padding: 0 1rem;
 }
 
-.btn-confirmar, .btn-cancelar {
+.btn-confirmar,
+.btn-cancelar {
   width: 100%;
   padding: 1rem;
   border-radius: 12px;
@@ -339,7 +341,8 @@ onMounted(() => {
   box-shadow: 0 6px 20px rgba(91, 94, 167, 0.15);
 }
 
-.btn-confirmar:active, .btn-cancelar:active {
+.btn-confirmar:active,
+.btn-cancelar:active {
   transform: translateY(1px);
 }
 
@@ -362,7 +365,8 @@ a:hover {
     justify-content: flex-end;
   }
 
-  .btn-confirmar, .btn-cancelar {
+  .btn-confirmar,
+  .btn-cancelar {
     width: auto;
     min-width: 160px;
     padding: 1rem 2rem;

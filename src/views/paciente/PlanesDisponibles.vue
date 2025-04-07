@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-[#F0F9FE]">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
-    <div class="container mx-auto py-20 px-6 mb-24">
+    <div  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <h1 class="text-4xl font-bold text-center text-[#5B5EA7] mb-12">Planes Disponibles</h1>
 
       <!-- Servicios sin membresía -->
@@ -174,7 +174,7 @@
         </div>
       </div>
     </div>
-    <NavBottom />
+    <NavBottom class="lg:hidden"/>
   </div>
 </template>
 

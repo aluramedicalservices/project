@@ -46,8 +46,11 @@
 
       <!-- Próximas citas -->
       <div id="s-upcoming-appointments" class="font-nunito py-2" v-if="citasPendientes.length > 0">
-        <div id="titulo_y_fecha" class="text-center mb-8">
-          <TituloH2 texto="Agenda" class="text-2xl font-bold mb-2 text-noxgrey" />
+        <div id="titulo_y_fecha" @click="irAProximasCitas" class="text-center mb-8">
+          <div class="flex items-center justify-center gap-2 cursor-pointer">
+            <TituloH2 texto="Agenda" class="text-2xl font-bold mb-2 text-noxgrey" />
+            <ChevronRight class="w-6 h-6 transform group-hover:translate-x-1 transition-transform" />
+          </div>
           <p>Hoy es {{ fechaActual }}</p>
         </div>
 
@@ -57,20 +60,22 @@
           <div id="contenedor_cita" v-for="cita in citasPendientes.slice(0, 4)" :key="cita.id"
             class="p-5 rounded-xl text-noxgrey bg-healingbluelight lg:flex lg:flex-col">
 
-            <!-- Badges en la parte superior -->
-            <div>
-              <span v-if="esHoy(cita.appointment_date)">Hoy</span>
-              <span v-if="cita.estaPorComenzar">Próxima</span>
-            </div>
-
             <!-- CONTENIDO DE LA CITA -->
             <div id="contenido_cita" class="lg:flex lg:space-x-16 justify-between items-center">
               <!-- Nombre del paciente -->
-              <div class="flex items-center gap-2">
-                <User class="w-4 h-4 text-medblue" />
-                <h3 class="text-md font-montserrat font-semibold text-medblue">
-                  {{ cita.paciente_nombre || 'No asignado' }}
-                </h3>
+              <div>
+                <div class="flex items-center gap-2">
+                  <User class="w-4 h-4 text-medblue" />
+                  <h3 class="text-md font-montserrat font-semibold text-medblue">
+                    {{ cita.paciente_nombre || 'No asignado' }}
+                  </h3>
+                  <!-- Badges en la parte superior -->
+                  <div class="mx-4 bg-healingblue text-white py-1 px-2 rounded-full">
+                    <span v-if="esHoy(cita.appointment_date)">Hoy</span>
+                    <span v-if="cita.estaPorComenzar">Próxima</span>
+                  </div>
+                </div>
+
               </div>
               <button v-if="cita.status === 'agendada'" @click="iniciarConsulta(cita.id, cita.appointment_type)"
                 :disabled="hayConsultaEnProceso"
@@ -80,7 +85,7 @@
               </button>
 
               <button v-if="cita.status === 'en_proceso'" @click="continuarConsulta(cita.id)"
-              class="w-full my-2 lg:my-0 lg:w-1/4 font-nunito bg-medblue text-white py-3 px-4 rounded-full inline-flex justify-center items-center gap-x-2 text-sm font-medium border border-transparent hover:bg-medbluehover transition focus:outline-hidden focus:border-medbluelight disabled:opacity-50 disabled:pointer-events-none">
+                class="w-full my-2 lg:my-0 lg:w-1/4 font-nunito bg-medblue text-white py-3 px-4 rounded-full inline-flex justify-center items-center gap-x-2 text-sm font-medium border border-transparent hover:bg-medbluehover transition focus:outline-hidden focus:border-medbluelight disabled:opacity-50 disabled:pointer-events-none">
                 Continuar
               </button>
             </div>
@@ -152,7 +157,7 @@ import NavBottomD from '@/components/comp_doctor/NavBottomD.vue';
 import TituloH2 from '@/components/TituloH2.vue';
 
 // Icons
-import { Calendar, Clock, User, Stethoscope, ActivitySquare, Play } from 'lucide-vue-next';
+import { Calendar, Clock, User, Stethoscope, ActivitySquare, Play, ChevronRight } from 'lucide-vue-next';
 import avatar from '@/assets/imagenes/avatar.png';
 import medicoAnuncio1 from '@/assets/imagenes/noticias/medico-anuncio1.png';
 
@@ -161,6 +166,7 @@ const especialidadDoctor = ref(localStorage.getItem('doctorEspecialidad') || 'Es
 const fechaActual = ref('');
 const citasPendientes = ref([]);
 const router = useRouter();
+const irAProximasCitas = () => router.push('/citas-agendadas');
 
 // Computado para saber si hay alguna consulta en proceso
 const hayConsultaEnProceso = computed(() => {

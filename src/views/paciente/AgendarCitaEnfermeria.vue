@@ -1,96 +1,80 @@
 <template>
-  <NavTop />
-  <div id="Schedule_appointment" class="p-4 max-w-2xl mx-auto pb-32">
-    <button 
-      @click="router.push('/dashboard-paciente')"
-      class="volver-btn"
-    >
-      ← Volver
-    </button>
-    <div class="mt-12">
-      <Titulo texto="Agendar cita a Domicilio" />
+  <div id="vista_agendar_cita_enfermeria" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
+    <NavTop />
+    <div id="Schedule_appointment" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
+      <button @click="router.push('/dashboard-paciente')" class="volver-btn">
+        ← Volver
+      </button>
+      <div class="mt-12">
+        <Titulo texto="Agendar cita a Domicilio" />
 
-      <!-- Selector de fecha -->
-      <div class="mb-8">
-        <label class="block text-lg font-medium mb-2">Fecha de la cita</label>
-        <Calendar 
-          :selected-date="selectedDate"
-          @date-selected="handleDateSelect"
-        />
-        <p class="mt-2 text-gray-600">
-          Fecha seleccionada: {{ formattedSelectedDate || 'Selecciona una fecha' }}
-        </p>
+        <!-- Selector de fecha -->
+        <div class="mb-8">
+          <label class="block text-lg font-medium mb-2">Fecha de la cita</label>
+          <Calendar :selected-date="selectedDate" @date-selected="handleDateSelect" />
+          <p class="mt-2 text-gray-600">
+            Fecha seleccionada: {{ formattedSelectedDate || 'Selecciona una fecha' }}
+          </p>
+        </div>
+
+        <!-- Selector de hora -->
+        <div class="mb-8">
+          <label class="block text-lg font-medium mb-2">Hora de la cita</label>
+          <TimeSelector :selected-time="selectedTime" @time-selected="handleTimeSelect" />
+          <p class="mt-2 text-gray-600">
+            Hora seleccionada: {{ selectedTime || 'Selecciona una hora' }}
+          </p>
+        </div>
+
+        <!-- Selector de ubicación -->
+        <div class="mb-8">
+          <label class="block text-lg font-medium mb-2">Ubicación de la consulta</label>
+          <MapSelector @location-selected="handleLocationSelect" />
+          <p v-if="selectedLocation" class="mt-2 text-gray-600">
+            Ubicación seleccionada: {{ selectedLocation.lat.toFixed(6) }}, {{ selectedLocation.lng.toFixed(6) }}
+          </p>
+        </div>
+
+        <!-- Método de pago -->
+        <div class="mb-8">
+          <label class="block text-lg font-medium mb-2">Método de pago</label>
+          <select v-model="metodoPago" class="w-full p-2 border border-gray-300 rounded-lg" required
+            @change="handlePaymentMethodChange">
+            <option value="" disabled selected>Selecciona un método de pago</option>
+            <option value="online">Pagar en línea</option>
+            <option value="efectivo">Pagar en efectivo</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Selector de hora -->
-      <div class="mb-8">
-        <label class="block text-lg font-medium mb-2">Hora de la cita</label>
-        <TimeSelector 
-          :selected-time="selectedTime"
-          @time-selected="handleTimeSelect"
-        />
-        <p class="mt-2 text-gray-600">
-          Hora seleccionada: {{ selectedTime || 'Selecciona una hora' }}
-        </p>
-      </div>
-
-      <!-- Selector de ubicación -->
-      <div class="mb-8">
-        <label class="block text-lg font-medium mb-2">Ubicación de la consulta</label>
-        <MapSelector @location-selected="handleLocationSelect" />
-        <p v-if="selectedLocation" class="mt-2 text-gray-600">
-          Ubicación seleccionada: {{ selectedLocation.lat.toFixed(6) }}, {{ selectedLocation.lng.toFixed(6) }}
-        </p>
-      </div>
-
-      <!-- Método de pago -->
-      <div class="mb-8">
-        <label class="block text-lg font-medium mb-2">Método de pago</label>
-        <select 
-          v-model="metodoPago"
-          class="w-full p-2 border border-gray-300 rounded-lg"
-          required
-          @change="handlePaymentMethodChange"
-        >
-          <option value="" disabled selected>Selecciona un método de pago</option>
-          <option value="online">Pagar en línea</option>
-          <option value="efectivo">Pagar en efectivo</option>
-        </select>
-      </div>
-    </div>
-    
-    <!-- Modal de PayPal -->
-    <div v-if="showPaypalModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <div class="text-center">
-          <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" 
-               alt="PayPal" 
-               class="mx-auto mb-4 h-16">
-          <h2 class="text-xl font-bold mb-4 text-gray-800">Pago con PayPal</h2>
-          <div class="bg-gray-100 p-4 rounded-lg mb-4">
-            <p class="text-lg font-semibold text-gray-800">Total a pagar:</p>
-            <p class="text-2xl font-bold text-blue-600">$600 MXN</p>
-          </div>
-          <p class="text-sm text-gray-600 mb-4">Consulta a domicilio con enfermero profesional</p>
-          <div class="flex space-x-3">
-            <button 
-              @click="procesarPago"
-              class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              Confirmar pago
-            </button>
-            <button 
-              @click="cancelarPago"
-              class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
-            >
-              Cancelar
-            </button>
+      <!-- Modal de PayPal -->
+      <div v-if="showPaypalModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div class="text-center">
+            <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" alt="PayPal"
+              class="mx-auto mb-4 h-16">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Pago con PayPal</h2>
+            <div class="bg-gray-100 p-4 rounded-lg mb-4">
+              <p class="text-lg font-semibold text-gray-800">Total a pagar:</p>
+              <p class="text-2xl font-bold text-blue-600">$600 MXN</p>
+            </div>
+            <p class="text-sm text-gray-600 mb-4">Consulta a domicilio con enfermero profesional</p>
+            <div class="flex space-x-3">
+              <button @click="procesarPago"
+                class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                Confirmar pago
+              </button>
+              <button @click="cancelarPago"
+                class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors">
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <NavBottom class="lg:hidden"/>
   </div>
-  <NavBottom />
 </template>
 
 <script setup>
@@ -125,12 +109,12 @@ const handleDateSelect = (date) => {
   // Validar que la fecha no sea anterior a hoy
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   if (date < today) {
     alert('No se pueden agendar citas en fechas pasadas');
     return;
   }
-  
+
   selectedDate.value = new Date(
     date.getFullYear(),
     date.getMonth(),
@@ -210,7 +194,7 @@ const irAConfirmarCita = async () => {
 
   // Convertir la ubicación a string para pasarla como query parameter
   const ubicacion = JSON.stringify(selectedLocation.value);
-  
+
   router.push({
     path: '/confirmar-cita',
     query: {
@@ -249,7 +233,7 @@ button:hover:not(.mb-4) {
   padding: 1.5rem;
   border-radius: 1rem;
   margin-top: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 label {
@@ -330,6 +314,7 @@ select {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

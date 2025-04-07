@@ -1,7 +1,7 @@
 <template>
-  <div id="vista_agendar_cita" class="flex flex-col justify-between min-h-screen font-nunito text-noxgrey">
+  <div id="vista_agendar_cita" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
-    <div id="Schedule_appointment" class="bg-fondo text-noxgrey w-4/5 max-w-[1200px] mx-auto py-16">
+    <div id="Schedule_appointment" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <TituloPrincipal texto="Agendar cita" />
 
       <!-- Tipo de consulta -->
@@ -62,7 +62,7 @@
       <br>
       <button @click="irAConfirmarCita" class="btn-agendar">Agendar</button>
     </div>
-    <NavBottom />
+    <NavBottom class="lg:hidden"/>
   </div>
 </template>
 

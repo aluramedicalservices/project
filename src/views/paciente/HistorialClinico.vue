@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-gradient-to-b from-[#F0F9FE] to-white min-h-screen pb-20 pt-16">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
-    <div class="max-w-4xl mx-auto px-4 py-6">
+    <div  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
       <div class="flex flex-col items-center gap-3 mb-12">
         <ClipboardDocumentIcon class="w-12 h-12 text-[#5B5EA7]"/>
         <h1 class="text-4xl font-semibold text-[#5B5EA7] text-center">Historial Clínico</h1>
@@ -112,7 +112,7 @@
         </div>
       </div>
     </div>
-    <NavBottom />
+    <NavBottom class="lg:hidden"/>
   </div>
 </template>
 
