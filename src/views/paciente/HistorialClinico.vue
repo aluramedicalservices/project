@@ -1,16 +1,13 @@
 <template>
-  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
+  <div class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-white">
     <NavTop />
-    <div  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
-      <div class="flex flex-col items-center gap-3 mb-12">
-        <ClipboardDocumentIcon class="w-12 h-12 text-[#5B5EA7]"/>
-        <h1 class="text-4xl font-semibold text-[#5B5EA7] text-center">Historial Clínico</h1>
-      </div>
+    <div  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32 py-20">
+      <Titulo texto="Historial Clínico" />
       
-      <div class="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-2xl shadow-sm">
+      <div class="flex flex-col md:flex-row gap-4 mb-8 py-4 ">
         <select 
           v-model="filtroTipo"
-          class="px-6 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#76C7D0] bg-[#F0F9FE] text-[#5B5EA7] font-medium transition-all hover:border-[#76C7D0]">
+          class="px-6 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#76C7D0] text-noxgrey font-medium transition-all w-full">
           <option value="">Todos los tipos</option>
           <option value="online">Online</option>
           <option value="domicilio">A domicilio</option>
@@ -122,6 +119,7 @@ import { useRouter } from 'vue-router';
 import { supabase } from '@/config/supabase';
 import NavTop from '@/components/comp_paciente/NavTop.vue';
 import NavBottom from '@/components/comp_paciente/NavBottom.vue';
+import Titulo from '@/components/Titulo.vue';
 import { ElLoading, ElNotification } from 'element-plus';
 import { ClipboardDocumentIcon } from '@heroicons/vue/24/outline';
 
