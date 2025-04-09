@@ -1,6 +1,5 @@
 <template>
-  <div id="vista_agendar_cita"
-    class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-white">
+  <div id="vista_agendar_cita" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-white">
     <NavTop />
     <div class="flex-1 py-20"> <!-- Added padding to prevent overlap -->
       <div id="p-patients-home" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto">
@@ -75,7 +74,7 @@
                 <hr class="w-full h-[1px] my-1 bg-separador border-0">
 
                 <div id="lista-informacion-cita"
-                  class="lg:flex lg:space-x-16 py-2 justify-between items-center text-sm">
+                  class="lg:flex lg:space-x-16 py-2 space-y-2 lg:space-y-0 justify-between items-center text-sm">
                   <div class="flex items-center space-x-2 lg:w-1/3">
                     <Calendar class="w-5 h-5 text-gray-600" />
                     <p>{{ formatearFecha(cita.appointment_date) }}</p>
@@ -107,7 +106,7 @@
         <!-- Solicitar citas -->
         <div id="s-request-appointment" class="mb-8 md:mb-12 space-y-4 pb-10" @click="irAAgendarCita">
           <div class=" group flex items-center justify-center gap-2 cursor-pointer">
-            <TituloH2 texto="Solicitar cita" />
+            <TituloH2 texto="Agendar cita" />
             <ChevronRight class="w-6 h-6 text-[#5B5EA7] transform transition-transform group-hover:translate-x-1 group-hover:scale-110 group-hover:motion-safe:animate-[bounceRight_0.4s]" />
           </div>
 
@@ -115,7 +114,7 @@
             <div v-for="(item, index) in appointmentTypes" :key="index" @click="item.action"
               class="group bg-medbluelight! rounded-lg md:rounded-xl flex flex-col justify-center items-center w-full md:w-[180px] p-3 md:p-6 cursor-pointer border-2 border-medbluelight hover:shadow-lg hover:border-2! hover:border-medblue! hover:bg-medbluefocus! hover:text-white!">
               <component :is="item.icon"
-                class="group-hover:text-white w-8 h-8 md:w-16 md:h-16 text-[#5B5EA7] mb-1 md:mb-4 " />
+                class="group-hover:text-white w-8 h-8 md:w-16 md:h-16 text-noxgrey mb-1 md:mb-4 " />
               <span class="group-hover:text-white font-medium text-noxgrey text-xs md:text-lg text-center">{{ item.text}}</span>
             </div>
           </div>

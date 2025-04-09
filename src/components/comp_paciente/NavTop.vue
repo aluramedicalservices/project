@@ -32,42 +32,38 @@
       <hr class="lg:hidden w-full h-[1px] my-6 bg-gray-200 border-0">
 
       <ul class="sm:space-y-2 lg:space-y-1 text-noxgrey">
-  <li
-    @click="$router.push('/dashboard-paciente')"
-    :class="isActive('/dashboard-paciente')
-      ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
-      : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
-    <House class="w-4 h-4" />
-    <p>Inicio</p>
-  </li>
+        <li @click="$router.push('/dashboard-paciente')"
+          :class="isActive('/dashboard-paciente')
+            ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
+            : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
+          <House class="w-4 h-4" />
+          <p>Inicio</p>
+        </li>
 
-  <li
-    @click="$router.push('/agendar-citas')"
-    :class="isActive('/agendar-citas')
-      ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
-      : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
-    <CalendarPlus class="w-4 h-4" />
-    <p>Agendar cita</p>
-  </li>
+        <li @click="$router.push('/agendar-citas')"
+          :class="isActive('/agendar-citas')
+            ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
+            : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
+          <CalendarPlus class="w-4 h-4" />
+          <p>Agendar cita</p>
+        </li>
 
-  <li
-    @click="$router.push('/proximas-citas')"
-    :class="isActive('/proximas-citas')
-      ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
-      : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
-    <CalendarHeart class="w-4 h-4" />
-    <p>Próximas citas</p>
-  </li>
+        <li @click="$router.push('/proximas-citas')"
+          :class="isActive('/proximas-citas')
+            ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
+            : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
+          <CalendarHeart class="w-4 h-4" />
+          <p>Próximas citas</p>
+        </li>
 
-  <li
-    @click="$router.push(`/historial-clinico/${userId}`)"
-    :class="isActive(`/historial-clinico/${userId}`)
-      ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
-      : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
-    <Clipboard class="w-4 h-4" />
-    <p>Historial clínico</p>
-  </li>
-</ul>
+        <li @click="$router.push(`/historial-clinico/${userId}`)"
+          :class="isActive(`/historial-clinico/${userId}`)
+            ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
+            : 'flex items-center space-x-4 cursor-pointer p-2 hover:bg-vitalblue hover:text-healingblue hover:font-bold hover:rounded-lg'">
+          <Clipboard class="w-4 h-4" />
+          <p>Historial clínico</p>
+        </li>
+      </ul>
 
 
       <hr class="w-full h-[1px] my-4 bg-separador border-0">
@@ -80,7 +76,7 @@
           <CreditCard class="w-4 h-4" />
           <p>Mis pagos</p>
         </li>
-        
+
         <li @click="$router.push(`/perfil/${userId}`)"
           :class="isActive(`/perfil/${userId}`)
             ? 'bg-healingblue text-white font-bold rounded-lg flex items-center space-x-4 cursor-pointer p-2'
