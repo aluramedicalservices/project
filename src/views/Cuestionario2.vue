@@ -1,41 +1,50 @@
 <template>
-  <div id="register">
-    <Titulo texto="Cuestionario" />
-    <div> Aqui ira la barra de progreso </div>
-    <div class="content">
-      <form @submit.prevent="Cuestionario2">
-        <hr>
-        <label for="calle">Calle</label><br>
-        <input v-model="calle" type="text" id="calle" placeholder="Calle" required />
-        <br>
+    <div id="register" class="flex flex-col min-h-screen bg-white">
+        <div class="principal-title">
+            <Titulo texto="Cuestionario" />
+            <hr />
+        </div>
 
-        <label for="numero">Número exterior</label><br>
-        <input v-model="numeroExterior" type="text" id="numero" placeholder="Número" required />
-        <br>
+        <div class="form-wrapper">
+            <p class="text-center text-medblue font-semibold mb-4">Por favor, complete su dirección.</p>
+            <form @submit.prevent="Cuestionario2" class="space-y-4">
+                <div class="form-group">
+                    <label for="calle">Calle</label>
+                    <input v-model="calle" type="text" id="calle" placeholder="Calle" required />
+                </div>
 
-        <label for="colonia">Colonia</label><br>
-        <input v-model="colonia" type="text" id="colonia" placeholder="Colonia" required />
-        <br>
+                <div class="form-group">
+                    <label for="numero">Número exterior</label>
+                    <input v-model="numeroExterior" type="text" id="numero" placeholder="Número" required />
+                </div>
 
-        <label for="ciudad">Ciudad</label><br>
-        <input v-model="ciudad" type="text" id="ciudad" placeholder="Ciudad" required />
-        <br>
+                <div class="form-group">
+                    <label for="colonia">Colonia</label>
+                    <input v-model="colonia" type="text" id="colonia" placeholder="Colonia" required />
+                </div>
 
-        <label for="cp">Código Postal</label><br>
-        <input v-model="cp" type="text" id="cp" placeholder="Código postal" required />
-        <br>
+                <div class="form-group">
+                    <label for="ciudad">Ciudad</label>
+                    <input v-model="ciudad" type="text" id="ciudad" placeholder="Ciudad" required />
+                </div>
 
-        <button type="submit">Siguiente</button>
-      </form>
+                <div class="form-group">
+                    <label for="cp">Código Postal</label>
+                    <input v-model="cp" type="text" id="cp" placeholder="Código postal" required />
+                </div>
+
+                <button type="submit">Siguiente</button>
+            </form>
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup>
 import Titulo from '../components/Titulo.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/config/supabase'
+import Swal from 'sweetalert2'
 
 const router = useRouter()
 
@@ -45,21 +54,32 @@ const colonia = ref('')
 const ciudad = ref('')
 const cp = ref('')
 
-const Cuestionario2 = async () => {
-  // Obtener los datos de la primera parte del cuestionario
-  const datosUsuario = JSON.parse(sessionStorage.getItem('datosUsuario'))
-
-  // Combinar los datos de ambas partes
-  const datosCompletos = {
-    ...datosUsuario,
-    calle: calle.value,
-    numero_exterior: numeroExterior.value,
-    colonia: colonia.value,
-    ciudad: ciudad.value,
-    cp: cp.value,
+onMounted(() => {
+  const datosUsuario = sessionStorage.getItem('datosUsuario')
+  if (!datosUsuario) {
+    router.push('/cuestionario-1')
+    return
   }
+})
 
+const Cuestionario2 = async () => {
   try {
+    const datosUsuario = JSON.parse(sessionStorage.getItem('datosUsuario'))
+    if (!datosUsuario) {
+      router.push('/cuestionario-1')
+      return
+    }
+
+    // Combinar los datos de ambas partes
+    const datosCompletos = {
+      ...datosUsuario,
+      calle: calle.value,
+      numero_exterior: numeroExterior.value,
+      colonia: colonia.value,
+      ciudad: ciudad.value,
+      cp: cp.value,
+    }
+
     // Obtener el ID del usuario autenticado
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -89,17 +109,110 @@ const Cuestionario2 = async () => {
 
     if (error) throw error
 
-    alert('¡Registro completado con éxito!')
-    router.push('/dashboard-paciente') // Redirigir al inicio o a otra vista
+    // Limpiar sessionStorage después de guardar
+    sessionStorage.removeItem('datosUsuario')
+    
+    // Mostrar alerta bonita
+    await Swal.fire({
+      icon: 'success',
+      title: '¡Registro exitoso!',
+      text: 'Tus datos han sido guardados correctamente',
+      confirmButtonText: 'Continuar',
+      confirmButtonColor: '#5B5EA7',
+      background: '#F0F9FE',
+      customClass: {
+        popup: 'rounded-lg',
+        title: 'text-medblue',
+      }
+    })
+    
+    router.push('/dashboard-paciente')
 
   } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Ocurrió un error al guardar los datos. Inténtalo de nuevo.',
+      confirmButtonColor: '#5B5EA7',
+      background: '#F0F9FE'
+    })
     console.error('Error al guardar los datos:', err.message)
-    alert('Ocurrió un error al guardar los datos. Inténtalo de nuevo.')
   }
 }
 </script>
 
 <style scoped>
-/* Aquí puedes agregar estilos para tu formulario */
+.principal-title {
+    text-align: center;
+    margin: 0 0 2rem 0;
+    position: relative;
+    padding-top: 1rem;
+}
+
+.principal-title h1 {
+    color: #5B5EA7;
+    margin: 1rem 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.form-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+form {
+    background-color: #F0F9FE;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    color: #5B5EA7;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #E0F9FC;
+    border-radius: 5px;
+    background-color: white;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #76C7D0;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 1rem;
+    background-color: #76C7D0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #5B5EA7;
+}
+
+@media (max-width: 768px) {
+    .form-wrapper {
+        margin: 0 1rem;
+    }
+}
 </style>
-    

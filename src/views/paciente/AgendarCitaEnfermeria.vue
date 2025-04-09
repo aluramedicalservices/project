@@ -2,9 +2,6 @@
   <div id="vista_agendar_cita_enfermeria" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
     <NavTop />
     <div id="Schedule_appointment" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
-      <button @click="router.push('/dashboard-paciente')" class="volver-btn">
-        ← Volver
-      </button>
       <div class="mt-12">
         <Titulo texto="Agendar cita a Domicilio" />
 
@@ -44,6 +41,15 @@
             <option value="online">Pagar en línea</option>
             <option value="efectivo">Pagar en efectivo</option>
           </select>
+          
+          <!-- Botón de continuar para pago en efectivo -->
+          <button 
+            v-if="metodoPago === 'efectivo'"
+            @click="irAConfirmarCita"
+            class="mt-4 w-full py-2 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+          >
+            Continuar
+          </button>
         </div>
       </div>
 
@@ -137,6 +143,7 @@ const handlePaymentMethodChange = (event) => {
   if (event.target.value === 'online') {
     showPaypalModal.value = true;
   }
+  // No es necesario hacer nada especial para efectivo, el botón se mostrará automáticamente
 };
 
 // Simular procesamiento de pago
@@ -287,21 +294,6 @@ select {
   padding-top: 3.5rem;
 }
 
-.volver-btn {
-  display: block;
-  padding: 0.5rem 1rem;
-  background-color: #F0F9FE;
-  color: #5B5EA7;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-}
-
-.volver-btn:hover {
-  background-color: #76C7D0;
-}
-
 .mt-12 {
   margin-top: 3rem;
 }
@@ -318,5 +310,9 @@ select {
   to {
     opacity: 1;
   }
+}
+
+.mt-4 {
+  margin-top: 1rem;
 }
 </style>

@@ -2,12 +2,6 @@
   <div id="vista_agendar_cita_especialista" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
   <NavTop />
   <div id="Schedule_appointment"  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
-    <button 
-      @click="router.push('/dashboard-paciente')"
-      class="volver-btn"
-    >
-      ← Volver
-    </button>
     <div class="mt-12">
       <Titulo texto="Cita con Especialista" />
 
@@ -60,6 +54,15 @@
         />
         <p class="mt-2 text-gray-600">
           Hora seleccionada: {{ selectedTime || 'Selecciona una hora' }}
+        </p>
+      </div>
+
+      <!-- Selector de ubicación -->
+      <div class="mb-8">
+        <label class="block text-lg font-medium mb-2">Ubicación de la consulta</label>
+        <MapSelector @location-selected="handleLocationSelect" />
+        <p v-if="selectedLocation" class="mt-2 text-gray-600">
+          Ubicación seleccionada: {{ selectedLocation.lat.toFixed(6) }}, {{ selectedLocation.lng.toFixed(6) }}
         </p>
       </div>
 
@@ -117,6 +120,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Calendar from '@/components/Calendar.vue';
 import TimeSelector from '@/components/TimeSelector.vue';
+import MapSelector from '@/components/MapSelector.vue';
 import NavTop from '../../components/comp_paciente/NavTop.vue';
 import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import Titulo from '../../components/Titulo.vue';
@@ -130,6 +134,7 @@ const doctorInfo = ref(null);
 const listaEspecialistas = ref([]);
 const loading = ref(false);
 const showModal = ref(false);
+const selectedLocation = ref(null);
 
 // Horas deshabilitadas (comida)
 const disabledHours = ref([12, 13]);
@@ -141,7 +146,10 @@ const formattedSelectedDate = computed(() => {
 
 // Validación del formulario
 const formularioValido = computed(() => {
-  return selectedDate.value && selectedTime.value && selectedSpecialist.value;
+  return selectedDate.value && 
+         selectedTime.value && 
+         selectedSpecialist.value && 
+         selectedLocation.value;
 });
 
 // Manejar selección de fecha
@@ -165,6 +173,11 @@ const handleDateSelect = (date) => {
 // Manejar selección de hora
 const handleTimeSelect = (time) => {
   selectedTime.value = time;
+};
+
+// Manejar selección de ubicación
+const handleLocationSelect = (location) => {
+  selectedLocation.value = location;
 };
 
 // Cargar lista de especialistas disponibles
@@ -225,12 +238,27 @@ const cargarEspecialista = async () => {
 };
 
 // Redirigir a confirmar cita
-const irAConfirmarCita = () => {
+const irAConfirmarCita = async () => {
   if (!formularioValido.value) {
-    alert('Por favor, completa todos los campos.');
+    alert('Por favor, completa todos los campos, incluyendo la ubicación.');
     return;
   }
-  showModal.value = true;
+
+  // Convert location to string for query parameter
+  const ubicacion = JSON.stringify(selectedLocation.value);
+
+  router.push({
+    path: '/confirmar-cita',
+    query: {
+      modalidad: 'especialista',
+      especialidad: doctorInfo.value.especialidad,
+      fecha: format(selectedDate.value, 'yyyy-MM-dd'),
+      hora: selectedTime.value,
+      doctorId: selectedSpecialist.value,
+      doctorNombre: doctorInfo.value.nombre,
+      ubicacion
+    },
+  });
 };
 
 // Confirmar cita
@@ -348,21 +376,6 @@ select {
 
 .content-container {
   padding-top: 3.5rem;
-}
-
-.volver-btn {
-  display: block;
-  padding: 0.5rem 1rem;
-  background-color: #F0F9FE;
-  color: #5B5EA7;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-}
-
-.volver-btn:hover {
-  background-color: #76C7D0;
 }
 
 .mt-12 {

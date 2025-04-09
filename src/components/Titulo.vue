@@ -1,7 +1,7 @@
 <template>
   <div id="component-titulo" class="flex justify-center items-center relative w-full m-2">
             
-    <button @click="volverAtras" id="volver" class="bg-medblue text-white w-8 h-8 flex items-center justify-center rounded-full absolute left-0">
+    <button @click="volverAtras" id="volver" class="bg-medblue text-white w-8 h-8 flex items-center justify-center rounded-full absolute left-0 cursor-pointer">
       <ChevronLeft class="w-5 h-5 text-white"/>
     </button>
 

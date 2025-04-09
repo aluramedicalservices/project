@@ -106,6 +106,7 @@ import { ref, onMounted } from 'vue';
 import { supabase } from '@/config/supabase';
 import NavBottom from '../../components/comp_paciente/NavBottom.vue';
 import NavTop from '../../components/comp_paciente/NavTop.vue';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -203,16 +204,44 @@ export default {
         
         if (error) throw error;
         
-        // Actualizar la foto en cualquier otra vista que pueda estar abierta
         const evento = new CustomEvent('perfil-actualizado', {
           detail: { foto_url: user.value.foto_url }
         });
         window.dispatchEvent(evento);
         
-        alert('¡Perfil actualizado con éxito!');
+        await Swal.fire({
+          icon: 'success',
+          title: '¡Perfil Actualizado!',
+          text: 'Tus datos han sido guardados correctamente',
+          confirmButtonText: 'Continuar',
+          confirmButtonColor: '#5B5EA7',
+          background: '#F0F9FE',
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          },
+          customClass: {
+            popup: 'rounded-xl border-4 border-[#76C7D0]',
+            title: 'text-[#5B5EA7] font-bold',
+            content: 'text-gray-600',
+            confirmButton: 'px-6 py-2 rounded-full font-semibold'
+          }
+        });
       } catch (error) {
         console.error("Error actualizando:", error);
-        alert('Error al actualizar el perfil');
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo actualizar el perfil',
+          confirmButtonColor: '#5B5EA7',
+          background: '#F0F9FE',
+          customClass: {
+            popup: 'rounded-xl',
+            title: 'text-red-500'
+          }
+        });
       } finally {
         loading.value = false;
       }

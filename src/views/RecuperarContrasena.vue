@@ -51,7 +51,7 @@ const recuperarContraseña = async () => {
 
   try {
     const { error } = await supabase.auth.resetPasswordForEmail(correo.value, {
-      redirectTo: "http://localhost:5173/restablecer-contrasena?type=recovery",
+      redirectTo: "https://alura-prueba-descarga-git-main-aluramedicalservices-projects.vercel.app/restablecer-contrasena?type=recovery",
     });
 
     if (error) {

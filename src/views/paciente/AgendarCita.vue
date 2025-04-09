@@ -27,18 +27,27 @@
       </div>
       <NavBottom class="lg:hidden"/>
     </div>
-  </template>
+</template>
   
-  <script setup>
-  import NavTop from '../../components/comp_paciente/NavTop.vue';
-  import NavBottom from '../../components/comp_paciente/NavBottom.vue';
-  import TituloPrincipal from '@/components/TituloPrincipal.vue';
+<script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
-  import { Stethoscope } from 'lucide-vue-next';
-  import { LaptopMinimal } from 'lucide-vue-next';
-  import {  DoorOpen } from 'lucide-vue-next';
-  
-  const irAAgendarCitaEspecialista = () => router.push('/agendar-cita-especialista');
+import NavTop from '../../components/comp_paciente/NavTop.vue';
+import NavBottom from '../../components/comp_paciente/NavBottom.vue';
+import TituloPrincipal from '@/components/TituloPrincipal.vue';
 
-  </script>
-  
+import { Stethoscope, LaptopMinimal, DoorOpen } from 'lucide-vue-next';
+
+const irAAgendarCitaEspecialista = () => {
+  router.push('/agendar-cita-especialista')
+}
+
+const irAAgendarCitaOnline = () => {
+  router.push('/agendar-cita-online')
+}
+
+const irAAgendarCitaDomicilio = () => {
+  router.push('/agendar-cita-enfermeria')
+}
+</script>

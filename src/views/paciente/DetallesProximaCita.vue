@@ -45,6 +45,65 @@
             <i>Imagen sobre el estado</i>
             <p>{{ mensajeEstado }}</p>
           </div>
+
+          <!-- Botón de cancelar -->
+          <button 
+            v-if="cita.status === 'agendada'"
+            @click="mostrarConfirmacion = true"
+            class="mt-4 bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Cancelar Cita
+          </button>
+
+          <!-- Modal de confirmación mejorado -->
+          <Transition name="fade">
+            <div v-if="mostrarConfirmacion" 
+                 class="fixed inset-0 z-50 overflow-y-auto"
+                 aria-labelledby="modal-title" 
+                 role="dialog" 
+                 aria-modal="true">
+              <!-- Overlay con efecto blur -->
+              <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm"></div>
+
+              <!-- Modal container -->
+              <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="relative bg-white rounded-xl shadow-xl transform transition-all max-w-lg w-full p-6">
+                  <!-- Icono de advertencia -->
+                  <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                  </div>
+                  
+                  <!-- Contenido del modal -->
+                  <div class="text-center">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2" id="modal-title">
+                      ¿Está seguro de cancelar la cita?
+                    </h3>
+                    <p class="text-gray-500 mb-6">
+                      Esta acción no se puede deshacer y la fecha quedará disponible para otros pacientes.
+                    </p>
+                  </div>
+
+                  <!-- Botones -->
+                  <div class="flex justify-center space-x-4">
+                    <button 
+                      @click="mostrarConfirmacion = false"
+                      class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
+                    >
+                      No, mantener cita
+                    </button>
+                    <button 
+                      @click="cancelarCita"
+                      class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 font-medium"
+                    >
+                      Sí, cancelar cita
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Transition>
         </div>
       </div>
     </div>
@@ -54,7 +113,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { supabase } from '@/config/supabase';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -72,22 +131,26 @@ const cita = ref({});
 const tituloCita = ref('');
 const modalidad = ref('');
 const horaEscogida = ref('');
-const ubicacionPaciente = ref('Clínica Central');
+const ubicacionPaciente = ref('Guardada correctamente');
 const mensajeEstado = ref('');
 const NombrePersonalQueAtiende = ref('');
 const TituloPersonal = ref('');
 const mensajeInstrucciones = ref('Por favor, confirme su asistencia a la cita 1 hora antes.');
 
-// Función corregida para formatear la fecha
+const router = useRouter();
+const mostrarConfirmacion = ref(false);
+
+// Función corregida para formatear la fecha con manejo de UTC
 const formatearFecha = (fecha) => {
-  if (!fecha) return 'Fecha no disponible'; // Manejo de valores nulos o indefinidos
+  if (!fecha) return 'Fecha no disponible';
 
   try {
-    const fechaObj = new Date(fecha);
-    if (isNaN(fechaObj.getTime())) {
-      throw new Error('Fecha inválida');
-    }
-    return format(fechaObj, "d 'de' MMMM 'de' yyyy", { locale: es });
+    // Convertir la fecha UTC a fecha local
+    const fechaUTC = new Date(fecha + 'T00:00:00Z');
+    const offset = fechaUTC.getTimezoneOffset() * 60000; // offset en milisegundos
+    const fechaLocal = new Date(fechaUTC.getTime() + offset);
+    
+    return format(fechaLocal, "d 'de' MMMM 'de' yyyy", { locale: es });
   } catch (error) {
     console.error('Error al formatear la fecha:', error);
     return 'Fecha inválida';
@@ -96,7 +159,33 @@ const formatearFecha = (fecha) => {
 
 // Función para formatear la hora
 const formatearHora = (hora) => {
-  return hora ? hora.slice(0, 5) : '--:--'; // Manejo de valores nulos o indefinidos
+  if (!hora) return '--:--';
+  try {
+    const fechaHora = new Date(`1970-01-01T${hora}`);
+    return format(fechaHora, 'HH:mm');
+  } catch (error) {
+    console.error('Error al formatear la hora:', error);
+    return '--:--';
+  }
+};
+
+const cancelarCita = async () => {
+  try {
+    const { error } = await supabase
+      .from('appointments')
+      .update({ status: 'cancelada' })
+      .eq('id', citaId);
+
+    if (error) throw error;
+
+    alert('Cita cancelada exitosamente');
+    router.push('/dashboard-paciente'); // Redirige al listado de citas
+  } catch (error) {
+    console.error('Error al cancelar la cita:', error);
+    alert('Error al cancelar la cita. Por favor, inténtelo de nuevo.');
+  } finally {
+    mostrarConfirmacion.value = false;
+  }
 };
 
 onMounted(async () => {
@@ -128,3 +217,15 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

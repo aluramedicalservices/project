@@ -2,7 +2,7 @@
   <div id="vista_agendar_cita" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-white">
     <NavTop />
     <div class="flex-1 py-20"> <!-- Added padding to prevent overlap -->
-      <div id="p-patients-home" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto">
+      <div id="p-patients-home" class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto relative">
 
         <!--NUEVA PRIMERA FILA-->
         <div id="primera-fila" class="flex flex-col lg:flex-row items-center pb-3">
@@ -10,7 +10,7 @@
           <div id="welcome-card"
             class="lg:w-5/12 border-gray-200 flex items-center justify-center gap-4 p-6 rounded-xl lg:mr-2 my-4"> <!--shadow-lg bg-white-->
             <div class="w-24 aspect-square overflow-hidden rounded-full border border-gray-200">
-              <img :src="avatar" alt="perfil_usuario" class="w-full h-full object-cover" />
+              <img :src="userAvatar" alt="perfil_usuario" class="w-full h-full object-cover" />
             </div>
 
             <div>
@@ -25,7 +25,7 @@
 
           <!-- Noticias -->
           <div id="news-card"
-            class="lg:w-7/12 border-gray-200 shadow-lg py-8 lg:ml-2 flex items-start relative bg-gradient-to-r from-[#3E3A99] to-medblue rounded-xl h-auto cursor-pointer">
+            class="lg:w-7/12 border-gray-200 shadow-lg py-8 lg:ml-2 flex items-start relative bg-gradient-to-r from-[#3E3A99] to-medblue rounded-xl h-auto cursor-pointer z-0">
 
             <!-- Imagen de fondo -->
             <img :src="medicoAnuncio1" alt="anuncios"
@@ -104,8 +104,8 @@
         <Separador />
 
         <!-- Solicitar citas -->
-        <div id="s-request-appointment" class="mb-8 md:mb-12 space-y-4 pb-10" @click="irAAgendarCita">
-          <div class=" group flex items-center justify-center gap-2 cursor-pointer">
+        <div id="s-request-appointment" class="mb-8 md:mb-12 space-y-4 pb-10" >
+          <div class=" group flex items-center justify-center gap-2 cursor-pointer" @click="irAAgendarCita">
             <TituloH2 texto="Agendar cita" />
             <ChevronRight class="w-6 h-6 text-[#5B5EA7] transform transition-transform group-hover:translate-x-1 group-hover:scale-110 group-hover:motion-safe:animate-[bounceRight_0.4s]" />
           </div>
@@ -141,7 +141,7 @@ import Separador from '@/components/Separador.vue';
 
 // Icons
 import { Calendar, Clock, Stethoscope, Monitor, UserRound, ChevronRight } from 'lucide-vue-next';
-import avatar from '@/assets/imagenes/avatar.png';
+const avatar = '/default-avatar.png';
 
 const nombrePaciente = ref('');
 const userAvatar = ref(avatar);
@@ -193,6 +193,12 @@ onMounted(async () => {
       .eq('id', user.id)
       .single();
 
+    // Si no hay datos del usuario, redirigir al cuestionario
+    if (!userData || !userData.nombre) {
+      router.push('/cuestionario-1');
+      return;
+    }
+
     if (userError || !userData) {
       alert('Error al cargar datos del usuario');
       return;
@@ -202,6 +208,8 @@ onMounted(async () => {
     // Actualizar avatar si existe
     if (userData.foto_url) {
       userAvatar.value = userData.foto_url;
+    } else {
+      userAvatar.value = avatar;
     }
 
     // Obtener citas FUTURAS con datos de doctores
@@ -218,6 +226,7 @@ onMounted(async () => {
         doctors!fk_doctor_id (nombre_completo)
       `)
       .eq('user_id', user.id)
+      .neq('status', 'cancelada') // Excluir citas canceladas
       .gte('appointment_date', hoy) // Solo citas futuras
       .order('appointment_date', { ascending: true });
 
@@ -226,7 +235,7 @@ onMounted(async () => {
     // Se filtran las citas completadas
     citas.value =
       citasData
-        ?.filter((cita) => cita.status !== 'completada')
+        ?.filter((cita) => cita.status !== 'completada' && cita.status !== 'cancelada')
         .map((cita) => ({
           ...cita,
           doctor_nombre: cita.doctors?.nombre_completo || 'No asignado',

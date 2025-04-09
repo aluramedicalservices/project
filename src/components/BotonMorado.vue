@@ -1,21 +1,34 @@
 <template>
-    <button
-        class="w-full font-nunito bg-medblue text-white mb-2 my-1 py-3  rounded-full px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium border border-transparent hover:bg-medbluehover transition focus:outline-hidden focus:border-medbluelight disabled:opacity-50 disabled:pointer-events-none">
-        {{ texto }}
-    </button>
+  <!-- Si hay prop 'to', renderiza un router-link -->
+  <router-link
+    v-if="to"
+    :to="to"
+    class="bg-[#5B5EA7] hover:bg-[#4a4d92] text-white font-bold py-2 px-4 rounded-full shadow-md transition-colors duration-300 text-center inline-block"
+  >
+    {{ label }}
+  </router-link>
+
+  <!-- Si no hay 'to', renderiza un botón normal -->
+  <button
+    v-else
+    @click="$emit('click')"
+    class="bg-[#5B5EA7] hover:bg-[#4a4d92] text-white font-bold py-2 px-4 rounded-xl shadow-md transition-colors duration-300"
+  >
+    {{ label }}
+  </button>
 </template>
 
-<script>
-export default {
-  name: 'BotonMorado',
-  
-  props: {
-    texto: {
-      type: String,
-      required: true
-    }
+<script setup>
+defineProps({
+  label: {
+    type: String,
+    required: true
   },
+  to: {
+    type: String,
+    default: null
+  }
+})
 
-}
-
+defineEmits(['click'])
 </script>

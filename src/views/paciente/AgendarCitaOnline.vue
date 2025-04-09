@@ -2,12 +2,6 @@
   <div id="vista_agendar_cita_online" class="lg:pl-64 flex flex-col justify-between min-h-screen font-nunito text-noxgrey bg-gradient-to-br from-slate-100 to-white">
   <NavTop />
   <div id="Schedule_appointment"  class="w-5/6 lg:w-23/24 max-w-[1700px] mx-auto pt-20 pb-32">
-    <button 
-      @click="router.push('/dashboard-paciente')"
-      class="volver-btn"
-    >
-      ← Volver
-    </button>
     <div class="mt-12">
       <Titulo texto="Agendar cita online" />
 
@@ -234,21 +228,6 @@ label {
 
 .relative {
   position: relative;
-}
-
-.volver-btn {
-  display: block;
-  padding: 0.5rem 1rem;
-  background-color: #F0F9FE;
-  color: #5B5EA7;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-}
-
-.volver-btn:hover {
-  background-color: #76C7D0;
 }
 
 .mt-12 {

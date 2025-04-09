@@ -258,7 +258,8 @@ const cargarCitasDoctor = async () => {
         ubicacion
       `)
       .eq('doctor_id', doctorId)
-      .in('status', ['agendada', 'en_proceso'])
+      .in('status', ['agendada', 'en_proceso']) // Solo mostrar citas agendadas y en proceso
+      .neq('status', 'cancelada') // Excluir explícitamente las canceladas
       .gte('appointment_date', hoy)
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true });
